@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>МОЙ КУБ — Спираль</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>МОЙ КУБ</h1>
+    <p>Куб Добра и Герои месяца</p>
+  </header>
+
+  <main class="stage-wrap">
+    <div id="stage" class="stage">
+      <!-- Центральный куб -->
+      <button class="cube center" data-type="center" style="--x:50; --y:50;">
+        <strong>ЦЕНТР</strong>
+        <small>аукцион аренды</small>
+      </button>
+
+      <!-- Куб Добра -->
+      <button class="cube good" data-type="good" style="--x:50; --y:64;">
+        <strong>КУБ ДОБРА</strong>
+        <small>Подать заявку</small>
+      </button>
+
+      <!-- Три Куба Героя -->
+      <div class="heroes">
+        <div class="hero" style="--x:43; --y:76;">
+          <strong>КУБ ГЕРОЯ</strong>
+          <small>1 месяц</small>
+        </div>
+        <div class="hero" style="--x:50; --y:76;">
+          <strong>КУБ ГЕРОЯ</strong>
+          <small>1 месяц</small>
+        </div>
+        <div class="hero" style="--x:57; --y:76;">
+          <strong>КУБ ГЕРОЯ</strong>
+          <small>1 месяц</small>
+        </div>
+      </div>
+
+      <!-- Спиральные кубы -->
+      <div id="spiralLayer"></div>
+    </div>
+  </main>
+
+  <!-- Модальное окно -->
+  <div id="modal" class="modal hidden">
+    <div class="modal__panel">
+      <button class="modal__close" id="modalClose" aria-label="Закрыть">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer__title">КУБ ДОБРА И ГЕРОИ МЕСЯЦА</div>
+    <div class="footer__subtitle">Каждую неделю — новая история. Каждый месяц — три героя.</div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

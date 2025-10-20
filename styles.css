@@ -1,0 +1,149 @@
+/* ====== БАЗА ====== */
+*{box-sizing:border-box} html,body{height:100%}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+  background:#05060a;
+  color:#eafcff;
+  overflow-x:hidden;
+}
+h1{margin:0; font-weight:900; letter-spacing:.02em}
+.header{
+  text-align:center;
+  padding:18px 12px 6px;
+}
+.header h1{
+  font-size: clamp(22px, 4vw, 42px);
+  color:#7ff7ff;
+  text-shadow: 0 0 12px rgba(0,255,255,.65);
+}
+.header p{opacity:.8; margin-top:6px; font-size: clamp(12px, 2.5vw, 16px)}
+
+.stage-wrap{display:flex; justify-content:center; padding:10px 10px 80px}
+.stage{
+  position:relative;
+  width:min(92vw, 900px);
+  height:min(92vw, 900px);
+  margin:auto;
+  border-radius:18px;
+  background: radial-gradient(1200px 800px at 50% 45%,
+             rgba(0, 255, 255, 0.06), transparent 60%),
+             radial-gradient(900px 600px at 50% 55%,
+             rgba(144, 0, 255, 0.06), transparent 65%);
+  box-shadow: inset 0 0 120px rgba(0,255,255,.05);
+}
+
+/* ====== КУБЫ ====== */
+.cube{
+  position:absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  transform: translate(-50%, -50%);
+  width: clamp(24px, 4.2vw, 42px);
+  height: clamp(24px, 4.2vw, 42px);
+  border-radius:10px;
+  border:1px solid rgba(127,247,255,.35);
+  background: linear-gradient(135deg, rgba(0,255,255,.18), rgba(144,0,255,.10));
+  box-shadow: 0 0 10px rgba(0,255,255,.25);
+  color:#bffbff;
+  display:grid;
+  place-items:center;
+  font-weight:700;
+  font-size: clamp(9px, 2.2vw, 11px);
+  cursor:pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.cube:hover{ transform: translate(-50%, -50%) scale(1.12); box-shadow: 0 0 16px rgba(0,255,255,.35); }
+
+/* Центр / Добро / Герои */
+.center{
+  width: clamp(56px, 7.5vw, 110px);
+  height: clamp(56px, 7.5vw, 110px);
+  border:3px solid rgba(255,170,255,.55);
+  background: linear-gradient(135deg, rgba(0,255,255,.20), rgba(217,70,239,.22));
+  text-align:center;
+}
+.center small{display:block; font-weight:600; opacity:.85; font-size: clamp(8px, 2vw, 11px)}
+
+.good{
+  width: clamp(48px, 6.2vw, 96px);
+  height: clamp(48px, 6.2vw, 96px);
+  border:2px solid rgba(127,247,255,.6);
+  background: linear-gradient(135deg, rgba(0,255,255,.22), rgba(0,255,255,.08));
+  color:#cffcff;
+}
+.good small{display:block; opacity:.9; font-size: clamp(8px, 2vw, 10px)}
+
+.heroes .hero{
+  position:absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  transform: translate(-50%, -50%);
+  width: clamp(42px, 5.6vw, 80px);
+  height: clamp(42px, 5.6vw, 80px);
+  border-radius:12px;
+  border:2px solid rgba(16,185,129,.55);
+  background: linear-gradient(135deg, rgba(16,185,129,.22), rgba(16,185,129,.08));
+  color:#c9ffea;
+  display:grid; place-items:center; text-align:center;
+  font-size: clamp(9px, 2vw, 11px);
+  font-weight:800;
+  box-shadow: 0 0 14px rgba(16,185,129,.28);
+}
+
+/* ====== МОДАЛКА ====== */
+.modal{position:fixed; inset:0; display:grid; place-items:center; background:rgba(0,0,0,.6); backdrop-filter: blur(2px)}
+.modal.hidden{display:none}
+.modal__panel{
+  width:min(92vw, 420px);
+  background:#0b0f16;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5), 0 0 24px rgba(0,255,255,.18);
+}
+.modal__close{
+  float:right;
+  background:transparent;
+  border:none;
+  color:#9bdde0;
+  font-size:22px;
+  cursor:pointer;
+}
+.modal__panel h3{margin:6px 0 10px; font-size:20px}
+.modal__panel p{margin:0 0 10px; opacity:.9}
+.modal__panel .field{display:flex; flex-direction:column; gap:6px; margin:8px 0}
+.modal__panel input, .modal__panel textarea{
+  background:#070a10;
+  color:#dffcff;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:14px;
+}
+.modal__panel .row{display:flex; gap:10px}
+.modal__panel .btn{
+  width:100%; margin-top:10px; padding:12px 14px;
+  border-radius:12px; border:1px solid rgba(127,247,255,.45);
+  background: linear-gradient(135deg, rgba(0,255,255,.25), rgba(144,0,255,.15));
+  color:#062a2e; font-weight:900; letter-spacing:.02em;
+  cursor:pointer;
+}
+.modal__panel .btn.secondary{
+  background:transparent; color:#9bdde0; border-color:rgba(127,247,255,.25)
+}
+
+/* ====== ПОДВАЛ ====== */
+.footer{
+  text-align:center;
+  padding:0 12px 24px;
+}
+.footer__title{color:#7ff7ff; font-weight:800; text-shadow: 0 0 12px rgba(0,255,255,.5)}
+.footer__subtitle{opacity:.85}
+
+/* ====== Мобилки ====== */
+@media (max-width: 520px){
+  .stage{ width:94vw; height:94vw; }
+  .header{ padding-bottom:0 }
+  .footer{ padding-bottom:18px }
+}
