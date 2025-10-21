@@ -20,30 +20,33 @@
         <small>аукцион аренды</small>
       </button>
 
-      <!-- Куб Добра -->
-      <button class="cube good" data-type="good" style="--x:50; --y:64;">
+      <!-- Куб Добра (кликабелен) -->
+      <button class="cube good" id="cubeGood" data-type="good" style="--x:50; --y:64;">
         <strong>КУБ ДОБРА</strong>
         <small>Подать заявку</small>
       </button>
 
-      <!-- Три Куба Героя -->
+      <!-- Три Куба Героя (неактивные) -->
       <div class="heroes">
-        <div class="hero" style="--x:43; --y:76;">
+        <div class="hero" aria-hidden="true" style="--x:41; --y:76;">
           <strong>КУБ ГЕРОЯ</strong>
           <small>1 месяц</small>
         </div>
-        <div class="hero" style="--x:50; --y:76;">
+        <div class="hero" aria-hidden="true" style="--x:50; --y:76;">
           <strong>КУБ ГЕРОЯ</strong>
           <small>1 месяц</small>
         </div>
-        <div class="hero" style="--x:57; --y:76;">
+        <div class="hero" aria-hidden="true" style="--x:59; --y:76;">
           <strong>КУБ ГЕРОЯ</strong>
           <small>1 месяц</small>
         </div>
       </div>
 
-      <!-- Спиральные кубы -->
-      <div id="spiralLayer"></div>
+      <!-- Слой спирали -->
+      <div id="spiralLayer" aria-live="polite"></div>
+
+      <!-- Tooltip -->
+      <div id="tooltip" class="tooltip hidden"></div>
     </div>
   </main>
 

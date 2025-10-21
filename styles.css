@@ -89,6 +89,7 @@ h1{margin:0; font-weight:900; letter-spacing:.02em}
   font-size: clamp(9px, 2vw, 11px);
   font-weight:800;
   box-shadow: 0 0 14px rgba(16,185,129,.28);
+  pointer-events:none;
 }
 
 /* ====== МОДАЛКА ====== */
@@ -121,9 +122,10 @@ h1{margin:0; font-weight:900; letter-spacing:.02em}
   padding:10px 12px;
   font-size:14px;
 }
-.modal__panel .row{display:flex; gap:10px}
+.modal__panel .row{display:flex; gap:10px; margin-top:8px}
 .modal__panel .btn{
-  width:100%; margin-top:10px; padding:12px 14px;
+  flex:1;
+  padding:12px 14px;
   border-radius:12px; border:1px solid rgba(127,247,255,.45);
   background: linear-gradient(135deg, rgba(0,255,255,.25), rgba(144,0,255,.15));
   color:#062a2e; font-weight:900; letter-spacing:.02em;
@@ -132,6 +134,23 @@ h1{margin:0; font-weight:900; letter-spacing:.02em}
 .modal__panel .btn.secondary{
   background:transparent; color:#9bdde0; border-color:rgba(127,247,255,.25)
 }
+
+/* ====== TOOLTIP ====== */
+.tooltip{
+  position:absolute;
+  transform: translate(-50%, -120%);
+  background: rgba(1, 25, 30, 0.92);
+  color:#aef6ff;
+  padding:8px 10px;
+  border:1px solid rgba(127,247,255,.35);
+  border-radius:10px;
+  font-size:12px;
+  pointer-events:none;
+  white-space:nowrap;
+  box-shadow: 0 0 18px rgba(0,255,255,.25);
+  z-index:10;
+}
+.tooltip.hidden{display:none}
 
 /* ====== ПОДВАЛ ====== */
 .footer{

@@ -1,56 +1,74 @@
-// Параметры спирали (золотая / архимедова): r = a + b * theta
-const N = 180;                   // количество кубов
-const theta0 = -Math.PI / 2;     // старт снизу
-const step = 0.25;               // шаг угла (по часовой — уменьшаем theta)
-const a = 6;                     // базовый радиус
-const b = 5.6;                   // шаг радиуса (подобрано, чтобы все влезли)
-const center = { x: 50, y: 50 }; // центр сцены (%)
+// ====== Геометрия золотой спирали (r = a + b * theta) ======
+const N = 180;
+const theta0 = -Math.PI / 2; // старт снизу по центру
+const step = 0.25;           // равномерный шаг по углу — ровные витки
+const a = 8;                 // базовый радиус
+const b = 6.2;               // шаг радиуса
+const center = { x: 50, y: 50 };
 
 // Цены по экспоненте от края к центру: 7 500 → 35 000 ₽
 const priceMin = 7500, priceMax = 35000;
 const growth = Math.pow(priceMax / priceMin, 1 / (N - 1));
 
-function priceByIndex(iFromOuter) {
-  // Индекс 0..N-1 от края к центру
-  const price = priceMin * Math.pow(growth, (N - 1) - iFromOuter);
+const priceByIdx = (innerIdx) => {
+  const price = priceMin * Math.pow(growth, (N - 1) - innerIdx);
   return Math.round(price / 100) * 100;
-}
+};
 
-// Узлы спирали (уникальные, без дублей)
+// Строим точки так, чтобы #1 был С СНАРУЖИ снизу и дальше по часовой к центру
 const points = Array.from({ length: N }, (_, i) => {
-  const theta = theta0 - step * i; // по часовой
-  const r = a + b * (i + 1);
+  const k = (N - 1) - i;             // внешний → внутренний
+  const theta = theta0 - step * k;   // по часовой
+  const r = a + b * (k + 1);
   const x = center.x + r * Math.cos(theta);
   const y = center.y + r * Math.sin(theta);
   return { x, y };
 });
 
-// Нумерация: #1 внизу снаружи → по часовой к центру → #180 возле центра
-const cubes = points.map((p, idx) => ({
-  id: idx + 1,
-  x: p.x,
-  y: p.y
-}));
+const cubes = points.map((p, i) => ({ id: i + 1, ...p }));
 
-// Рендер
+// ====== Рендер спирали ======
 const layer = document.getElementById('spiralLayer');
 const frag = document.createDocumentFragment();
+const tooltip = document.getElementById('tooltip');
 
 cubes.forEach((c, idx) => {
-  const btn = document.createElement('button');
-  btn.className = 'cube';
-  btn.style.setProperty('--x', c.x.toFixed(3));
-  btn.style.setProperty('--y', c.y.toFixed(3));
-  btn.dataset.id = c.id;
-  btn.title = `Куб #${c.id} — ${priceByIndex(idx).toLocaleString('ru-RU')} ₽/мес`;
-  btn.textContent = `#${c.id}`;
-  btn.addEventListener('click', () => openModalForCube(c.id, priceByIndex(idx)));
-  frag.appendChild(btn);
-});
+  const el = document.createElement('button');
+  el.className = 'cube';
+  el.style.setProperty('--x', c.x.toFixed(3));
+  el.style.setProperty('--y', c.y.toFixed(3));
+  el.dataset.id = c.id;
+  el.textContent = `#${c.id}`;
 
+  const price = priceByIdx(idx);
+  const tipText = `💰 ${price.toLocaleString('ru-RU')} ₽/мес`;
+
+  function showTip(evt){
+    tooltip.textContent = tipText;
+    const rect = evt.currentTarget.getBoundingClientRect();
+    tooltip.style.left = `${rect.left + rect.width/2 + window.scrollX}px`;
+    tooltip.style.top  = `${rect.top - 8 + window.scrollY}px`;
+    tooltip.classList.remove('hidden');
+  }
+  function moveTip(evt){
+    const rect = evt.currentTarget.getBoundingClientRect();
+    tooltip.style.left = `${rect.left + rect.width/2 + window.scrollX}px`;
+    tooltip.style.top  = `${rect.top - 8 + window.scrollY}px`;
+  }
+  function hideTip(){ tooltip.classList.add('hidden'); }
+
+  el.addEventListener('mouseenter', showTip);
+  el.addEventListener('mousemove', moveTip);
+  el.addEventListener('mouseleave', hideTip);
+  el.addEventListener('touchstart', (e)=>{ showTip(e); setTimeout(hideTip, 1200); }, {passive:true});
+
+  el.addEventListener('click', () => openModalForCube(c.id, price));
+
+  frag.appendChild(el);
+});
 layer.appendChild(frag);
 
-// Модалка (общая)
+// ====== Модалка ======
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modalContent');
 const modalClose = document.getElementById('modalClose');
@@ -119,25 +137,31 @@ function openModalForCube(id, price){
   };
 }
 
-// Клик по Центру / Добру (заглушки)
+// ====== Клики по Центру и КУБУ ДОБРА ======
 document.querySelector('.cube.center')?.addEventListener('click', () => {
   modalContent.innerHTML = `
     <h3>Центральный куб</h3>
     <p>Аукцион ежемесячной аренды. Оставьте ставку и контактные данные.</p>
     <div class="field"><label>Ставка (₽)</label><input placeholder="Например, 120 000" /></div>
     <div class="field"><label>Контакты</label><input placeholder="+7 ... или @username" /></div>
-    <button class="btn" onclick="alert('Ставка отправлена (заглушка)');">Отправить ставку</button>
+    <div class="row">
+      <button class="btn secondary" onclick="closeModal()">Отмена</button>
+      <button class="btn" onclick="alert('Ставка отправлена (заглушка)'); closeModal();">Отправить ставку</button>
+    </div>
   `;
   modal.classList.remove('hidden');
 });
 
-document.querySelector('.cube.good')?.addEventListener('click', () => {
+document.getElementById('cubeGood')?.addEventListener('click', () => {
   modalContent.innerHTML = `
     <h3>КУБ ДОБРА — Подать заявку</h3>
     <div class="field"><label>Заголовок проблемы</label><input placeholder="Коротко о проблеме" /></div>
     <div class="field"><label>Описание</label><textarea rows="4" placeholder="Что случилось и какая помощь нужна"></textarea></div>
     <div class="field"><label>Ссылка / Контакты</label><input placeholder="Сайт, соцсеть или телефон" /></div>
-    <button class="btn" onclick="alert('Заявка отправлена (заглушка)');">Отправить</button>
+    <div class="row">
+      <button class="btn secondary" onclick="closeModal()">Отмена</button>
+      <button class="btn" onclick="alert('Заявка отправлена (заглушка)'); closeModal();">Отправить</button>
+    </div>
   `;
   modal.classList.remove('hidden');
 });
