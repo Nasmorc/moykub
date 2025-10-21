@@ -1,71 +1,67 @@
-// ====== Геометрия золотой спирали (r = a + b * theta) ======
-const N = 180;
-const theta0 = -Math.PI / 2; // старт снизу по центру
-const step = 0.25;           // равномерный шаг по углу — ровные витки
-const a = 8;                 // базовый радиус
-const b = 6.2;               // шаг радиуса
+// ====== Концентрические кольца: 10 колец × 18 кубов = 180 ======
+const RINGS = 10, PER_RING = 18, N = RINGS * PER_RING;
 const center = { x: 50, y: 50 };
+const rMin = 8;        // радиус внутреннего кольца (% от сцены)
+const rStep = 3.8;     // расстояние между кольцами (%)
+const theta0 = -Math.PI / 2; // старт внизу, дальше по часовой стрелке
 
-// Цены по экспоненте от края к центру: 7 500 → 35 000 ₽
+// Цены: к центру дороже (внешнее 7 500 ₽ → внутреннее 35 000 ₽)
 const priceMin = 7500, priceMax = 35000;
-const growth = Math.pow(priceMax / priceMin, 1 / (N - 1));
+const growth = Math.pow(priceMax / priceMin, 1 / (RINGS - 1));
+const priceForRing = (ringIdxFromOuter) =>
+  Math.round((priceMin * Math.pow(growth, ringIdxFromOuter)) / 100) * 100;
 
-const priceByIdx = (innerIdx) => {
-  const price = priceMin * Math.pow(growth, (N - 1) - innerIdx);
-  return Math.round(price / 100) * 100;
-};
-
-// Строим точки так, чтобы #1 был С СНАРУЖИ снизу и дальше по часовой к центру
-const points = Array.from({ length: N }, (_, i) => {
-  const k = (N - 1) - i;             // внешний → внутренний
-  const theta = theta0 - step * k;   // по часовой
-  const r = a + b * (k + 1);
-  const x = center.x + r * Math.cos(theta);
-  const y = center.y + r * Math.sin(theta);
-  return { x, y };
-});
-
-const cubes = points.map((p, i) => ({ id: i + 1, ...p }));
-
-// ====== Рендер спирали ======
-const layer = document.getElementById('spiralLayer');
+const layer = document.getElementById('ringsLayer');
 const frag = document.createDocumentFragment();
 const tooltip = document.getElementById('tooltip');
 
-cubes.forEach((c, idx) => {
-  const el = document.createElement('button');
-  el.className = 'cube';
-  el.style.setProperty('--x', c.x.toFixed(3));
-  el.style.setProperty('--y', c.y.toFixed(3));
-  el.dataset.id = c.id;
-  el.textContent = `#${c.id}`;
+let id = 1;
+// Нумерация: ОТ ЦЕНТРА к краю
+for (let ring = RINGS - 1; ring >= 0; ring--) {
+  const radius = rMin + ring * rStep;
+  const ringIdxFromOuter = (RINGS - 1) - ring; // 0..9 (0 внешний, 9 внутренний)
+  const ringPrice = priceForRing(ringIdxFromOuter);
 
-  const price = priceByIdx(idx);
-  const tipText = `💰 ${price.toLocaleString('ru-RU')} ₽/мес`;
+  for (let j = 0; j < PER_RING; j++) {
+    const step = (2 * Math.PI) / PER_RING;
+    const theta = theta0 - j * step; // по часовой
+    const x = center.x + radius * Math.cos(theta);
+    const y = center.y + radius * Math.sin(theta);
 
-  function showTip(evt){
-    tooltip.textContent = tipText;
-    const rect = evt.currentTarget.getBoundingClientRect();
-    tooltip.style.left = `${rect.left + rect.width/2 + window.scrollX}px`;
-    tooltip.style.top  = `${rect.top - 8 + window.scrollY}px`;
-    tooltip.classList.remove('hidden');
+    const el = document.createElement('button');
+    el.className = 'cube';
+    el.style.setProperty('--x', x.toFixed(3));
+    el.style.setProperty('--y', y.toFixed(3));
+    el.dataset.id = id;
+    el.textContent = `#${id}`;
+
+    // тултип с ценой
+    const tipText = `💰 ${ringPrice.toLocaleString('ru-RU')} ₽/мес`;
+    function showTip(evt){
+      tooltip.textContent = tipText;
+      const rect = evt.currentTarget.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + rect.width/2 + window.scrollX}px`;
+      tooltip.style.top  = `${rect.top - 8 + window.scrollY}px`;
+      tooltip.classList.remove('hidden');
+    }
+    function moveTip(evt){
+      const rect = evt.currentTarget.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + rect.width/2 + window.scrollX}px`;
+      tooltip.style.top  = `${rect.top - 8 + window.scrollY}px`;
+    }
+    function hideTip(){ tooltip.classList.add('hidden'); }
+
+    el.addEventListener('mouseenter', showTip);
+    el.addEventListener('mousemove', moveTip);
+    el.addEventListener('mouseleave', hideTip);
+    el.addEventListener('touchstart', (e)=>{ showTip(e); setTimeout(hideTip, 1200); }, {passive:true});
+
+    el.addEventListener('click', () => openModalForCube(id, ringPrice));
+
+    frag.appendChild(el);
+    id++;
   }
-  function moveTip(evt){
-    const rect = evt.currentTarget.getBoundingClientRect();
-    tooltip.style.left = `${rect.left + rect.width/2 + window.scrollX}px`;
-    tooltip.style.top  = `${rect.top - 8 + window.scrollY}px`;
-  }
-  function hideTip(){ tooltip.classList.add('hidden'); }
-
-  el.addEventListener('mouseenter', showTip);
-  el.addEventListener('mousemove', moveTip);
-  el.addEventListener('mouseleave', hideTip);
-  el.addEventListener('touchstart', (e)=>{ showTip(e); setTimeout(hideTip, 1200); }, {passive:true});
-
-  el.addEventListener('click', () => openModalForCube(c.id, price));
-
-  frag.appendChild(el);
-});
+}
 layer.appendChild(frag);
 
 // ====== Модалка ======
@@ -131,13 +127,13 @@ function openModalForCube(id, price){
         price
       };
       console.log("Заявка (локально):", payload);
-      alert("Заявка отправлена! (Локальный режим)\\nМы свяжемся с вами после модерации.");
+      alert("Заявка отправлена! (Локальный режим)\nМы свяжемся с вами после модерации.");
       closeModal();
     };
   };
 }
 
-// ====== Клики по Центру и КУБУ ДОБРА ======
+// ====== Центр и КУБ ДОБРА ======
 document.querySelector('.cube.center')?.addEventListener('click', () => {
   modalContent.innerHTML = `
     <h3>Центральный куб</h3>
