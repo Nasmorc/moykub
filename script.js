@@ -1,15 +1,15 @@
 // ====== Конфигурация ======
 const TOTAL_CUBES = 180;
 const center = { x: 50, y: 50 };
-const a = 6;            // начальный радиус (процент)
-const b = 0.35;         // коэффициент "закручивания спирали"
-const thetaStep = 0.35; // шаг угла между кубами (чем меньше — плотнее спираль)
+const a = 6;             // старт радиуса
+const b = 0.25;          // коэффициент расширения
+const thetaStep = 0.2;   // шаг угла (чем меньше, тем плотнее)
 const theta0 = Math.PI / 2; // начинаем снизу и идём по часовой
 
 const priceMin = 7500;
 const priceMax = 35000;
 
-// ====== Вычисление цен по экспоненте ======
+// ====== Расчёт цен ======
 const growth = Math.pow(priceMax / priceMin, 1 / (TOTAL_CUBES - 1));
 const priceForIndex = (i) =>
   Math.round((priceMin * Math.pow(growth, i)) / 100) * 100;
@@ -18,11 +18,12 @@ const layer = document.getElementById('ringsLayer');
 const frag = document.createDocumentFragment();
 const tooltip = document.getElementById('tooltip');
 
+// ====== Расположение кубов ======
 for (let i = 0; i < TOTAL_CUBES; i++) {
-  const theta = theta0 + i * thetaStep;      // угол
-  const r = a + b * theta;                   // радиус растёт по спирали
-  const x = center.x + r * Math.cos(theta);  // координата X
-  const y = center.y + r * Math.sin(theta);  // координата Y
+  const theta = theta0 + i * thetaStep;
+  const r = a + b * theta;
+  const x = center.x + r * Math.cos(theta);
+  const y = center.y + r * Math.sin(theta);
   const price = priceForIndex(TOTAL_CUBES - i - 1);
 
   const el = document.createElement('button');
@@ -34,27 +35,22 @@ for (let i = 0; i < TOTAL_CUBES; i++) {
 
   const tipText = `💰 ${price.toLocaleString('ru-RU')} ₽/мес`;
 
-  function showTip(evt) {
+  el.addEventListener('mouseenter', (evt) => {
     tooltip.textContent = tipText;
     const rect = evt.currentTarget.getBoundingClientRect();
     tooltip.style.left = `${rect.left + rect.width / 2 + window.scrollX}px`;
     tooltip.style.top = `${rect.top - 8 + window.scrollY}px`;
     tooltip.classList.remove('hidden');
-  }
-  function moveTip(evt) {
+  });
+
+  el.addEventListener('mousemove', (evt) => {
     const rect = evt.currentTarget.getBoundingClientRect();
     tooltip.style.left = `${rect.left + rect.width / 2 + window.scrollX}px`;
     tooltip.style.top = `${rect.top - 8 + window.scrollY}px`;
-  }
-  function hideTip() {
-    tooltip.classList.add('hidden');
-  }
+  });
 
-  el.addEventListener('mouseenter', showTip);
-  el.addEventListener('mousemove', moveTip);
-  el.addEventListener('mouseleave', hideTip);
+  el.addEventListener('mouseleave', () => tooltip.classList.add('hidden'));
   el.addEventListener('click', () => openModalForCube(i + 1, price));
-
   frag.appendChild(el);
 }
 layer.appendChild(frag);
@@ -63,7 +59,6 @@ layer.appendChild(frag);
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modalContent');
 const modalClose = document.getElementById('modalClose');
-
 modalClose.addEventListener('click', closeModal);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
@@ -110,21 +105,7 @@ function openModalForCube(id, price) {
   };
 }
 
-// ====== Центр и Куб Добра ======
-document.querySelector('.cube.center')?.addEventListener('click', () => {
-  modalContent.innerHTML = `
-    <h3>Центральный куб</h3>
-    <p>Аукцион аренды. Укажите вашу ставку.</p>
-    <div class="field"><label>Ставка (₽)</label><input /></div>
-    <div class="field"><label>Контакты</label><input /></div>
-    <div class="row">
-      <button class="btn secondary" onclick="closeModal()">Отмена</button>
-      <button class="btn" onclick="alert('Ставка отправлена'); closeModal();">Отправить</button>
-    </div>
-  `;
-  modal.classList.remove('hidden');
-});
-
+// ====== Куб Добра ======
 document.getElementById('cubeGood')?.addEventListener('click', () => {
   modalContent.innerHTML = `
     <h3>КУБ ДОБРА — Подать заявку</h3>
