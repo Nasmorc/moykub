@@ -1,68 +1,123 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>МОЙ КУБ — Концентрические кольца</title>
-  <link rel="stylesheet" href="./styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МОЙ КУБ</title>
+<style>
+  body {
+    background-color: #05060a;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .spiral-container {
+    position: relative;
+    width: 800px;
+    height: 800px;
+  }
+
+  .cube {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #00ffff;
+    color: #00ffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #00ffff;
+    background: rgba(0, 255, 255, 0.05);
+  }
+
+  .center-cube {
+    background: radial-gradient(circle, #944bff, #3a0ca3);
+    color: white;
+    border: 1px solid #b388ff;
+    box-shadow: 0 0 20px #b388ff;
+  }
+
+  .good-cube {
+    background: radial-gradient(circle, #00ffff, #005f5f);
+    box-shadow: 0 0 20px #00ffff;
+  }
+
+  .hero-cube {
+    background: radial-gradient(circle, #00ff9d, #007f55);
+    box-shadow: 0 0 20px #00ff9d;
+  }
+
+  .label {
+    position: absolute;
+    bottom: -30px;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #00ffff;
+  }
+</style>
 </head>
 <body>
-  <header class="header">
-    <h1>МОЙ КУБ</h1>
-    <p>Куб Добра и Герои месяца</p>
-  </header>
+  <h1>МОЙ КУБ</h1>
+  <p>Куб Добра и Герои месяца</p>
 
-  <main class="stage-wrap">
-    <div id="stage" class="stage">
-      <!-- Центральный куб -->
-      <button class="cube center" style="--x:50; --y:50;">
-        <strong>ЦЕНТР</strong>
-        <small>аукцион аренды</small>
-      </button>
+  <div class="spiral-container" id="spiral"></div>
 
-      <!-- Куб Добра (кликабелен) -->
-      <button class="cube good" id="cubeGood" style="--x:50; --y:64;">
-        <strong>КУБ ДОБРА</strong>
-        <small>Подать заявку</small>
-      </button>
+  <script>
+    const container = document.getElementById('spiral');
+    const totalCubes = 180;
+    const a = 30, b = 15; // параметры спирали
+    const centerX = 400, centerY = 400;
 
-      <!-- Три Куба Героя (неактивные) -->
-      <div class="heroes">
-        <div class="hero" style="--x:41; --y:76;">
-          <strong>КУБ ГЕРОЯ</strong>
-          <small>1 месяц</small>
-        </div>
-        <div class="hero" style="--x:50; --y:76;">
-          <strong>КУБ ГЕРОЯ</strong>
-          <small>1 месяц</small>
-        </div>
-        <div class="hero" style="--x:59; --y:76;">
-          <strong>КУБ ГЕРОЯ</strong>
-          <small>1 месяц</small>
-        </div>
-      </div>
+    for (let i = 1; i <= totalCubes; i++) {
+      const cube = document.createElement('div');
+      cube.classList.add('cube');
+      cube.textContent = '#' + i;
 
-      <!-- Слой колец -->
-      <div id="ringsLayer" aria-live="polite"></div>
+      const angle = i * 0.35;
+      const radius = a + b * angle;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
 
-      <!-- Tooltip -->
-      <div id="tooltip" class="tooltip hidden"></div>
-    </div>
-  </main>
+      cube.style.left = `${x}px`;
+      cube.style.top = `${y}px`;
 
-  <!-- Модальное окно -->
-  <div id="modal" class="modal hidden">
-    <div class="modal__panel">
-      <button class="modal__close" id="modalClose" aria-label="Закрыть">×</button>
-      <div id="modalContent"></div>
-    </div>
-  </div>
+      container.appendChild(cube);
+    }
 
-  <footer class="footer">
-    <div class="footer__title">КУБ ДОБРА И ГЕРОИ МЕСЯЦА</div>
-    <div class="footer__subtitle">Каждую неделю — новая история. Каждый месяц — три героя.</div>
-  </footer>
+    // Центральный куб
+    const center = document.createElement('div');
+    center.classList.add('cube', 'center-cube');
+    center.style.left = `${centerX - 25}px`;
+    center.style.top = `${centerY - 25}px`;
+    center.innerHTML = 'ЦЕНТР<br><small>аукцион аренды</small>';
+    container.appendChild(center);
 
-  <script src="./script.js"></script>
+    // Куб Добра
+    const good = document.createElement('div');
+    good.classList.add('cube', 'good-cube');
+    good.style.left = `${centerX - 25}px`;
+    good.style.top = `${centerY + 80}px`;
+    good.innerHTML = 'КУБ ДОБРА<br><small>Подать заявку</small>';
+    container.appendChild(good);
+
+    // Кубы Героя
+    const offsets = [-90, 0, 90];
+    offsets.forEach((offset, idx) => {
+      const hero = document.createElement('div');
+      hero.classList.add('cube', 'hero-cube');
+      hero.style.left = `${centerX - 75 + offset}px`;
+      hero.style.top = `${centerY + 180}px`;
+      hero.innerHTML = 'КУБ ГЕРОЯ<br><small>1 месяц</small>';
+      container.appendChild(hero);
+    });
+  </script>
 </body>
 </html>
