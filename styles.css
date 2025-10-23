@@ -1,23 +1,25 @@
 body {
-  background-color: #000;
-  color: #00ffff;
-  font-family: "Orbitron", sans-serif;
+  background: #000;
+  color: #0ff;
+  font-family: 'Arial Black', sans-serif;
   text-align: center;
+  margin: 0;
   overflow: hidden;
 }
 
 h1 {
-  font-size: 3rem;
+  margin-top: 30px;
+  font-size: 48px;
   color: #00ffff;
   text-shadow: 0 0 20px #00ffff;
 }
 
 p {
-  color: #a0ffff;
-  margin-bottom: 20px;
+  margin-top: -10px;
+  color: #88ffff;
 }
 
-.scene {
+#scene {
   position: relative;
   width: 100vw;
   height: 100vh;
@@ -25,57 +27,46 @@ p {
 
 .cube {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  border: 1px solid #00ffff;
-  border-radius: 8px;
+  width: 45px;
+  height: 45px;
+  border: 2px solid #00ffff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #00ffff;
+  color: #00ffff;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-shadow: 0 0 5px #00ffff;
-  box-shadow: 0 0 10px #00ffff;
-  transition: transform 0.5s, box-shadow 0.5s;
+  font-size: 12px;
+  transition: transform 0.3s;
 }
 
 .cube:hover {
-  box-shadow: 0 0 20px #00ffff;
-  transform: scale(1.1);
+  transform: scale(1.2);
+  box-shadow: 0 0 25px #0ff;
+}
+
+.center {
+  width: 80px;
+  height: 80px;
+  font-size: 14px;
+  background: radial-gradient(circle, rgba(0,255,255,0.2), transparent);
+  box-shadow: 0 0 30px #00ffff;
 }
 
 .good {
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-color: #00ffae;
-  color: #00ffae;
-  box-shadow: 0 0 15px #00ffae;
+  width: 70px;
+  height: 70px;
+  font-size: 13px;
+  color: #0f0;
+  border: 2px solid #0f0;
+  box-shadow: 0 0 25px #0f0;
 }
 
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: #001f1f;
-  padding: 20px;
-  border: 2px solid #00ffff;
-  border-radius: 10px;
-  width: 300px;
-  text-align: left;
-  box-shadow: 0 0 25px #00ffff;
-}
-
-.hidden {
-  display: none;
-}
-
-.close {
-  float: right;
-  cursor: pointer;
-  color: #00ffff;
+.hero {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #ff00ff;
+  box-shadow: 0 0 25px #ff00ff;
+  color: #ff00ff;
+  font-size: 11px;
 }
