@@ -85,7 +85,7 @@ function autoScaleScene() {
   if (width < 800) {
     scale = Math.min(width, height) / 800;   // телефоны
   } else if (width < 1400) {
-    scale = Math.min(width, height) / 1000;  // ноутбуки
+    scale = Math.min(width, height) / 1100;  // ноутбуки
   } else {
     scale = Math.min(width, height) / 1200;  // большие экраны
   }
