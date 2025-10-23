@@ -17,6 +17,8 @@ h1 {
   position: relative;
   width: 100vw;
   height: 100vh;
+  transform-origin: center;
+  transition: transform 0.3s ease;
 }
 
 .cube {
@@ -35,7 +37,6 @@ h1 {
   animation: pulse 2s infinite alternate;
 }
 
-
 @keyframes pulse {
   from { transform: scale(1); opacity: 1; }
   to { transform: scale(1.1); opacity: 0.8; }
@@ -43,9 +44,9 @@ h1 {
 
 #center {
   position: absolute;
-  width: 90px;
-  height: 90px;
-  background: rgba(0, 255, 255, 0.2);
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 255, 255, 0.15);
   border: 2px solid #0ff;
   border-radius: 15px;
   display: flex;
