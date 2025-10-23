@@ -3,16 +3,27 @@ const center = document.getElementById('center');
 const goodCube = document.getElementById('goodCube');
 const heroes = document.querySelectorAll('.hero');
 
-// Параметры орбит
+// параметры орбит
 const orbitCount = 5;
-const cubesPerOrbit = [8, 12, 16, 20, 24];
-const orbitRadiusStep = 90;
+const cubesPerOrbit = [10, 14, 18, 22, 28];
+const orbitRadiusStep = 120;
 let allCubes = [];
 
-// Создание орбит
+// создать орбиты и кольца
 for (let o = 0; o < orbitCount; o++) {
-  const count = cubesPerOrbit[o];
   const radius = (o + 1) * orbitRadiusStep;
+
+  // кольца
+  const ring = document.createElement('div');
+  ring.className = 'orbit-ring';
+  ring.style.width = `${radius * 2}px`;
+  ring.style.height = `${radius * 2}px`;
+  ring.style.left = `calc(50% - ${radius}px)`;
+  ring.style.top = `calc(50% - ${radius}px)`;
+  scene.appendChild(ring);
+
+  // кубы
+  const count = cubesPerOrbit[o];
   for (let i = 0; i < count; i++) {
     const cube = document.createElement('div');
     cube.className = 'cube orbit';
@@ -28,11 +39,11 @@ function positionElements() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
 
-  center.style.left = `${w - 40}px`;
-  center.style.top = `${h - 40}px`;
+  center.style.left = `${w - 45}px`;
+  center.style.top = `${h - 45}px`;
 
   goodCube.style.left = `${w - 35}px`;
-  goodCube.style.top = `${h + 130}px`;
+  goodCube.style.top = `${h + 150}px`;
 
   allCubes.forEach((cube) => {
     const r = +cube.dataset.radius;
@@ -46,12 +57,12 @@ function positionElements() {
 
 positionElements();
 
-// Анимация героев месяца
+// анимация героев месяца
 let angleOffset = 0;
 function animateHeroes() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-  const r = 120;
+  const r = 130;
 
   heroes.forEach((hero, i) => {
     const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
@@ -61,7 +72,7 @@ function animateHeroes() {
     hero.style.top = `${y}px`;
   });
 
-  angleOffset += 0.01;
+  angleOffset += 0.008;
   requestAnimationFrame(animateHeroes);
 }
 
