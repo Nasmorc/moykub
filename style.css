@@ -1,76 +1,76 @@
-const scene = document.getElementById('scene');
-const center = document.getElementById('center');
-const goodCube = document.getElementById('goodCube');
-const heroes = document.querySelectorAll('.hero');
-
-const orbitCount = 4;
-const cubesPerOrbit = [16, 20, 26, 32];
-const orbitRadiusStep = 150;
-let allCubes = [];
-
-// создаем орбиты без внутренней
-for (let o = 0; o < orbitCount; o++) {
-  const radius = (o + 2) * orbitRadiusStep;
-
-  const ring = document.createElement('div');
-  ring.className = 'orbit-ring';
-  ring.style.width = `${radius * 2}px`;
-  ring.style.height = `${radius * 2}px`;
-  ring.style.left = `calc(50% - ${radius}px)`;
-  ring.style.top = `calc(50% - ${radius}px)`;
-  scene.appendChild(ring);
-
-  const count = cubesPerOrbit[o];
-  for (let i = 0; i < count; i++) {
-    const cube = document.createElement('div');
-    cube.className = 'cube orbit';
-    cube.textContent = `#${i + 1 + allCubes.length}`;
-    cube.dataset.angle = (i / count) * Math.PI * 2;
-    cube.dataset.radius = radius;
-    scene.appendChild(cube);
-    allCubes.push(cube);
-  }
+body {
+  background: #000;
+  color: #0ff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  overflow: hidden;
+  margin: 0;
 }
 
-function positionElements() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
-
-  center.style.left = `${w - 45}px`;
-  center.style.top = `${h - 45}px`;
-
-  goodCube.style.left = `${w - 35}px`;
-  goodCube.style.top = `${h + 220}px`;
-
-  allCubes.forEach((cube) => {
-    const r = +cube.dataset.radius;
-    const a = +cube.dataset.angle;
-    const x = w + Math.cos(a) * r;
-    const y = h + Math.sin(a) * r;
-    cube.style.left = `${x}px`;
-    cube.style.top = `${y}px`;
-  });
+h1 {
+  margin-top: 20px;
+  font-size: 48px;
+  text-shadow: 0 0 20px #00ffff;
 }
 
-positionElements();
-
-let angleOffset = 0;
-function animateHeroes() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
-  const r = 180; // орбита героев
-
-  heroes.forEach((hero, i) => {
-    const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
-    const x = w + Math.cos(angle) * r;
-    const y = h + Math.sin(angle) * r;
-    hero.style.left = `${x}px`;
-    hero.style.top = `${y}px`;
-  });
-
-  angleOffset += 0.007;
-  requestAnimationFrame(animateHeroes);
+#scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
 }
 
-animateHeroes();
-window.addEventListener('resize', positionElements);
+.cube {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #0ff;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 20px #00ffff;
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(1.1); opacity: 0.8; }
+}
+
+#center {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  background: rgba(0, 255, 255, 0.2);
+  border: 2px solid #0ff;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff;
+  box-shadow: 0 0 20px #00ffff;
+}
+
+.cube.good {
+  border-color: #00ff66;
+  color: #00ff66;
+  text-shadow: 0 0 15px #00ff66;
+  box-shadow: 0 0 20px #00ff66;
+}
+
+.cube.hero {
+  border-color: #ff00ff;
+  color: #ff00ff;
+  text-shadow: 0 0 15px #ff00ff;
+  box-shadow: 0 0 20px #ff00ff;
+}
+
+.orbit-ring {
+  position: absolute;
+  border: 1px dashed rgba(0, 255, 255, 0.2);
+  border-radius: 50%;
+}
