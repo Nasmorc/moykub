@@ -6,7 +6,7 @@ const heroes = document.querySelectorAll('.hero');
 // количество орбит и кубов на каждой
 const orbitCount = 4;
 const cubesPerOrbit = [16, 20, 26, 32];
-const orbitRadiusStep = 150;
+const orbitRadiusStep = 100;
 let allCubes = [];
 
 // создаем орбиты, начиная со второй (внутреннюю пропускаем)
