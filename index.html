@@ -6,32 +6,37 @@
   <title>МОЙ КУБ</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="scene" id="scene"></div>
 
-  <!-- КУБ ДОБРА -->
-  <div class="cube good" id="good-cube">
+<body>
+  <h1>МОЙ КУБ</h1>
+  <p>Куб Добра и Герои месяца</p>
+
+  <div id="scene" class="scene"></div>
+
+  <div id="good-cube" class="cube good">
     КУБ ДОБРА<br><small>Подать заявку</small>
   </div>
 
-  <!-- ФОРМА ЗАЯВКИ -->
-  <div class="modal" id="modal">
+  <!-- Модальное окно -->
+  <div id="modal" class="modal">
     <div class="modal-content">
-      <h2>Подать заявку</h2>
+      <span id="close" class="close">&times;</span>
       <form id="request-form">
-        <label>Имя</label>
-        <input type="text" required>
-        <label>E-mail или Telegram</label>
-        <input type="text" required>
+        <h3>Заявка на Куб Добра</h3>
+        <label>Ваше имя</label>
+        <input type="text" required />
+        <label>Email</label>
+        <input type="email" required />
         <label>Описание проблемы</label>
         <textarea required></textarea>
         <button type="submit">Отправить</button>
       </form>
       <p id="success" class="hidden">Заявка отправлена. Спасибо!</p>
-      <span class="close" id="close">✖</span>
     </div>
   </div>
 
+  <!-- Подключаем стили и скрипт -->
+  <link rel="stylesheet" href="style.css" />
   <script src="script.js"></script>
 </body>
 </html>
