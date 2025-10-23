@@ -1,0 +1,116 @@
+body {
+  background: #000;
+  margin: 0;
+  overflow: hidden;
+  color: #00ffff;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+}
+
+h1 {
+  font-size: 48px;
+  text-shadow: 0 0 30px #00ffff;
+  margin-top: 20px;
+}
+
+p {
+  color: #aaf;
+  margin-bottom: 30px;
+}
+
+/* сцена плавно появляется */
+#scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0;
+  animation: fadeInScene 3s ease forwards;
+}
+
+@keyframes fadeInScene {
+  to { opacity: 1; }
+}
+
+/* орбиты */
+.orbit-ring {
+  position: absolute;
+  border: 1px dotted rgba(0, 255, 255, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* кубы */
+.cube {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #00ffff;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  box-shadow: 0 0 20px #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+  animation: pulseCube 4s infinite ease-in-out;
+}
+
+@keyframes pulseCube {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.85; }
+}
+
+/* центр с ореолом */
+.center {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  font-size: 14px;
+  background: radial-gradient(circle, rgba(0,255,255,0.3), rgba(0,255,255,0.05), transparent);
+  box-shadow: 0 0 60px 15px rgba(0,255,255,0.3);
+  border: 2px solid #00ffff;
+  border-radius: 15px;
+  color: #00ffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* куб добра */
+.good {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #00ff6a;
+  color: #00ff6a;
+  border-radius: 15px;
+  box-shadow: 0 0 40px #00ff6a, 0 0 70px #00ff6a44;
+  background: radial-gradient(circle, rgba(0,255,106,0.25), transparent);
+  animation: pulseGood 3s infinite ease-in-out;
+}
+
+@keyframes pulseGood {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+/* герои месяца */
+.hero {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border: 2px solid #ff00ff;
+  color: #ff00ff;
+  font-size: 11px;
+  border-radius: 12px;
+  box-shadow: 0 0 40px #ff00ff, 0 0 70px #ff00ff55;
+  background: radial-gradient(circle, rgba(255,0,255,0.25), transparent);
+  filter: drop-shadow(0 0 10px #ff00ffaa);
+  animation: pulseHero 3.5s infinite ease-in-out;
+}
+
+@keyframes pulseHero {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.9; }
+}
