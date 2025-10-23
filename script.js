@@ -3,14 +3,15 @@ const center = document.getElementById('center');
 const goodCube = document.getElementById('goodCube');
 const heroes = document.querySelectorAll('.hero');
 
-const orbitCount = 4; // количество орбит (без внутренней)
-const cubesPerOrbit = [14, 18, 22, 28];
-const orbitRadiusStep = 130;
+// количество орбит и кубов на каждой
+const orbitCount = 4;
+const cubesPerOrbit = [16, 20, 26, 32];
+const orbitRadiusStep = 150;
 let allCubes = [];
 
-// создаём орбиты, начиная со 2-й (чтобы убрать внутреннюю)
-for (let o = 1; o <= orbitCount; o++) {
-  const radius = o * orbitRadiusStep;
+// создаем орбиты, начиная со второй (внутреннюю пропускаем)
+for (let o = 0; o < orbitCount; o++) {
+  const radius = (o + 2) * orbitRadiusStep; // сдвигаем наружу на одну орбиту
 
   const ring = document.createElement('div');
   ring.className = 'orbit-ring';
@@ -20,7 +21,7 @@ for (let o = 1; o <= orbitCount; o++) {
   ring.style.top = `calc(50% - ${radius}px)`;
   scene.appendChild(ring);
 
-  const count = cubesPerOrbit[o - 1];
+  const count = cubesPerOrbit[o];
   for (let i = 0; i < count; i++) {
     const cube = document.createElement('div');
     cube.className = 'cube orbit';
@@ -32,16 +33,20 @@ for (let o = 1; o <= orbitCount; o++) {
   }
 }
 
+// позиционирование элементов
 function positionElements() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
 
+  // центр
   center.style.left = `${w - 45}px`;
   center.style.top = `${h - 45}px`;
 
+  // куб добра
   goodCube.style.left = `${w - 35}px`;
-  goodCube.style.top = `${h + 170}px`;
+  goodCube.style.top = `${h + 220}px`;
 
+  // остальные кубы
   allCubes.forEach((cube) => {
     const r = +cube.dataset.radius;
     const a = +cube.dataset.angle;
@@ -54,12 +59,12 @@ function positionElements() {
 
 positionElements();
 
-// герои месяца вращаются
+// анимация героев месяца
 let angleOffset = 0;
 function animateHeroes() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-  const r = 140; // орбита героев
+  const r = 180; // орбита героев
 
   heroes.forEach((hero, i) => {
     const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
