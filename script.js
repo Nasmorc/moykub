@@ -3,15 +3,14 @@ const center = document.getElementById('center');
 const goodCube = document.getElementById('goodCube');
 const heroes = document.querySelectorAll('.hero');
 
-// количество орбит и кубов на каждой
 const orbitCount = 4;
 const cubesPerOrbit = [16, 20, 26, 32];
 const orbitRadiusStep = 100;
 let allCubes = [];
 
-// создаем орбиты, начиная со второй (внутреннюю пропускаем)
+// создаем орбиты без внутренней
 for (let o = 0; o < orbitCount; o++) {
-  const radius = (o + 2) * orbitRadiusStep; // сдвигаем наружу на одну орбиту
+  const radius = (o + 2) * orbitRadiusStep;
 
   const ring = document.createElement('div');
   ring.className = 'orbit-ring';
@@ -33,20 +32,16 @@ for (let o = 0; o < orbitCount; o++) {
   }
 }
 
-// позиционирование элементов
 function positionElements() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
 
-  // центр
-  center.style.left = `${w - 45}px`;
-  center.style.top = `${h - 45}px`;
+  center.style.left = `${w - 40}px`;
+  center.style.top = `${h - 40}px`;
 
-  // куб добра
-  goodCube.style.left = `${w - 35}px`;
-  goodCube.style.top = `${h + 220}px`;
+  goodCube.style.left = `${w - 30}px`;
+  goodCube.style.top = `${h + 180}px`;
 
-  // остальные кубы
   allCubes.forEach((cube) => {
     const r = +cube.dataset.radius;
     const a = +cube.dataset.angle;
@@ -59,12 +54,11 @@ function positionElements() {
 
 positionElements();
 
-// анимация героев месяца
 let angleOffset = 0;
 function animateHeroes() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-  const r = 180; // орбита героев
+  const r = 160; // орбита героев
 
   heroes.forEach((hero, i) => {
     const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
@@ -80,3 +74,11 @@ function animateHeroes() {
 
 animateHeroes();
 window.addEventListener('resize', positionElements);
+
+// 🔧 АВТОМАСШТАБИРОВАНИЕ
+function autoScaleScene() {
+  const scale = Math.min(window.innerWidth, window.innerHeight) / 1200;
+  scene.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', autoScaleScene);
+autoScaleScene();
