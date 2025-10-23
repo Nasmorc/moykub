@@ -75,9 +75,21 @@ function animateHeroes() {
 animateHeroes();
 window.addEventListener('resize', positionElements);
 
-// 🔧 АВТОМАСШТАБИРОВАНИЕ
+// 🔧 Адаптивное масштабирование
 function autoScaleScene() {
-  const scale = Math.min(window.innerWidth, window.innerHeight) / 1200;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  // вычисляем масштаб адаптивно под разные экраны
+  let scale;
+  if (width < 800) {
+    scale = Math.min(width, height) / 800;   // телефоны
+  } else if (width < 1400) {
+    scale = Math.min(width, height) / 1000;  // ноутбуки
+  } else {
+    scale = Math.min(width, height) / 1200;  // большие экраны
+  }
+
   scene.style.transform = `scale(${scale})`;
 }
 window.addEventListener('resize', autoScaleScene);
