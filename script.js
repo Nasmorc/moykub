@@ -1,85 +1,69 @@
 const scene = document.getElementById('scene');
+const center = document.getElementById('center');
+const goodCube = document.getElementById('goodCube');
+const heroes = document.querySelectorAll('.hero');
 
-// Настройки орбит
-const orbitCount = 5; // количество орбит
-const cubesPerOrbit = [8, 12, 16, 20, 24]; // кубов на каждой орбите
-const orbitRadiusStep = 80; // расстояние между орбитами
-
-// Создаём центр
-const center = document.createElement('div');
-center.className = 'cube center';
-center.textContent = 'ЦЕНТР';
-scene.appendChild(center);
-
-// Добавляем Куб Добра под центром
-const goodCube = document.createElement('div');
-goodCube.className = 'cube good';
-goodCube.textContent = 'КУБ ДОБРА';
-scene.appendChild(goodCube);
-
-// Создаём орбиты
+// Параметры орбит
+const orbitCount = 5;
+const cubesPerOrbit = [8, 12, 16, 20, 24];
+const orbitRadiusStep = 90;
 let allCubes = [];
+
+// Создание орбит
 for (let o = 0; o < orbitCount; o++) {
-  const orbit = [];
-  const radius = (o + 1) * orbitRadiusStep;
   const count = cubesPerOrbit[o];
+  const radius = (o + 1) * orbitRadiusStep;
   for (let i = 0; i < count; i++) {
     const cube = document.createElement('div');
     cube.className = 'cube orbit';
     cube.textContent = `#${i + 1 + allCubes.length}`;
-    const angle = (i / count) * Math.PI * 2;
-    cube.dataset.angle = angle;
+    cube.dataset.angle = (i / count) * Math.PI * 2;
     cube.dataset.radius = radius;
     scene.appendChild(cube);
-    orbit.push(cube);
+    allCubes.push(cube);
   }
-  allCubes.push(orbit);
 }
 
-// Центрируем сцену
 function positionElements() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
 
-  center.style.left = `${w - 25}px`;
-  center.style.top = `${h - 25}px`;
+  center.style.left = `${w - 40}px`;
+  center.style.top = `${h - 40}px`;
 
-  goodCube.style.left = `${w - 40}px`;
-  goodCube.style.top = `${h + 120}px`;
+  goodCube.style.left = `${w - 35}px`;
+  goodCube.style.top = `${h + 130}px`;
 
-  allCubes.forEach((orbit, index) => {
-    orbit.forEach((cube) => {
-      const radius = +cube.dataset.radius;
-      const angle = +cube.dataset.angle;
-      const x = w + Math.cos(angle) * radius;
-      const y = h + Math.sin(angle) * radius;
-      cube.style.left = `${x}px`;
-      cube.style.top = `${y}px`;
-    });
+  allCubes.forEach((cube) => {
+    const r = +cube.dataset.radius;
+    const a = +cube.dataset.angle;
+    const x = w + Math.cos(a) * r;
+    const y = h + Math.sin(a) * r;
+    cube.style.left = `${x}px`;
+    cube.style.top = `${y}px`;
   });
-}
-
-// Анимация вращения
-let rotation = 0;
-function animate() {
-  rotation += 0.002; // скорость вращения
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
-
-  allCubes.forEach((orbit, index) => {
-    orbit.forEach((cube, i) => {
-      const radius = +cube.dataset.radius;
-      const angle = +cube.dataset.angle + rotation * (index % 2 === 0 ? 1 : -1);
-      const x = w + Math.cos(angle) * radius;
-      const y = h + Math.sin(angle) * radius;
-      cube.style.left = `${x}px`;
-      cube.style.top = `${y}px`;
-    });
-  });
-
-  requestAnimationFrame(animate);
 }
 
 positionElements();
-animate();
+
+// Анимация героев месяца
+let angleOffset = 0;
+function animateHeroes() {
+  const w = window.innerWidth / 2;
+  const h = window.innerHeight / 2;
+  const r = 120;
+
+  heroes.forEach((hero, i) => {
+    const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
+    const x = w + Math.cos(angle) * r;
+    const y = h + Math.sin(angle) * r;
+    hero.style.left = `${x}px`;
+    hero.style.top = `${y}px`;
+  });
+
+  angleOffset += 0.01;
+  requestAnimationFrame(animateHeroes);
+}
+
+animateHeroes();
 window.addEventListener('resize', positionElements);
