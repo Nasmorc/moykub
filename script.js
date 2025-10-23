@@ -18,10 +18,10 @@ function buildScene() {
 
   const orbitCount = 4;
   const cubesPerOrbit = [16, 20, 26, 32];
-  const orbitRadiusStep = base / 10; // адаптивно
+  const orbitRadiusStep = base / 10;
   const cubeSize = base / 30;
 
-  // размеры кубов и центра
+  // размеры кубов
   document.querySelectorAll('.cube').forEach(cube => {
     cube.style.width = `${cubeSize}px`;
     cube.style.height = `${cubeSize}px`;
@@ -58,8 +58,9 @@ function buildScene() {
 }
 
 function positionElements() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
+  const rect = scene.getBoundingClientRect();
+  const w = rect.width / 2;
+  const h = rect.height / 2;
 
   center.style.left = `${w - center.offsetWidth / 2}px`;
   center.style.top = `${h - center.offsetHeight / 2}px`;
@@ -80,9 +81,10 @@ function positionElements() {
 
 let angleOffset = 0;
 function animateHeroes() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
-  const r = Math.min(window.innerWidth, window.innerHeight) / 8; // адаптивная орбита героев
+  const rect = scene.getBoundingClientRect();
+  const w = rect.width / 2;
+  const h = rect.height / 2;
+  const r = Math.min(window.innerWidth, window.innerHeight) / 8;
 
   heroes.forEach((hero, i) => {
     const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
