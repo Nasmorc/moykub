@@ -3,17 +3,14 @@ const center = document.getElementById('center');
 const goodCube = document.getElementById('goodCube');
 const heroes = document.querySelectorAll('.hero');
 
-// параметры орбит
-const orbitCount = 5;
-const cubesPerOrbit = [10, 14, 18, 22, 28];
-const orbitRadiusStep = 120;
+const orbitCount = 4; // было 5
+const cubesPerOrbit = [14, 18, 22, 28];
+const orbitRadiusStep = 130;
 let allCubes = [];
 
-// создать орбиты и кольца
 for (let o = 0; o < orbitCount; o++) {
   const radius = (o + 1) * orbitRadiusStep;
 
-  // кольца
   const ring = document.createElement('div');
   ring.className = 'orbit-ring';
   ring.style.width = `${radius * 2}px`;
@@ -22,7 +19,6 @@ for (let o = 0; o < orbitCount; o++) {
   ring.style.top = `calc(50% - ${radius}px)`;
   scene.appendChild(ring);
 
-  // кубы
   const count = cubesPerOrbit[o];
   for (let i = 0; i < count; i++) {
     const cube = document.createElement('div');
@@ -43,7 +39,7 @@ function positionElements() {
   center.style.top = `${h - 45}px`;
 
   goodCube.style.left = `${w - 35}px`;
-  goodCube.style.top = `${h + 150}px`;
+  goodCube.style.top = `${h + 170}px`;
 
   allCubes.forEach((cube) => {
     const r = +cube.dataset.radius;
@@ -57,12 +53,12 @@ function positionElements() {
 
 positionElements();
 
-// анимация героев месяца
+// анимация героев
 let angleOffset = 0;
 function animateHeroes() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-  const r = 130;
+  const r = 140; // орбита героев (центр чистый)
 
   heroes.forEach((hero, i) => {
     const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
@@ -72,7 +68,7 @@ function animateHeroes() {
     hero.style.top = `${y}px`;
   });
 
-  angleOffset += 0.008;
+  angleOffset += 0.007;
   requestAnimationFrame(animateHeroes);
 }
 
