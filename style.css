@@ -1,75 +1,79 @@
 body {
   margin: 0;
-  height: 100vh;
-  background: radial-gradient(circle at center, #000010 0%, #000000 100%);
+  background: radial-gradient(circle at center, #060a13 0%, #000 100%);
+  color: #00fff2;
+  font-family: 'Segoe UI', sans-serif;
   overflow: hidden;
-  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  font-size: 48px;
+  margin-top: 20px;
+  color: #00fff2;
+  text-shadow: 0 0 25px #00fff2;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  margin-bottom: 40px;
+  font-size: 18px;
+  color: #7fffd4;
+  text-shadow: 0 0 10px #00fff2;
+}
+
+#container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+#scene {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transform: translate(-50%, -50%);
+  transition: transform 0.5s ease;
 }
 
 .cube {
   position: absolute;
   width: 70px;
   height: 70px;
-  background: rgba(0, 255, 255, 0.05);
-  border: 2px solid rgba(0, 255, 255, 0.6);
-  box-shadow: 0 0 14px rgba(0, 255, 255, 0.8);
-  border-radius: 14px;
-  color: #00ffff;
-  text-align: center;
-  line-height: 70px;
-  font-size: 12px;
-  animation: pulse 3s infinite;
-  text-shadow: 0 0 10px #00ffff;
+  border: 2px solid #00fff2;
+  box-shadow: 0 0 20px #00fff2;
+  color: #00fff2;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(0, 255, 242, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.cube:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px #00fff2;
 }
 
 .center {
-  width: 110px;
-  height: 110px;
-  line-height: 110px;
-  font-size: 14px;
-  color: #ff0099;
-  border: 2px solid #ff00ff;
-  background: rgba(255, 0, 150, 0.15);
+  background: rgba(255, 0, 255, 0.2);
+  border-color: #ff00ff;
   box-shadow: 0 0 25px #ff00ff;
-  border-radius: 20px;
-  animation: centerPulse 4s infinite;
+  font-weight: bold;
 }
 
 .good {
-  color: #00ff88;
-  background: rgba(0, 255, 88, 0.1);
-  border: 2px solid #00ff88;
-  box-shadow: 0 0 22px #00ff88;
-  border-radius: 18px;
+  background: rgba(0, 255, 0, 0.2);
+  border-color: #00ff00;
+  box-shadow: 0 0 25px #00ff00;
 }
 
 .hero {
-  color: #ff00ff;
-  border: 2px solid #ff00ff;
-  background: rgba(255, 0, 255, 0.15);
+  background: rgba(255, 0, 255, 0.2);
+  border-color: #ff00ff;
   box-shadow: 0 0 25px #ff00ff;
-  border-radius: 15px;
-  animation: heroPulse 5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-}
-
-@keyframes heroPulse {
-  0%, 100% { box-shadow: 0 0 20px #ff00ff; }
-  50% { box-shadow: 0 0 35px #ff33ff; }
-}
-
-@keyframes centerPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 30px #ff00ff; }
-  50% { transform: scale(1.05); box-shadow: 0 0 50px #ff00ff; }
-}
-
-@media (max-width: 768px) {
-  .cube { width: 45px; height: 45px; line-height: 45px; font-size: 10px; }
-  .center { width: 70px; height: 70px; line-height: 70px; }
-  .good { width: 60px; height: 60px; line-height: 60px; }
-  .hero { width: 50px; height: 50px; line-height: 50px; }
 }
