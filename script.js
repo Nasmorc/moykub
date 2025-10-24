@@ -11,11 +11,7 @@ function createCubes() {
   allCubes = [];
   document.querySelectorAll('.orbit').forEach(el => el.remove());
 
-  const minSide = Math.min(window.innerWidth, window.innerHeight);
-  const baseSize = 1000;
-  const scale = minSide / baseSize;
-  const orbitRadiusStep = 140 * scale;
-
+  const orbitRadiusStep = 150;
   for (let o = 0; o < orbitCount; o++) {
     const radius = (o + 2) * orbitRadiusStep;
     const count = cubesPerOrbit[o];
@@ -35,23 +31,12 @@ function createCubes() {
 function positionElements() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-  const minSide = Math.min(window.innerWidth, window.innerHeight);
-  const scale = minSide / 1000;
 
-  const centerSize = 110 * scale;
-  const goodSize = 90 * scale;
+  center.style.left = `${w - 45}px`;
+  center.style.top = `${h - 45}px`;
 
-  center.style.width = `${centerSize}px`;
-  center.style.height = `${centerSize}px`;
-  center.style.lineHeight = `${centerSize}px`;
-  center.style.left = `${w - centerSize / 2}px`;
-  center.style.top = `${h - centerSize / 2}px`;
-
-  goodCube.style.width = `${goodSize}px`;
-  goodCube.style.height = `${goodSize}px`;
-  goodCube.style.lineHeight = `${goodSize}px`;
-  goodCube.style.left = `${w - goodSize / 2}px`;
-  goodCube.style.top = `${h + 220 * scale}px`;
+  goodCube.style.left = `${w - 35}px`;
+  goodCube.style.top = `${h + 220}px`;
 
   allCubes.forEach(cube => {
     const r = +cube.dataset.radius;
@@ -63,14 +48,21 @@ function positionElements() {
   });
 }
 
+function scaleScene() {
+  const container = document.getElementById('container');
+  const scene = document.getElementById('scene');
+  const scaleX = container.clientWidth / 1600;
+  const scaleY = container.clientHeight / 900;
+  const scale = Math.min(scaleX, scaleY);
+  scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+
 function animateHeroes() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-  const minSide = Math.min(window.innerWidth, window.innerHeight);
-  const scale = minSide / 1000;
-  const r = 180 * scale;
-
+  const r = 180;
   let angleOffset = 0;
+
   function rotate() {
     heroes.forEach((hero, i) => {
       const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
@@ -83,14 +75,16 @@ function animateHeroes() {
     angleOffset += 0.006;
     requestAnimationFrame(rotate);
   }
+
   rotate();
 }
 
 window.addEventListener('resize', () => {
-  createCubes();
   positionElements();
+  scaleScene();
 });
 
 createCubes();
 positionElements();
+scaleScene();
 animateHeroes();
