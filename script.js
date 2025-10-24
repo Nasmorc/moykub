@@ -11,7 +11,9 @@ function createCubes() {
   allCubes = [];
   document.querySelectorAll('.orbit').forEach(el => el.remove());
 
-  const scale = Math.min(window.innerWidth, window.innerHeight) / 1000;
+  const minSide = Math.min(window.innerWidth, window.innerHeight);
+  const baseSize = 1000;
+  const scale = minSide / baseSize;
   const orbitRadiusStep = 140 * scale;
 
   for (let o = 0; o < orbitCount; o++) {
@@ -33,8 +35,8 @@ function createCubes() {
 function positionElements() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-
-  const scale = Math.min(window.innerWidth, window.innerHeight) / 1000;
+  const minSide = Math.min(window.innerWidth, window.innerHeight);
+  const scale = minSide / 1000;
 
   const centerSize = 110 * scale;
   const goodSize = 90 * scale;
@@ -64,7 +66,8 @@ function positionElements() {
 function animateHeroes() {
   const w = window.innerWidth / 2;
   const h = window.innerHeight / 2;
-  const scale = Math.min(window.innerWidth, window.innerHeight) / 1000;
+  const minSide = Math.min(window.innerWidth, window.innerHeight);
+  const scale = minSide / 1000;
   const r = 180 * scale;
 
   let angleOffset = 0;
