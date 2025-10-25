@@ -1,24 +1,26 @@
-const scene = document.getElementById('scene');
-const center = document.getElementById('center');
-const goodCube = document.getElementById('goodCube');
-const heroes = document.querySelectorAll('.hero');
+const scene = document.getElementById("scene");
+const center = document.getElementById("center");
+const goodCube = document.getElementById("goodCube");
+const heroes = document.querySelectorAll(".hero");
 
-const orbitCount = 4;
-const cubesPerOrbit = [16, 20, 26, 32];
 let allCubes = [];
 
 function createCubes() {
   allCubes = [];
-  document.querySelectorAll('.orbit').forEach(el => el.remove());
+  document.querySelectorAll(".orbit").forEach(el => el.remove());
 
-  const orbitRadiusStep = 150;
+  // --- создаём орбиты ---
+  const orbitCount = 3;
+  const cubesPerOrbit = [16, 24, 32];
+  const orbitRadiusStep = 180;
+
   for (let o = 0; o < orbitCount; o++) {
-    const radius = (o + 2) * orbitRadiusStep;
+    const radius = (o + 1.8) * orbitRadiusStep;
     const count = cubesPerOrbit[o];
 
     for (let i = 0; i < count; i++) {
-      const cube = document.createElement('div');
-      cube.className = 'cube orbit';
+      const cube = document.createElement("div");
+      cube.className = "cube orbit";
       cube.textContent = `#${i + 1 + allCubes.length}`;
       cube.dataset.angle = (i / count) * Math.PI * 2;
       cube.dataset.radius = radius;
@@ -28,69 +30,66 @@ function createCubes() {
   }
 }
 
+// позиционируем центр, Куб Добра и орбиты
 function positionElements() {
-  // Ставим центр в 0:0 внутри сцены
-  const w = 0;
-  const h = 0;
+  const cx = 0;
+  const cy = 0;
 
-  center.style.left = `${w - 45}px`;
-  center.style.top = `${h - 45}px`;
+  // центр — в середине сцены
+  center.style.left = `${cx - 40}px`;
+  center.style.top = `${cy - 40}px`;
 
-  goodCube.style.left = `${w - 35}px`;
-  goodCube.style.top = `${h + 220}px`;
+  // Куб Добра — ниже центра
+  goodCube.style.left = `${cx - 35}px`;
+  goodCube.style.top = `${cy + 160}px`;
 
+  // орбиты
   allCubes.forEach(cube => {
     const r = +cube.dataset.radius;
     const a = +cube.dataset.angle;
-    const x = w + Math.cos(a) * r;
-    const y = h + Math.sin(a) * r;
+    const x = cx + Math.cos(a) * r;
+    const y = cy + Math.sin(a) * r;
     cube.style.left = `${x}px`;
     cube.style.top = `${y}px`;
   });
 }
 
-function scaleScene() {
-  const sceneEl = document.getElementById('scene');
-  const container = document.getElementById('container');
-
-  // Считаем масштаб и применяем, сохраняя центр
-  const baseWidth = 1600;
-  const baseHeight = 900;
-  const scaleX = container.clientWidth / baseWidth;
-  const scaleY = container.clientHeight / baseHeight;
-  const scale = Math.min(scaleX, scaleY);
-
-  // Центрируем сцену по окну
-  const offsetX = container.clientWidth / 2;
-  const offsetY = container.clientHeight / 2;
-  sceneEl.style.left = `${offsetX}px`;
-  sceneEl.style.top = `${offsetY}px`;
-  sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
-}
-
+// анимация вращения 3 героев
 function animateHeroes() {
-  const r = 180;
+  const orbitRadius = 120;
   let angleOffset = 0;
 
   function rotate() {
     heroes.forEach((hero, i) => {
       const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
-      const x = Math.cos(angle) * r;
-      const y = Math.sin(angle) * r;
+      const x = Math.cos(angle) * orbitRadius;
+      const y = Math.sin(angle) * orbitRadius;
       hero.style.left = `${x}px`;
       hero.style.top = `${y}px`;
     });
 
-    angleOffset += 0.006;
+    angleOffset += 0.01;
     requestAnimationFrame(rotate);
   }
 
   rotate();
 }
 
-window.addEventListener('resize', () => {
-  scaleScene();
-});
+// адаптивное масштабирование
+function scaleScene() {
+  const sceneEl = document.getElementById("scene");
+  const container = document.getElementById("container");
+
+  const scaleX = container.clientWidth / 1600;
+  const scaleY = container.clientHeight / 900;
+  const scale = Math.min(scaleX, scaleY);
+
+  sceneEl.style.left = "50%";
+  sceneEl.style.top = "50%";
+  sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+
+window.addEventListener("resize", scaleScene);
 
 createCubes();
 positionElements();
