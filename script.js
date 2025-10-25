@@ -1,10 +1,11 @@
 // Получаем сцену и контейнер
 const scene = document.getElementById("scene");
-const totalCubes = 125;
-const orbits = 3;
+const totalCubes = 108;       // чуть меньше кубов, чтобы не налезали
+const orbits = 3;             // три орбиты
 const cubesPerOrbit = Math.ceil(totalCubes / orbits);
-const baseRadius = 220;  // стартовая орбита чуть дальше от центра
-const radiusStep = 140;  // увеличили расстояние между орбитами
+const baseRadius = 240;       // первая орбита чуть дальше от центра
+const radiusStep = 160;       // между орбитами больше воздуха
+
 
 
 // Создаём орбиты с кубами
