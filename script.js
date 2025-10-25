@@ -1,11 +1,9 @@
-// Получаем сцену
 const scene = document.getElementById("scene");
 
-// Настройки орбит
 const orbitSettings = [
-  { count: 20, radius: 220, color: "#00fff2" }, // внутренняя
-  { count: 36, radius: 380, color: "#00fff2" }, // средняя
-  { count: 52, radius: 580, color: "#00fff2" }  // внешняя
+  { count: 20, radius: 220, color: "#00fff2" },
+  { count: 36, radius: 380, color: "#00fff2" },
+  { count: 52, radius: 580, color: "#00fff2" }
 ];
 
 // Создаём орбиты
@@ -59,5 +57,9 @@ function scaleScene() {
   scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
 
+// Отслеживаем resize + zoom
 window.addEventListener("resize", scaleScene);
+const resizeObserver = new ResizeObserver(scaleScene);
+resizeObserver.observe(document.body);
+
 scaleScene();
