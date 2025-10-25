@@ -91,9 +91,9 @@ function scaleScene() {
   const scaleX = (availableWidth * padding) / neededSize;
   const scaleY = (availableHeight * padding) / neededSize;
   const scale = Math.min(scaleX, scaleY);
-
+  const verticalOffset = -100; // ← регулируй здесь высоту
   sceneEl.style.left = "50%";
-  sceneEl.style.top = "50%";
+  sceneEl.style.top = `calc(50% + ${verticalOffset}px)`;
   sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
 
