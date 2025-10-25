@@ -4,6 +4,7 @@ const goodCube = document.getElementById("goodCube");
 const heroes = document.querySelectorAll(".hero");
 
 let allCubes = [];
+let maxRadius = 0;
 
 function createCubes() {
   allCubes = [];
@@ -17,6 +18,7 @@ function createCubes() {
   for (let o = 0; o < orbitCount; o++) {
     const radius = (o + 1.8) * orbitRadiusStep;
     const count = cubesPerOrbit[o];
+    maxRadius = Math.max(maxRadius, radius);
 
     for (let i = 0; i < count; i++) {
       const cube = document.createElement("div");
@@ -30,7 +32,6 @@ function createCubes() {
   }
 }
 
-// позиционируем центр, Куб Добра и орбиты
 function positionElements() {
   const cx = 0;
   const cy = 0;
@@ -54,7 +55,6 @@ function positionElements() {
   });
 }
 
-// анимация вращения 3 героев
 function animateHeroes() {
   const orbitRadius = 120;
   let angleOffset = 0;
@@ -75,13 +75,21 @@ function animateHeroes() {
   rotate();
 }
 
-// адаптивное масштабирование
 function scaleScene() {
   const sceneEl = document.getElementById("scene");
   const container = document.getElementById("container");
 
-  const scaleX = container.clientWidth / 1600;
-  const scaleY = container.clientHeight / 900;
+  // доступные размеры окна
+  const availableWidth = container.clientWidth;
+  const availableHeight = container.clientHeight;
+
+  // добавим небольшой отступ (10%)
+  const padding = 0.9;
+
+  // рассчитываем масштаб, чтобы всё влезло
+  const neededSize = maxRadius * 2.5; // немного больше, чем диаметр орбит
+  const scaleX = (availableWidth * padding) / neededSize;
+  const scaleY = (availableHeight * padding) / neededSize;
   const scale = Math.min(scaleX, scaleY);
 
   sceneEl.style.left = "50%";
