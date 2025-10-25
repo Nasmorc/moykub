@@ -7,7 +7,7 @@ const orbitSettings = [
   { count: 52, radius: 580, color: "#00fff2" }
 ];
 
-// Создаём орбиты
+// === Создание орбит ===
 orbitSettings.forEach((orbit, i) => {
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
@@ -25,24 +25,69 @@ orbitSettings.forEach((orbit, i) => {
   }
 });
 
-// Центральные кубы
-function createCenterCube(label, color, offsetY = 0) {
+// === Центральный куб ===
+const centerCube = document.createElement("div");
+centerCube.classList.add("cube");
+centerCube.textContent = "ЦЕНТР";
+centerCube.style.width = "80px";
+centerCube.style.height = "80px";
+centerCube.style.fontSize = "14px";
+centerCube.style.borderColor = "#ff00ff";
+centerCube.style.boxShadow = "0 0 25px #ff00ff, 0 0 40px #ff00ff";
+centerCube.style.zIndex = "10";
+scene.appendChild(centerCube);
+
+// === Куб Добра (чуть ниже) ===
+const goodCube = document.createElement("div");
+goodCube.classList.add("cube");
+goodCube.textContent = "КУБ ДОБРА";
+goodCube.style.width = "60px";
+goodCube.style.height = "60px";
+goodCube.style.fontSize = "12px";
+goodCube.style.borderColor = "#00ff00";
+goodCube.style.boxShadow = "0 0 20px #00ff00";
+goodCube.style.transform = `translate(0px, 130px)`;
+goodCube.style.zIndex = "9";
+scene.appendChild(goodCube);
+
+// === Герои (вращаются вокруг центра) ===
+const heroes = [
+  { label: "Герой 1", angle: 0 },
+  { label: "Герой 2", angle: 120 },
+  { label: "Герой 3", angle: 240 }
+];
+
+const heroRadius = 150; // орбита героев
+const heroSpeed = 0.01; // скорость вращения
+
+heroes.forEach((hero) => {
   const cube = document.createElement("div");
   cube.classList.add("cube");
-  cube.textContent = label;
-  cube.style.borderColor = color;
-  cube.style.transform = `translate(0px, ${offsetY}px)`;
-  cube.style.boxShadow = `0 0 20px ${color}`;
+  cube.textContent = hero.label;
+  cube.style.width = "50px";
+  cube.style.height = "50px";
+  cube.style.fontSize = "11px";
+  cube.style.borderColor = "#ff00ff";
+  cube.style.boxShadow = "0 0 15px #ff00ff";
+  cube.dataset.angle = hero.angle;
   scene.appendChild(cube);
+  hero.element = cube;
+});
+
+// === Анимация вращения героев ===
+function animateHeroes() {
+  heroes.forEach((hero) => {
+    const angle = parseFloat(hero.element.dataset.angle);
+    const x = Math.cos(angle) * heroRadius;
+    const y = Math.sin(angle) * heroRadius;
+    hero.element.style.transform = `translate(${x}px, ${y}px)`;
+    hero.element.dataset.angle = angle + heroSpeed;
+  });
+  requestAnimationFrame(animateHeroes);
 }
+animateHeroes();
 
-createCenterCube("ЦЕНТР", "#ff00ff");
-createCenterCube("Герой 1", "#ff00ff", 100);
-createCenterCube("Герой 2", "#ff00ff", -100);
-createCenterCube("Герой 3", "#ff00ff", 0);
-createCenterCube("КУБ ДОБРА", "#00ff00", 180);
-
-// Масштабирование
+// === Масштабирование сцены ===
 let userScale = 1;
 
 function scaleScene() {
@@ -50,7 +95,7 @@ function scaleScene() {
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
 
-  const maxRadius = Math.max(...orbitSettings.map(o => o.radius));
+  const maxRadius = Math.max(...orbitSettings.map(o => o.radius)) + 200;
   const neededSize = maxRadius * 2.5;
 
   const scaleX = (availableWidth * 0.9) / neededSize;
@@ -58,15 +103,12 @@ function scaleScene() {
   const baseScale = Math.min(scaleX, scaleY);
 
   const totalScale = baseScale * userScale;
-
-  // Масштабируем теперь wrapper, а не саму сцену
   wrapper.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
 }
 
 window.addEventListener("resize", scaleScene);
 scaleScene();
 
-// Колёсико для зума
 window.addEventListener("wheel", (e) => {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     e.preventDefault();
