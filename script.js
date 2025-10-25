@@ -6,7 +6,7 @@ const orbitSettings = [
   { count: 52, radius: 580, color: "#00fff2" }
 ];
 
-// Создаём орбиты
+// Создание орбит
 orbitSettings.forEach((orbit, i) => {
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
@@ -24,7 +24,7 @@ orbitSettings.forEach((orbit, i) => {
   }
 });
 
-// Центр и герои
+// Центральные элементы
 function createCenterCube(label, color, offsetY = 0) {
   const cube = document.createElement("div");
   cube.classList.add("cube");
@@ -41,7 +41,7 @@ createCenterCube("Герой 2", "#ff00ff", -100);
 createCenterCube("Герой 3", "#ff00ff", 0);
 createCenterCube("КУБ ДОБРА", "#00ff00", 180);
 
-// Масштабирование всей сцены
+// --- Масштаб всей сцены ---
 function scaleScene() {
   const container = document.getElementById("container");
   const availableWidth = container.clientWidth;
@@ -52,14 +52,22 @@ function scaleScene() {
 
   const scaleX = (availableWidth * 0.9) / neededSize;
   const scaleY = (availableHeight * 0.9) / neededSize;
-  const scale = Math.min(scaleX, scaleY);
+  const baseScale = Math.min(scaleX, scaleY);
 
-  scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  // Определяем текущий зум браузера (1 = 100%, 3 = 300%)
+  const browserZoom = window.visualViewport ? window.visualViewport.scale : 1;
+
+  // Масштаб всей сцены с учётом зума
+  const totalScale = baseScale * browserZoom;
+
+  scene.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
 }
 
-// Отслеживаем resize + zoom
+// Слушаем всё, что может изменить масштаб
 window.addEventListener("resize", scaleScene);
-const resizeObserver = new ResizeObserver(scaleScene);
-resizeObserver.observe(document.body);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", scaleScene);
+  window.visualViewport.addEventListener("scroll", scaleScene);
+}
 
 scaleScene();
