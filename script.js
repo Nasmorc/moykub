@@ -8,7 +8,7 @@ const cubesPerOrbit = [16, 20, 26, 32];
 const orbitRadiusStep = 150;
 let allCubes = [];
 
-// Создаём орбиты
+// создаем орбиты
 for (let o = 0; o < orbitCount; o++) {
   const radius = (o + 2) * orbitRadiusStep;
 
@@ -33,11 +33,11 @@ for (let o = 0; o < orbitCount; o++) {
 }
 
 function positionElements() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
+  const w = 0;
+  const h = 0;
 
-  center.style.left = `${w - 35}px`;
-  center.style.top = `${h - 45}px`;
+  center.style.left = `${w - 25}px`;
+  center.style.top = `${h - 25}px`;
 
   goodCube.style.left = `${w - 25}px`;
   goodCube.style.top = `${h + 180}px`;
@@ -56,8 +56,8 @@ positionElements();
 
 let angleOffset = 0;
 function animateHeroes() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
+  const w = 0;
+  const h = 0;
   const r = 160;
 
   heroes.forEach((hero, i) => {
@@ -74,7 +74,7 @@ function animateHeroes() {
 
 animateHeroes();
 
-// Масштабирование сцены
+// масштаб всей сцены
 function scaleScene() {
   const sceneEl = document.getElementById("scene");
   const container = document.getElementById("container");
