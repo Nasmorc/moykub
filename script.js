@@ -6,7 +6,7 @@ const orbitSettings = [
   { count: 52, radius: 580, color: "#00fff2" }
 ];
 
-// Создание орбит
+// Создаём орбиты
 orbitSettings.forEach((orbit, i) => {
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
@@ -24,7 +24,7 @@ orbitSettings.forEach((orbit, i) => {
   }
 });
 
-// Центральные кубы
+// Центральные элементы
 function createCenterCube(label, color, offsetY = 0) {
   const cube = document.createElement("div");
   cube.classList.add("cube");
@@ -41,7 +41,7 @@ createCenterCube("Герой 2", "#ff00ff", -100);
 createCenterCube("Герой 3", "#ff00ff", 0);
 createCenterCube("КУБ ДОБРА", "#00ff00", 180);
 
-// === Настоящее масштабирование сцены ===
+// Масштабирование сцены
 let userScale = 1;
 
 function scaleScene() {
@@ -58,13 +58,14 @@ function scaleScene() {
 
   const totalScale = baseScale * userScale;
 
+  // порядок важен: translate -> scale
   scene.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
 }
 
 window.addEventListener("resize", scaleScene);
 scaleScene();
 
-// === Слушаем колесо мыши для управления масштабом ===
+// Управление масштабом через колесо
 window.addEventListener("wheel", (e) => {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     e.preventDefault();
