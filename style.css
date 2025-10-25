@@ -1,8 +1,8 @@
 body {
   margin: 0;
   overflow: hidden;
-  background: radial-gradient(circle at center, #000010, #000);
-  font-family: 'Segoe UI', sans-serif;
+  background: #000;
+  font-family: Arial, sans-serif;
   color: white;
 }
 
@@ -14,7 +14,6 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  z-index: 1;
 }
 
 /* Сцена с кубами */
@@ -24,6 +23,7 @@ body {
   left: 50%;
   transform-origin: center;
   transform: translate(-50%, -50%);
+  z-index: 1; /* Сцена над фоном */
 }
 
 /* Кубы */
@@ -60,38 +60,27 @@ body {
   color: #00ff66;
 }
 
-/* --- Надпись поверх сцены --- */
-#title-overlay {
-  position: fixed;
-  top: 5%;
+/* --- Фоновая надпись --- */
+#title-background {
+  position: absolute;
+  top: 10%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  z-index: 20;
+  z-index: 0; /* Ниже сцены */
   pointer-events: none;
-  background: none;
 }
 
-#title-overlay h1 {
-  font-size: 72px;
+#title-background h1 {
+  font-size: 120px;
   color: #00ffff;
-  text-shadow: 0 0 25px #00ffff, 0 0 80px #00ffff;
+  opacity: 0.25;
   margin: 0;
-  animation: neonPulse 3s ease-in-out infinite;
 }
 
-#title-overlay .subtitle {
-  font-size: 24px;
-  color: #66ffee;
-  text-shadow: 0 0 15px #00ffff;
+#title-background .subtitle {
+  font-size: 28px;
+  color: #00ffff;
+  opacity: 0.2;
   margin-top: 10px;
-}
-
-@keyframes neonPulse {
-  0%, 100% {
-    text-shadow: 0 0 25px #00ffff, 0 0 50px #00ffff;
-  }
-  50% {
-    text-shadow: 0 0 40px #00ffff, 0 0 100px #00ffff;
-  }
 }
