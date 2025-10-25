@@ -8,7 +8,7 @@ const cubesPerOrbit = [16, 20, 26, 32];
 const orbitRadiusStep = 150;
 let allCubes = [];
 
-// создаем орбиты
+// === создаём орбиты ===
 for (let o = 0; o < orbitCount; o++) {
   const radius = (o + 2) * orbitRadiusStep;
 
@@ -32,6 +32,7 @@ for (let o = 0; o < orbitCount; o++) {
   }
 }
 
+// === позиционируем всё ===
 function positionElements() {
   const w = 0;
   const h = 0;
@@ -54,6 +55,7 @@ function positionElements() {
 
 positionElements();
 
+// === анимация героев ===
 let angleOffset = 0;
 function animateHeroes() {
   const w = 0;
@@ -74,27 +76,29 @@ function animateHeroes() {
 
 animateHeroes();
 
-// масштаб всей сцены
+// === масштаб сцены ===
 function scaleScene() {
   const sceneEl = document.getElementById("scene");
   const container = document.getElementById("container");
 
-  // получаем реальные размеры содержимого сцены
-  const sceneRect = sceneEl.getBoundingClientRect();
-  const containerWidth = container.clientWidth;
-  const containerHeight = container.clientHeight;
+  // Сбрасываем масштаб, чтобы получить реальный размер
+  sceneEl.style.transform = `translate(-50%, -50%) scale(1)`;
 
-  // учитываем небольшие поля (10%)
+  // Получаем размеры содержимого
+  const rect = sceneEl.getBoundingClientRect();
+  const availableWidth = container.clientWidth;
+  const availableHeight = container.clientHeight;
+
+  // Вычисляем масштаб
   const padding = 0.9;
-
-  // рассчитываем масштаб
-  const scaleX = (containerWidth * padding) / sceneRect.width;
-  const scaleY = (containerHeight * padding) / sceneRect.height;
+  const scaleX = (availableWidth * padding) / rect.width;
+  const scaleY = (availableHeight * padding) / rect.height;
   const scale = Math.min(scaleX, scaleY);
 
-  // применяем
+  // Применяем масштаб и центрируем
   sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
 
+// === слушаем изменение окна ===
 window.addEventListener("resize", scaleScene);
 scaleScene();
