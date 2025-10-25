@@ -128,3 +128,31 @@ h1 {
     text-shadow: 0 0 40px #00fff2, 0 0 80px #00fff2;
   }
 }
+/* --- Убираем чёрную "доску" сверху --- */
+header, .top-bar {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  height: auto !important;
+  padding: 10px 0 !important;
+  position: relative;
+  z-index: 10;
+}
+
+/* --- Стили заголовка --- */
+h1 {
+  font-size: 56px;
+  color: #00f6ff;
+  text-shadow: 0 0 25px #00f6ff;
+  margin: 20px 0 5px 0;
+  text-align: center;
+}
+
+/* --- Подзаголовок --- */
+.subtitle {
+  text-align: center;
+  color: #66ffee;
+  font-size: 20px;
+  text-shadow: 0 0 10px #00f6ff;
+  margin-bottom: 20px;
+}
