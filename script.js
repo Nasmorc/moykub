@@ -1,13 +1,14 @@
 const scene = document.getElementById("scene");
 const wrapper = document.getElementById("wrapper");
 
+// === Орбиты ===
 const orbitSettings = [
   { count: 20, radius: 220, color: "#00fff2" },
   { count: 36, radius: 380, color: "#00fff2" },
   { count: 52, radius: 580, color: "#00fff2" }
 ];
 
-// === Создание орбит ===
+// === Создаём орбиты ===
 orbitSettings.forEach((orbit, i) => {
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
@@ -20,7 +21,6 @@ orbitSettings.forEach((orbit, i) => {
 
     cube.style.transform = `translate(${x}px, ${y}px)`;
     cube.style.borderColor = orbit.color;
-
     scene.appendChild(cube);
   }
 });
@@ -34,10 +34,14 @@ centerCube.style.height = "80px";
 centerCube.style.fontSize = "14px";
 centerCube.style.borderColor = "#ff00ff";
 centerCube.style.boxShadow = "0 0 25px #ff00ff, 0 0 40px #ff00ff";
+centerCube.style.position = "absolute";
+centerCube.style.left = "50%";
+centerCube.style.top = "50%";
+centerCube.style.transform = "translate(-50%, -50%)";
 centerCube.style.zIndex = "10";
 scene.appendChild(centerCube);
 
-// === Куб Добра (чуть ниже) ===
+// === Куб Добра (ниже центра) ===
 const goodCube = document.createElement("div");
 goodCube.classList.add("cube");
 goodCube.textContent = "КУБ ДОБРА";
@@ -46,21 +50,24 @@ goodCube.style.height = "60px";
 goodCube.style.fontSize = "12px";
 goodCube.style.borderColor = "#00ff00";
 goodCube.style.boxShadow = "0 0 20px #00ff00";
-goodCube.style.transform = `translate(0px, 130px)`;
+goodCube.style.position = "absolute";
+goodCube.style.left = "50%";
+goodCube.style.top = "calc(50% + 110px)";
+goodCube.style.transform = "translateX(-50%)";
 goodCube.style.zIndex = "9";
 scene.appendChild(goodCube);
 
-// === Герои (вращаются вокруг центра) ===
+// === Герои ===
 const heroes = [
-  { label: "Герой 1", angle: 0 },
-  { label: "Герой 2", angle: 120 },
-  { label: "Герой 3", angle: 240 }
+  { label: "Герой 1", baseAngle: 270 }, // 12 часов
+  { label: "Герой 2", baseAngle: 30 },  // 4 часа
+  { label: "Герой 3", baseAngle: 210 }  // 8 часов
 ];
 
-const heroRadius = 150; // орбита героев
-const heroSpeed = 0.01; // скорость вращения
+const heroRadius = 150;
+const heroSpeed = 0.008;
 
-heroes.forEach((hero) => {
+heroes.forEach(hero => {
   const cube = document.createElement("div");
   cube.classList.add("cube");
   cube.textContent = hero.label;
@@ -69,18 +76,21 @@ heroes.forEach((hero) => {
   cube.style.fontSize = "11px";
   cube.style.borderColor = "#ff00ff";
   cube.style.boxShadow = "0 0 15px #ff00ff";
-  cube.dataset.angle = hero.angle;
+  cube.dataset.angle = (hero.baseAngle * Math.PI) / 180;
   scene.appendChild(cube);
   hero.element = cube;
 });
 
 // === Анимация вращения героев ===
 function animateHeroes() {
-  heroes.forEach((hero) => {
-    const angle = parseFloat(hero.element.dataset.angle);
+  heroes.forEach(hero => {
+    let angle = parseFloat(hero.element.dataset.angle);
     const x = Math.cos(angle) * heroRadius;
     const y = Math.sin(angle) * heroRadius;
-    hero.element.style.transform = `translate(${x}px, ${y}px)`;
+    hero.element.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    hero.element.style.position = "absolute";
+    hero.element.style.left = "50%";
+    hero.element.style.top = "50%";
     hero.element.dataset.angle = angle + heroSpeed;
   });
   requestAnimationFrame(animateHeroes);
