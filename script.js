@@ -24,7 +24,7 @@ orbitSettings.forEach((orbit, i) => {
   }
 });
 
-// Центральные элементы
+// Центральные кубы
 function createCenterCube(label, color, offsetY = 0) {
   const cube = document.createElement("div");
   cube.classList.add("cube");
@@ -41,7 +41,9 @@ createCenterCube("Герой 2", "#ff00ff", -100);
 createCenterCube("Герой 3", "#ff00ff", 0);
 createCenterCube("КУБ ДОБРА", "#00ff00", 180);
 
-// --- Масштаб всей сцены ---
+// === Настоящее масштабирование сцены ===
+let userScale = 1;
+
 function scaleScene() {
   const container = document.getElementById("container");
   const availableWidth = container.clientWidth;
@@ -54,20 +56,20 @@ function scaleScene() {
   const scaleY = (availableHeight * 0.9) / neededSize;
   const baseScale = Math.min(scaleX, scaleY);
 
-  // Определяем текущий зум браузера (1 = 100%, 3 = 300%)
-  const browserZoom = window.visualViewport ? window.visualViewport.scale : 1;
-
-  // Масштаб всей сцены с учётом зума
-  const totalScale = baseScale * browserZoom;
+  const totalScale = baseScale * userScale;
 
   scene.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
 }
 
-// Слушаем всё, что может изменить масштаб
 window.addEventListener("resize", scaleScene);
-if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", scaleScene);
-  window.visualViewport.addEventListener("scroll", scaleScene);
-}
-
 scaleScene();
+
+// === Слушаем колесо мыши для управления масштабом ===
+window.addEventListener("wheel", (e) => {
+  if (e.ctrlKey || e.altKey || e.metaKey) {
+    e.preventDefault();
+    const delta = -e.deltaY * 0.001;
+    userScale = Math.min(Math.max(userScale + delta, 0.2), 5);
+    scaleScene();
+  }
+}, { passive: false });
