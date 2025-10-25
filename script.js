@@ -29,7 +29,8 @@ function createCubes() {
 }
 
 function positionElements() {
-  const w = 0; // теперь центр сцены будет в (0,0)
+  // Ставим центр в 0:0 внутри сцены
+  const w = 0;
   const h = 0;
 
   center.style.left = `${w - 45}px`;
@@ -51,13 +52,20 @@ function positionElements() {
 function scaleScene() {
   const sceneEl = document.getElementById('scene');
   const container = document.getElementById('container');
-  const scaleX = container.clientWidth / 1600;
-  const scaleY = container.clientHeight / 900;
+
+  // Считаем масштаб и применяем, сохраняя центр
+  const baseWidth = 1600;
+  const baseHeight = 900;
+  const scaleX = container.clientWidth / baseWidth;
+  const scaleY = container.clientHeight / baseHeight;
   const scale = Math.min(scaleX, scaleY);
 
+  // Центрируем сцену по окну
+  const offsetX = container.clientWidth / 2;
+  const offsetY = container.clientHeight / 2;
+  sceneEl.style.left = `${offsetX}px`;
+  sceneEl.style.top = `${offsetY}px`;
   sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
-  sceneEl.style.left = "50%";
-  sceneEl.style.top = "50%";
 }
 
 function animateHeroes() {
