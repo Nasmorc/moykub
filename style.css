@@ -1,28 +1,50 @@
 body {
   margin: 0;
-  background: radial-gradient(circle at center, #060a13 0%, #000 100%);
-  color: #00fff2;
-  font-family: 'Segoe UI', sans-serif;
+  padding: 0;
   overflow: hidden;
+  background: radial-gradient(circle at center, #0a0a0a, #000000 70%);
+  font-family: "Montserrat", sans-serif;
+  color: #fff;
+}
+
+/* Заголовок поверх сцены */
+.header-overlay {
+  position: fixed;
+  top: 30px;
+  left: 0;
+  width: 100%;
   text-align: center;
+  z-index: 10;
+  pointer-events: none;
+  background: none !important;
 }
 
 h1 {
-  font-size: 48px;
-  margin-top: 20px;
+  font-size: 56px;
   color: #00fff2;
-  text-shadow: 0 0 25px #00fff2;
-  letter-spacing: 2px;
-  animation: neonPulse 3s infinite alternate ease-in-out;
+  text-shadow: 0 0 25px #00fff2, 0 0 60px #00fff2;
+  animation: neonPulse 2s infinite alternate;
+  margin: 0;
 }
 
 .subtitle {
-  margin-bottom: 40px;
-  font-size: 18px;
-  color: #7fffd4;
+  font-size: 20px;
+  color: #66ffee;
   text-shadow: 0 0 10px #00fff2;
+  margin-top: 10px;
 }
 
+/* Анимация свечения */
+@keyframes neonPulse {
+  0%, 100% {
+    text-shadow: 0 0 20px #00fff2, 0 0 40px #00fff2;
+  }
+  50% {
+    text-shadow: 0 0 40px #00fff2, 0 0 80px #00fff2;
+  }
+}
+
+/* Контейнер сцены */
 #container {
   position: fixed;
   top: 0;
@@ -33,136 +55,59 @@ h1 {
   z-index: 1;
 }
 
-h1, .subtitle {
-  position: relative;
-  z-index: 10;
-  pointer-events: none; /* чтобы не мешали кликам по кубам */
-}
-
-
+/* Сцена по центру */
 #scene {
   position: absolute;
   top: 50%;
   left: 50%;
   transform-origin: center;
   transform: translate(-50%, -50%);
-  transition: transform 0.5s ease;
 }
 
+/* Кубы */
 .cube {
   position: absolute;
-  width: 70px;
-  height: 70px;
-  border: 2px solid #00fff2;
-  box-shadow: 0 0 20px #00fff2;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 8px;
   color: #00fff2;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: rgba(0, 255, 242, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  animation: cubePulse 4s infinite ease-in-out;
+  border: 2px solid #00fff2;
+  box-shadow: 0 0 15px #00fff2;
+  font-size: 10px;
+  transition: transform 0.3s ease;
 }
 
 .cube:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 30px #00fff2;
+  transform: scale(1.3);
 }
 
+/* Центр */
 .center {
-  background: rgba(255, 0, 255, 0.2);
+  color: #ff00ff;
   border-color: #ff00ff;
   box-shadow: 0 0 25px #ff00ff;
-  font-weight: bold;
-  animation: cubePulseCenter 3s infinite ease-in-out;
 }
 
+/* Куб добра */
 .good {
-  background: rgba(0, 255, 0, 0.2);
-  border-color: #00ff00;
-  box-shadow: 0 0 25px #00ff00;
-  animation: cubePulseGood 4s infinite ease-in-out;
+  color: #00ff44;
+  border-color: #00ff44;
+  box-shadow: 0 0 25px #00ff44;
 }
 
+/* Герои */
 .hero {
-  background: rgba(255, 0, 255, 0.2);
+  color: #ff00ff;
   border-color: #ff00ff;
   box-shadow: 0 0 25px #ff00ff;
-  animation: cubePulseHero 3.5s infinite ease-in-out;
 }
 
-/* 🌈 Анимации дыхания */
-@keyframes cubePulse {
-  0%, 100% {
-    box-shadow: 0 0 15px #00fff2, 0 0 30px #00fff2;
-  }
-  50% {
-    box-shadow: 0 0 30px #00fff2, 0 0 60px #00fff2;
-  }
-}
-
-@keyframes cubePulseCenter {
-  0%, 100% {
-    box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
-  }
-  50% {
-    box-shadow: 0 0 35px #ff66ff, 0 0 80px #ff00ff;
-  }
-}
-
-@keyframes cubePulseGood {
-  0%, 100% {
-    box-shadow: 0 0 15px #00ff00, 0 0 40px #00ff00;
-  }
-  50% {
-    box-shadow: 0 0 35px #00ff66, 0 0 80px #00ff00;
-  }
-}
-
-@keyframes cubePulseHero {
-  0%, 100% {
-    box-shadow: 0 0 20px #ff00ff, 0 0 50px #ff00ff;
-  }
-  50% {
-    box-shadow: 0 0 40px #ff66ff, 0 0 90px #ff00ff;
-  }
-}
-
-@keyframes neonPulse {
-  0%, 100% {
-    text-shadow: 0 0 20px #00fff2, 0 0 40px #00fff2;
-  }
-  50% {
-    text-shadow: 0 0 40px #00fff2, 0 0 80px #00fff2;
-  }
-}
-/* --- Убираем чёрную "доску" сверху --- */
-header, .top-bar {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-  height: auto !important;
-  padding: 10px 0 !important;
-  position: relative;
-  z-index: 10;
-}
-
-/* --- Стили заголовка --- */
-h1 {
-  font-size: 56px;
-  color: #00f6ff;
-  text-shadow: 0 0 25px #00f6ff;
-  margin: 20px 0 5px 0;
-  text-align: center;
-}
-
-/* --- Подзаголовок --- */
-.subtitle {
-  text-align: center;
-  color: #66ffee;
-  font-size: 20px;
-  text-shadow: 0 0 10px #00f6ff;
-  margin-bottom: 20px;
+/* Орбиты */
+.orbit-ring {
+  position: absolute;
+  border: 1px dashed rgba(0, 255, 255, 0.15);
+  border-radius: 50%;
+  pointer-events: none;
 }
