@@ -24,11 +24,21 @@ h1 {
 }
 
 #container {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  position: relative;
+  z-index: 1;
 }
+
+h1, .subtitle {
+  position: relative;
+  z-index: 10;
+  pointer-events: none; /* чтобы не мешали кликам по кубам */
+}
+
 
 #scene {
   position: absolute;
