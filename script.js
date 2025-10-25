@@ -1,4 +1,5 @@
 const scene = document.getElementById("scene");
+const wrapper = document.getElementById("wrapper");
 
 const orbitSettings = [
   { count: 20, radius: 220, color: "#00fff2" },
@@ -24,7 +25,7 @@ orbitSettings.forEach((orbit, i) => {
   }
 });
 
-// Центральные элементы
+// Центральные кубы
 function createCenterCube(label, color, offsetY = 0) {
   const cube = document.createElement("div");
   cube.classList.add("cube");
@@ -41,7 +42,7 @@ createCenterCube("Герой 2", "#ff00ff", -100);
 createCenterCube("Герой 3", "#ff00ff", 0);
 createCenterCube("КУБ ДОБРА", "#00ff00", 180);
 
-// Масштабирование сцены
+// Масштабирование
 let userScale = 1;
 
 function scaleScene() {
@@ -58,14 +59,14 @@ function scaleScene() {
 
   const totalScale = baseScale * userScale;
 
-  // порядок важен: translate -> scale
-  scene.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
+  // Масштабируем теперь wrapper, а не саму сцену
+  wrapper.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
 }
 
 window.addEventListener("resize", scaleScene);
 scaleScene();
 
-// Управление масштабом через колесо
+// Колёсико для зума
 window.addEventListener("wheel", (e) => {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     e.preventDefault();
