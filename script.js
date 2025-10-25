@@ -1,7 +1,7 @@
 // Получаем сцену
 const scene = document.getElementById("scene");
 
-// Настройки орбит (каждую можно регулировать отдельно)
+// Настройки орбит (каждая отдельная)
 const orbitSettings = [
   { count: 20, radius: 220, color: "#00fff2" }, // внутренняя
   { count: 36, radius: 380, color: "#00fff2" }, // средняя
@@ -15,7 +15,6 @@ orbitSettings.forEach((orbit, i) => {
     cube.classList.add("cube");
     cube.textContent = `#${j + 1 + (i * 50)}`;
 
-    // Позиционирование кубов
     const angle = (j / orbit.count) * Math.PI * 2;
     const x = Math.cos(angle) * orbit.radius;
     const y = Math.sin(angle) * orbit.radius;
@@ -38,18 +37,15 @@ function createCenterCube(label, color, offsetY = 0) {
   scene.appendChild(cube);
 }
 
-// Центр и герои
 createCenterCube("ЦЕНТР", "#ff00ff");
 createCenterCube("Герой 1", "#ff00ff", 100);
 createCenterCube("Герой 2", "#ff00ff", -100);
 createCenterCube("Герой 3", "#ff00ff", 0);
 createCenterCube("КУБ ДОБРА", "#00ff00", 180);
 
-// --- Масштабирование ---
+// --- Масштабирование всей сцены ---
 function scaleScene() {
-  const sceneEl = document.getElementById("scene");
   const container = document.getElementById("container");
-
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
 
@@ -60,9 +56,11 @@ function scaleScene() {
   const scaleY = (availableHeight * 0.9) / neededSize;
   const scale = Math.min(scaleX, scaleY);
 
-  sceneEl.style.left = "50%";
-  sceneEl.style.top = "50%";
-  sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  // Центрируем и масштабируем всю сцену
+  scene.style.left = "50%";
+  scene.style.top = "50%";
+  scene.style.transformOrigin = "center center";
+  scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
 
 window.addEventListener("resize", scaleScene);
