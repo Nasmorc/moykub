@@ -1,12 +1,39 @@
 body {
   margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at center, #000010 30%, #000 100%);
   overflow: hidden;
-  background: #000;
-  font-family: Arial, sans-serif;
-  color: white;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Arial", sans-serif;
+  color: #00fff2;
 }
 
-/* Контейнер сцены */
+/* Слой с текстом — поверх, но не влияет на сцену */
+#title-layer {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+h1 {
+  font-size: 72px;
+  color: rgba(0, 255, 255, 0.15); /* лёгкий прозрачный фон */
+  text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 24px;
+  color: rgba(0, 255, 255, 0.2);
+  margin: 10px 0 0;
+}
+
+/* Контейнер и сцена */
 #container {
   position: fixed;
   top: 0;
@@ -14,73 +41,29 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  z-index: 1;
 }
 
-/* Сцена с кубами */
 #scene {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform-origin: center;
+  transform-origin: center center;
   transform: translate(-50%, -50%);
-  z-index: 1; /* Сцена над фоном */
 }
 
 /* Кубы */
 .cube {
   position: absolute;
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  border: 2px solid #00ffff;
-  box-shadow: 0 0 20px #00ffff;
+  width: 45px;
+  height: 45px;
+  border: 2px solid #00fff2;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00fff2, 0 0 20px #00fff2;
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 14px;
-  color: #00ffff;
-  transition: transform 0.3s ease;
-}
-
-.cube.center {
-  border-color: #ff00ff;
-  box-shadow: 0 0 25px #ff00ff;
-  color: #ff00ff;
-}
-
-.cube.hero {
-  border-color: #ff00ff;
-  box-shadow: 0 0 25px #ff00ff;
-  color: #ff00ff;
-}
-
-.cube.good {
-  border-color: #00ff66;
-  box-shadow: 0 0 25px #00ff66;
-  color: #00ff66;
-}
-
-/* --- Фоновая надпись --- */
-#title-background {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  z-index: 0; /* Ниже сцены */
-  pointer-events: none;
-}
-
-#title-background h1 {
-  font-size: 120px;
-  color: #00ffff;
-  opacity: 0.25;
-  margin: 0;
-}
-
-#title-background .subtitle {
-  font-size: 28px;
-  color: #00ffff;
-  opacity: 0.2;
-  margin-top: 10px;
+  align-items: center;
+  font-size: 12px;
+  color: #00fff2;
+  background: transparent;
 }
