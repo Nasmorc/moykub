@@ -3,8 +3,9 @@ const scene = document.getElementById("scene");
 const totalCubes = 125;
 const orbits = 3;
 const cubesPerOrbit = Math.ceil(totalCubes / orbits);
-const baseRadius = 180;
-const radiusStep = 100;
+const baseRadius = 220;  // стартовая орбита чуть дальше от центра
+const radiusStep = 140;  // увеличили расстояние между орбитами
+
 
 // Создаём орбиты с кубами
 for (let i = 0; i < orbits; i++) {
