@@ -1,4 +1,3 @@
-const scene = document.getElementById("scene");
 const wrapper = document.getElementById("wrapper");
 
 // === Орбиты ===
@@ -19,9 +18,12 @@ orbitSettings.forEach((orbit, i) => {
     const x = Math.cos(angle) * orbit.radius;
     const y = Math.sin(angle) * orbit.radius;
 
-    cube.style.transform = `translate(${x}px, ${y}px)`;
+    cube.style.position = "absolute";
+    cube.style.left = "50%";
+    cube.style.top = "50%";
+    cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     cube.style.borderColor = orbit.color;
-    scene.appendChild(cube);
+    wrapper.appendChild(cube);
   }
 });
 
@@ -39,9 +41,9 @@ centerCube.style.left = "50%";
 centerCube.style.top = "50%";
 centerCube.style.transform = "translate(-50%, -50%)";
 centerCube.style.zIndex = "10";
-scene.appendChild(centerCube);
+wrapper.appendChild(centerCube);
 
-// === Куб Добра (ниже центра) ===
+// === Куб Добра ===
 const goodCube = document.createElement("div");
 goodCube.classList.add("cube");
 goodCube.textContent = "КУБ ДОБРА";
@@ -55,13 +57,13 @@ goodCube.style.left = "50%";
 goodCube.style.top = "calc(50% + 110px)";
 goodCube.style.transform = "translateX(-50%)";
 goodCube.style.zIndex = "9";
-scene.appendChild(goodCube);
+wrapper.appendChild(goodCube);
 
 // === Герои ===
 const heroes = [
-  { label: "Герой 1", baseAngle: 270 }, // 12 часов
-  { label: "Герой 2", baseAngle: 30 },  // 4 часа
-  { label: "Герой 3", baseAngle: 210 }  // 8 часов
+  { label: "Герой 1", baseAngle: 270 },
+  { label: "Герой 2", baseAngle: 30 },
+  { label: "Герой 3", baseAngle: 210 }
 ];
 
 const heroRadius = 150;
@@ -76,8 +78,11 @@ heroes.forEach(hero => {
   cube.style.fontSize = "11px";
   cube.style.borderColor = "#ff00ff";
   cube.style.boxShadow = "0 0 15px #ff00ff";
+  cube.style.position = "absolute";
+  cube.style.left = "50%";
+  cube.style.top = "50%";
   cube.dataset.angle = (hero.baseAngle * Math.PI) / 180;
-  scene.appendChild(cube);
+  wrapper.appendChild(cube);
   hero.element = cube;
 });
 
@@ -88,16 +93,13 @@ function animateHeroes() {
     const x = Math.cos(angle) * heroRadius;
     const y = Math.sin(angle) * heroRadius;
     hero.element.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
-    hero.element.style.position = "absolute";
-    hero.element.style.left = "50%";
-    hero.element.style.top = "50%";
     hero.element.dataset.angle = angle + heroSpeed;
   });
   requestAnimationFrame(animateHeroes);
 }
 animateHeroes();
 
-// === Масштабирование сцены ===
+// === Масштабирование ===
 let userScale = 1;
 
 function scaleScene() {
