@@ -1,85 +1,63 @@
-// Получаем сцену и контейнер
+// Получаем сцену
 const scene = document.getElementById("scene");
-const totalCubes = 108;       // чуть меньше кубов, чтобы не налезали
-const orbits = 3;             // три орбиты
-const cubesPerOrbit = Math.ceil(totalCubes / orbits);
-const baseRadius = 240;       // первая орбита чуть дальше от центра
-const radiusStep = 160;       // между орбитами больше воздуха
 
+// Настройки орбит (каждую можно регулировать отдельно)
+const orbitSettings = [
+  { count: 20, radius: 220, color: "#00fff2" }, // внутренняя
+  { count: 36, radius: 380, color: "#00fff2" }, // средняя
+  { count: 52, radius: 580, color: "#00fff2" }  // внешняя
+];
 
-
-// Создаём орбиты с кубами
-for (let i = 0; i < orbits; i++) {
-  const radius = baseRadius + i * radiusStep;
-  for (let j = 0; j < cubesPerOrbit; j++) {
+// Создаём орбиты
+orbitSettings.forEach((orbit, i) => {
+  for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
     cube.classList.add("cube");
-    cube.textContent = `#${i * cubesPerOrbit + j + 1}`;
-    scene.appendChild(cube);
+    cube.textContent = `#${j + 1 + (i * 50)}`;
 
-    const angle = (j / cubesPerOrbit) * Math.PI * 2 * (1 + i * 0.15);
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
+    // Позиционирование кубов
+    const angle = (j / orbit.count) * Math.PI * 2;
+    const x = Math.cos(angle) * orbit.radius;
+    const y = Math.sin(angle) * orbit.radius;
+
     cube.style.transform = `translate(${x}px, ${y}px)`;
+    cube.style.borderColor = orbit.color;
+
+    scene.appendChild(cube);
   }
+});
+
+// --- Центральные элементы ---
+function createCenterCube(label, color, offsetY = 0) {
+  const cube = document.createElement("div");
+  cube.classList.add("cube");
+  cube.textContent = label;
+  cube.style.borderColor = color;
+  cube.style.transform = `translate(0px, ${offsetY}px)`;
+  cube.style.boxShadow = `0 0 20px ${color}`;
+  scene.appendChild(cube);
 }
 
-// Центральный куб
-const centerCube = document.createElement("div");
-centerCube.classList.add("cube", "center");
-centerCube.textContent = "ЦЕНТР";
-scene.appendChild(centerCube);
+// Центр и герои
+createCenterCube("ЦЕНТР", "#ff00ff");
+createCenterCube("Герой 1", "#ff00ff", 100);
+createCenterCube("Герой 2", "#ff00ff", -100);
+createCenterCube("Герой 3", "#ff00ff", 0);
+createCenterCube("КУБ ДОБРА", "#00ff00", 180);
 
-// Куб добра
-const goodCube = document.createElement("div");
-goodCube.classList.add("cube", "good");
-goodCube.textContent = "КУБ ДОБРА";
-scene.appendChild(goodCube);
-
-// Герои
-const heroes = [];
-for (let i = 1; i <= 3; i++) {
-  const hero = document.createElement("div");
-  hero.classList.add("cube", "hero");
-  hero.textContent = `Герой ${i}`;
-  scene.appendChild(hero);
-  heroes.push(hero);
-}
-
-// Анимация движения героев вокруг центра
-let angleOffset = 0;
-function animateHeroes() {
-  angleOffset += 0.01;
-  const heroRadius = baseRadius - 40;
-
-  heroes.forEach((hero, index) => {
-    const angle = angleOffset + (index * Math.PI * 2) / heroes.length;
-    const x = Math.cos(angle) * heroRadius;
-    const y = Math.sin(angle) * heroRadius;
-    hero.style.transform = `translate(${x}px, ${y}px)`;
-  });
-
-  centerCube.style.transform = `translate(-50%, -50%)`;
-  goodCube.style.transform = `translate(-50%, 140px)`;
-
-  requestAnimationFrame(animateHeroes);
-}
-animateHeroes();
-
-// Масштабирование сцены при изменении размера окна
+// --- Масштабирование ---
 function scaleScene() {
   const sceneEl = document.getElementById("scene");
   const container = document.getElementById("container");
 
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
-  const padding = 0.9;
 
-  const maxRadius = baseRadius + (orbits - 1) * radiusStep;
+  const maxRadius = Math.max(...orbitSettings.map(o => o.radius));
   const neededSize = maxRadius * 2.5;
 
-  const scaleX = (availableWidth * padding) / neededSize;
-  const scaleY = (availableHeight * padding) / neededSize;
+  const scaleX = (availableWidth * 0.9) / neededSize;
+  const scaleY = (availableHeight * 0.9) / neededSize;
   const scale = Math.min(scaleX, scaleY);
 
   sceneEl.style.left = "50%";
