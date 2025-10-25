@@ -29,8 +29,8 @@ function createCubes() {
 }
 
 function positionElements() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
+  const w = 0; // теперь центр сцены будет в (0,0)
+  const h = 0;
 
   center.style.left = `${w - 45}px`;
   center.style.top = `${h - 45}px`;
@@ -49,25 +49,26 @@ function positionElements() {
 }
 
 function scaleScene() {
+  const sceneEl = document.getElementById('scene');
   const container = document.getElementById('container');
-  const scene = document.getElementById('scene');
   const scaleX = container.clientWidth / 1600;
   const scaleY = container.clientHeight / 900;
   const scale = Math.min(scaleX, scaleY);
-  scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+  sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  sceneEl.style.left = "50%";
+  sceneEl.style.top = "50%";
 }
 
 function animateHeroes() {
-  const w = window.innerWidth / 2;
-  const h = window.innerHeight / 2;
   const r = 180;
   let angleOffset = 0;
 
   function rotate() {
     heroes.forEach((hero, i) => {
       const angle = angleOffset + (i * (Math.PI * 2)) / heroes.length;
-      const x = w + Math.cos(angle) * r;
-      const y = h + Math.sin(angle) * r;
+      const x = Math.cos(angle) * r;
+      const y = Math.sin(angle) * r;
       hero.style.left = `${x}px`;
       hero.style.top = `${y}px`;
     });
@@ -80,7 +81,6 @@ function animateHeroes() {
 }
 
 window.addEventListener('resize', () => {
-  positionElements();
   scaleScene();
 });
 
