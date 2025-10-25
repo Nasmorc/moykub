@@ -79,14 +79,20 @@ function scaleScene() {
   const sceneEl = document.getElementById("scene");
   const container = document.getElementById("container");
 
-  const availableWidth = container.clientWidth;
-  const availableHeight = container.clientHeight;
+  // получаем реальные размеры содержимого сцены
+  const sceneRect = sceneEl.getBoundingClientRect();
+  const containerWidth = container.clientWidth;
+  const containerHeight = container.clientHeight;
+
+  // учитываем небольшие поля (10%)
   const padding = 0.9;
-  const neededSize = orbitCount * orbitRadiusStep * 3;
-  const scaleX = (availableWidth * padding) / neededSize;
-  const scaleY = (availableHeight * padding) / neededSize;
+
+  // рассчитываем масштаб
+  const scaleX = (containerWidth * padding) / sceneRect.width;
+  const scaleY = (containerHeight * padding) / sceneRect.height;
   const scale = Math.min(scaleX, scaleY);
 
+  // применяем
   sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
 
