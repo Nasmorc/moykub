@@ -1,3 +1,4 @@
+// Получаем сцену и контейнер
 const scene = document.getElementById("scene");
 const totalCubes = 125;
 const orbits = 3;
@@ -5,7 +6,7 @@ const cubesPerOrbit = Math.ceil(totalCubes / orbits);
 const baseRadius = 180;
 const radiusStep = 100;
 
-// создаём орбиты
+// Создаём орбиты с кубами
 for (let i = 0; i < orbits; i++) {
   const radius = baseRadius + i * radiusStep;
   for (let j = 0; j < cubesPerOrbit; j++) {
@@ -21,18 +22,19 @@ for (let i = 0; i < orbits; i++) {
   }
 }
 
-// центральные кубы
+// Центральный куб
 const centerCube = document.createElement("div");
 centerCube.classList.add("cube", "center");
 centerCube.textContent = "ЦЕНТР";
 scene.appendChild(centerCube);
 
+// Куб добра
 const goodCube = document.createElement("div");
 goodCube.classList.add("cube", "good");
 goodCube.textContent = "КУБ ДОБРА";
 scene.appendChild(goodCube);
 
-// герои
+// Герои
 const heroes = [];
 for (let i = 1; i <= 3; i++) {
   const hero = document.createElement("div");
@@ -42,7 +44,7 @@ for (let i = 1; i <= 3; i++) {
   heroes.push(hero);
 }
 
-// движение героев
+// Анимация движения героев вокруг центра
 let angleOffset = 0;
 function animateHeroes() {
   angleOffset += 0.01;
@@ -62,7 +64,7 @@ function animateHeroes() {
 }
 animateHeroes();
 
-// адаптивное масштабирование сцены
+// Масштабирование сцены при изменении размера окна
 function scaleScene() {
   const sceneEl = document.getElementById("scene");
   const container = document.getElementById("container");
@@ -70,9 +72,10 @@ function scaleScene() {
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
   const padding = 0.9;
-  const maxRadius = baseRadius + (orbits - 1) * radiusStep;
 
+  const maxRadius = baseRadius + (orbits - 1) * radiusStep;
   const neededSize = maxRadius * 2.5;
+
   const scaleX = (availableWidth * padding) / neededSize;
   const scaleY = (availableHeight * padding) / neededSize;
   const scale = Math.min(scaleX, scaleY);
@@ -81,5 +84,6 @@ function scaleScene() {
   sceneEl.style.top = "50%";
   sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
+
 window.addEventListener("resize", scaleScene);
 scaleScene();
