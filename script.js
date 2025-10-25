@@ -17,7 +17,7 @@ for (let i = 0; i < orbits; i++) {
     cube.textContent = `#${i * cubesPerOrbit + j + 1}`;
     scene.appendChild(cube);
 
-    const angle = (j / cubesPerOrbit) * Math.PI * 2;
+    const angle = (j / cubesPerOrbit) * Math.PI * 2 * (1 + i * 0.15);
     const x = Math.cos(angle) * radius;
     const y = Math.sin(angle) * radius;
     cube.style.transform = `translate(${x}px, ${y}px)`;
