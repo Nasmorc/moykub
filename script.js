@@ -1,126 +1,85 @@
 const scene = document.getElementById("scene");
-const container = document.getElementById("container");
+const totalCubes = 125;
+const orbits = 3;
+const cubesPerOrbit = Math.ceil(totalCubes / orbits);
+const baseRadius = 180;
+const radiusStep = 100;
 
-const cubeCount = 125;
-const orbitCount = 3;
-const orbitSpacing = 120;
-const cubes = [];
+// создаём орбиты
+for (let i = 0; i < orbits; i++) {
+  const radius = baseRadius + i * radiusStep;
+  for (let j = 0; j < cubesPerOrbit; j++) {
+    const cube = document.createElement("div");
+    cube.classList.add("cube");
+    cube.textContent = `#${i * cubesPerOrbit + j + 1}`;
+    scene.appendChild(cube);
 
-const heroes = [];
-let maxRadius = orbitCount * orbitSpacing;
-
-// === Создание орбит ===
-for (let i = 1; i <= orbitCount; i++) {
-  const ring = document.createElement("div");
-  ring.className = "orbit-ring";
-  const radius = i * orbitSpacing;
-  ring.style.width = `${radius * 2}px`;
-  ring.style.height = `${radius * 2}px`;
-  ring.style.left = "50%";
-  ring.style.top = "50%";
-  scene.appendChild(ring);
+    const angle = (j / cubesPerOrbit) * Math.PI * 2;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    cube.style.transform = `translate(${x}px, ${y}px)`;
+  }
 }
 
-// === Центральный куб ===
+// центральные кубы
 const centerCube = document.createElement("div");
-centerCube.className = "cube";
-centerCube.id = "center";
-centerCube.innerText = "ЦЕНТР";
+centerCube.classList.add("cube", "center");
+centerCube.textContent = "ЦЕНТР";
 scene.appendChild(centerCube);
 
-// === Куб добра ===
 const goodCube = document.createElement("div");
-goodCube.className = "cube";
-goodCube.id = "goodCube";
-goodCube.innerText = "КУБ\nДОБРА";
+goodCube.classList.add("cube", "good");
+goodCube.textContent = "КУБ ДОБРА";
 scene.appendChild(goodCube);
 
-// === Герои ===
+// герои
+const heroes = [];
 for (let i = 1; i <= 3; i++) {
   const hero = document.createElement("div");
-  hero.className = "cube hero";
-  hero.innerText = `Герой ${i}`;
+  hero.classList.add("cube", "hero");
+  hero.textContent = `Герой ${i}`;
   scene.appendChild(hero);
   heroes.push(hero);
 }
 
-// === Основные кубы ===
-for (let i = 1; i <= cubeCount; i++) {
-  const cube = document.createElement("div");
-  cube.className = "cube";
-  cube.innerText = `#${i}`;
-  scene.appendChild(cube);
-  cubes.push(cube);
-}
+// движение героев
+let angleOffset = 0;
+function animateHeroes() {
+  angleOffset += 0.01;
+  const heroRadius = baseRadius - 40;
 
-// === Расположение кубов по орбитам ===
-function arrangeCubes() {
-  const orbitAngles = [0, 0, 0];
-  const cubesPerOrbit = Math.ceil(cubeCount / orbitCount);
-
-  cubes.forEach((cube, i) => {
-    const orbitIndex = Math.floor(i / cubesPerOrbit);
-    const radius = (orbitIndex + 1) * orbitSpacing;
-    const angle = (orbitAngles[orbitIndex] += (2 * Math.PI) / cubesPerOrbit);
-    const x = radius * Math.cos(angle);
-    const y = radius * Math.sin(angle);
-    cube.style.left = `calc(50% + ${x}px)`;
-    cube.style.top = `calc(50% + ${y}px)`;
+  heroes.forEach((hero, index) => {
+    const angle = angleOffset + (index * Math.PI * 2) / heroes.length;
+    const x = Math.cos(angle) * heroRadius;
+    const y = Math.sin(angle) * heroRadius;
+    hero.style.transform = `translate(${x}px, ${y}px)`;
   });
 
-  // Центр и Куб Добра
-  centerCube.style.left = "50%";
-  centerCube.style.top = "50%";
+  centerCube.style.transform = `translate(-50%, -50%)`;
+  goodCube.style.transform = `translate(-50%, 140px)`;
 
-  goodCube.style.left = "50%";
-  goodCube.style.top = `calc(50% + ${orbitSpacing * 1.1}px)`;
+  requestAnimationFrame(animateHeroes);
 }
+animateHeroes();
 
-// === Масштабирование сцены под экран ===
+// адаптивное масштабирование сцены
 function scaleScene() {
+  const sceneEl = document.getElementById("scene");
+  const container = document.getElementById("container");
+
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
-  const padding = 0.9; // немного отступов
+  const padding = 0.9;
+  const maxRadius = baseRadius + (orbits - 1) * radiusStep;
 
   const neededSize = maxRadius * 2.5;
   const scaleX = (availableWidth * padding) / neededSize;
   const scaleY = (availableHeight * padding) / neededSize;
   const scale = Math.min(scaleX, scaleY);
 
-  scene.style.left = "50%";
-  scene.style.top = "50%";
-  scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
-
-  // Центрируем надписи обратно (не масштабируем)
-  const titleEl = document.querySelector("h1");
-  const subtitleEl = document.querySelector(".subtitle");
-
-  if (titleEl && subtitleEl) {
-    const inverseScale = 1 / scale; // обратный масштаб
-    titleEl.style.transform = `scale(${inverseScale})`;
-    subtitleEl.style.transform = `scale(${inverseScale})`;
-  }
+  sceneEl.style.left = "50%";
+  sceneEl.style.top = "50%";
+  sceneEl.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
-
-// === Анимация героев вокруг центра ===
-function animateHeroes() {
-  const time = Date.now() * 0.001;
-  const radius = orbitSpacing * 1.5;
-
-  heroes.forEach((hero, i) => {
-    const angle = time + (i * (2 * Math.PI)) / heroes.length;
-    const x = radius * Math.cos(angle);
-    const y = radius * Math.sin(angle);
-    hero.style.left = `calc(50% + ${x}px)`;
-    hero.style.top = `calc(50% + ${y}px)`;
-  });
-
-  requestAnimationFrame(animateHeroes);
-}
-
-// === Инициализация ===
-arrangeCubes();
-scaleScene();
-animateHeroes();
-
 window.addEventListener("resize", scaleScene);
+scaleScene();
