@@ -331,12 +331,11 @@ function openStoryModal() {
     }
   };
 }
-
-// === Аукцион (модалка + отправка) ===
+// === Аукцион (универсальная форма и отправка) ===
 function openAuctionModal() {
   const html = `
     <h2>💎 Аукцион центрального куба</h2>
-    <p>Укажи свою ставку и контакт. Победитель получает центр на месяц.</p>
+    <p>Укажи ставку и контакт. Победитель получает куб на месяц.</p>
     <form id="auctionForm">
       <input type="number" id="auctionAmount" placeholder="Ставка (₽)" required />
       <input type="text"   id="auctionContact" placeholder="Контакт (Telegram / Email)" required />
@@ -347,29 +346,53 @@ function openAuctionModal() {
   const modal = ensureModal("auctionModal", html);
   openModal("auctionModal");
 
+  // Закрытие крестиком
+  modal.querySelector(".close").addEventListener("click", () => {
+    modal.classList.remove("show");
+  });
+
   const form = modal.querySelector("#auctionForm");
   form.onsubmit = async (e) => {
     e.preventDefault();
-    const payload = {
-      amount:  modal.querySelector("#auctionAmount").value.trim(),
-      contact: modal.querySelector("#auctionContact").value.trim(),
-      comment: modal.querySelector("#auctionComment").value.trim(),
-    };
-    if (!payload.amount || !payload.contact) {
+
+    const amount = modal.querySelector("#auctionAmount").value.trim();
+    const contact = modal.querySelector("#auctionContact").value.trim();
+    const comment = modal.querySelector("#auctionComment").value.trim();
+
+    if (!amount || !contact) {
       showNotify("⚠️ Укажи сумму и контакт!");
       return;
     }
+
     try {
-      const r = await postToSheets("auction", payload);
-      if (r.ok) {
+      // Google Script ждёт form-urlencoded, а не JSON
+      const body = new URLSearchParams({
+        payload: JSON.stringify({
+          secret: WEB_APP_SECRET,
+          type: "auction",
+          amount,
+          contact,
+          comment,
+        }),
+      });
+
+      const res = await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      });
+
+      const result = await res.json();
+      if (result.ok) {
         modal.classList.remove("show");
         showNotify("✅ Ставка отправлена!");
         form.reset();
       } else {
-        showNotify("❌ Ошибка отправки: " + (r.error || ""));
+        showNotify("❌ Ошибка: " + (result.error || "Не удалось отправить"));
       }
-    } catch {
-      showNotify("⚠️ Не удалось связаться с сервером.");
+    } catch (err) {
+      showNotify("⚠️ Не удалось связаться с сервером");
+      console.error(err);
     }
   };
 }
