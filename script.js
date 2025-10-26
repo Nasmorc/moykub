@@ -332,38 +332,42 @@ function openStoryModal() {
   };
 }
 
-// Аукцион центрального куба
-function openAuctionModal() {
-  const html = `
-    <h2>💎 Аукцион центрального куба</h2>
-    <p>Укажи свою ставку и контакт. Победитель получает центр на месяц.</p>
-    <form id="auctionForm">
-      <input type="number" id="bidAmount" placeholder="Сумма ставки (руб.)" min="1" required />
-      <input type="text" id="bidContact" placeholder="Контакт (Telegram / Email)" required />
-      <textarea id="bidComment" placeholder="Комментарий (по желанию)"></textarea>
-      <button type="submit" class="modal-btn">Сделать ставку</button>
-    </form>
-  `;
-  const modal = ensureModal("auctionModal", html);
-  openModal("auctionModal");
+// === Отправка данных аукциона ===
+async function submitAuctionForm(event) {
+  event.preventDefault();
 
-  const form = modal.querySelector("#auctionForm");
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const payload = {
-      amount:  modal.querySelector("#bidAmount").value.trim(),
-      contact: modal.querySelector("#bidContact").value.trim(),
-      comment: modal.querySelector("#bidComment").value.trim(),
-    };
-    try {
-      const r = await postToSheets("auction", payload);
-      if (r.ok) {
-        modal.classList.remove("show");
-        showNotify("✅ Ставка отправлена! Мы свяжемся с победителем.");
-        form.reset();
-      } else showNotify("❌ Ошибка отправки: " + (r.error || ""));
-    } catch {
-      showNotify("⚠️ Не удалось связаться с сервером.");
+  const amount = document.getElementById("auctionAmount").value.trim();
+  const contact = document.getElementById("auctionContact").value.trim();
+  const comment = document.getElementById("auctionComment").value.trim();
+
+  if (!amount || !contact) {
+    showNotification("⚠️ Укажи сумму и контакт!", "error");
+    return;
+  }
+
+  try {
+    const response = await fetch(WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: WEB_APP_SECRET,
+        type: "auction",   // 🔥 Важно: этот тип должен совпадать с Google Script
+        amount,
+        contact,
+        comment
+      }),
+    });
+
+    const result = await response.json();
+    if (result.ok) {
+      showNotification("✅ Ставка успешно отправлена!");
+      closeModal();
+    } else {
+      throw new Error(result.error || "Не удалось отправить ставку");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    showNotification(`❌ Ошибка: ${err.message}`, "error");
+  }
 }
+
