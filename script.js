@@ -4,7 +4,7 @@ const wrapper = document.getElementById("wrapper");
 const orbitSettings = [
   { count: 52, radius: 580, color: "#00fff2", size: 36 }, // внешняя
   { count: 36, radius: 460, color: "#00fff2", size: 44 }, // средняя
-  { count: 21, radius: 340, color: "#00fff2", size: 54 }, // внутренняя (увеличена +1 куб)
+  { count: 21, radius: 340, color: "#00fff2", size: 54 }, // внутренняя
 ];
 
 let cubeNumber = 1;
@@ -30,6 +30,15 @@ orbitSettings.forEach((orbit) => {
     cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     cube.style.borderColor = orbit.color;
     cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
+    cube.style.transition = "transform 0.25s ease, box-shadow 0.25s ease";
+    cube.addEventListener("mouseenter", () => {
+      cube.style.transform += " scale(1.25)";
+      cube.style.boxShadow = `0 0 ${orbit.size * 1.8}px ${orbit.color}`;
+    });
+    cube.addEventListener("mouseleave", () => {
+      cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+      cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
+    });
     wrapper.appendChild(cube);
   }
 });
@@ -38,41 +47,62 @@ orbitSettings.forEach((orbit) => {
 const centerCube = document.createElement("div");
 centerCube.classList.add("cube");
 centerCube.textContent = "ЦЕНТР";
-centerCube.style.width = "110px";
-centerCube.style.height = "110px";
-centerCube.style.fontSize = "18px";
-centerCube.style.borderColor = "#ff00ff";
-centerCube.style.boxShadow = "0 0 25px #ff00ff, 0 0 40px #ff00ff";
-centerCube.style.position = "absolute";
-centerCube.style.left = "50%";
-centerCube.style.top = "50%";
-centerCube.style.transform = "translate(-50%, -50%)";
-centerCube.style.zIndex = "10";
+Object.assign(centerCube.style, {
+  width: "110px",
+  height: "110px",
+  fontSize: "18px",
+  borderColor: "#ff00ff",
+  boxShadow: "0 0 25px #ff00ff, 0 0 40px #ff00ff",
+  position: "absolute",
+  left: "50%",
+  top: "50%",
+  transform: "translate(-50%, -50%)",
+  zIndex: "10",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+});
+centerCube.addEventListener("mouseenter", () => {
+  centerCube.style.transform = "translate(-50%, -50%) scale(1.15)";
+  centerCube.style.boxShadow = "0 0 60px #ff00ff, 0 0 90px #ff00ff";
+});
+centerCube.addEventListener("mouseleave", () => {
+  centerCube.style.transform = "translate(-50%, -50%) scale(1)";
+  centerCube.style.boxShadow = "0 0 25px #ff00ff, 0 0 40px #ff00ff";
+});
 wrapper.appendChild(centerCube);
 
 // === Куб Добра ===
 const goodCube = document.createElement("div");
 goodCube.classList.add("cube");
 goodCube.textContent = "КУБ ДОБРА";
-goodCube.style.width = "80px";
-goodCube.style.height = "80px";
-goodCube.style.fontSize = "14px";
-goodCube.style.borderColor = "#00ff00";
-goodCube.style.boxShadow = "0 0 25px #00ff00";
-goodCube.style.position = "absolute";
-goodCube.style.left = "50%";
-goodCube.style.top = "calc(50% + 150px)";
-goodCube.style.transform = "translateX(-50%)";
-goodCube.style.zIndex = "9";
+Object.assign(goodCube.style, {
+  width: "80px",
+  height: "80px",
+  fontSize: "14px",
+  borderColor: "#00ff00",
+  boxShadow: "0 0 25px #00ff00",
+  position: "absolute",
+  left: "50%",
+  top: "calc(50% + 150px)",
+  transform: "translateX(-50%)",
+  zIndex: "9",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+});
+goodCube.addEventListener("mouseenter", () => {
+  goodCube.style.transform = "translateX(-50%) scale(1.15)";
+  goodCube.style.boxShadow = "0 0 50px #00ff00, 0 0 90px #00ff00";
+});
+goodCube.addEventListener("mouseleave", () => {
+  goodCube.style.transform = "translateX(-50%) scale(1)";
+  goodCube.style.boxShadow = "0 0 25px #00ff00";
+});
 wrapper.appendChild(goodCube);
 
 // === Герои ===
 const heroes = [
-  { label: "Герой 1", baseAngle: 270 },
-  { label: "Герой 2", baseAngle: 30 },
-  { label: "Герой 3", baseAngle: 150 },
+  { label: "Герой 1", baseAngle: 210 },
+  { label: "Герой 2", baseAngle: 330 },
+  { label: "Герой 3", baseAngle: 90 },
 ];
-
 const heroRadius = 250;
 const heroSpeed = 0.008;
 
@@ -80,15 +110,27 @@ heroes.forEach(hero => {
   const cube = document.createElement("div");
   cube.classList.add("cube");
   cube.textContent = hero.label;
-  cube.style.width = "70px";
-  cube.style.height = "70px";
-  cube.style.fontSize = "13px";
-  cube.style.borderColor = "#ff00ff";
-  cube.style.boxShadow = "0 0 20px #ff00ff";
-  cube.style.position = "absolute";
-  cube.style.left = "50%";
-  cube.style.top = "50%";
+  Object.assign(cube.style, {
+    width: "70px",
+    height: "70px",
+    fontSize: "13px",
+    borderColor: "#ff00ff",
+    boxShadow: "0 0 20px #ff00ff",
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transition: "transform 0.25s ease, box-shadow 0.25s ease",
+  });
   cube.dataset.angle = (hero.baseAngle * Math.PI) / 180;
+
+  cube.addEventListener("mouseenter", () => {
+    cube.style.transform += " scale(1.2)";
+    cube.style.boxShadow = "0 0 50px #ff00ff, 0 0 80px #ff00ff";
+  });
+  cube.addEventListener("mouseleave", () => {
+    cube.style.boxShadow = "0 0 20px #ff00ff";
+  });
+
   wrapper.appendChild(cube);
   hero.element = cube;
 });
@@ -108,7 +150,6 @@ animateHeroes();
 
 // === Масштабирование ===
 let userScale = 1;
-
 function scaleScene() {
   const container = document.getElementById("container");
   const availableWidth = container.clientWidth;
@@ -116,7 +157,6 @@ function scaleScene() {
 
   const maxRadius = Math.max(...orbitSettings.map(o => o.radius)) + 250;
   const neededSize = maxRadius * 2.6;
-
   const scaleX = (availableWidth * 0.9) / neededSize;
   const scaleY = (availableHeight * 0.9) / neededSize;
   const baseScale = Math.min(scaleX, scaleY);
