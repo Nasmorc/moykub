@@ -72,3 +72,15 @@ h1 {
   color: #00fff2;
   background: transparent;
 }
+
+/* === Анимация появления сцены === */
+#scene-wrapper {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 1.2s ease-out, opacity 1.2s ease-out;
+}
+
+#scene-wrapper.loaded {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
