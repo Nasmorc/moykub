@@ -1,197 +1,369 @@
-// === URL и секрет Google Apps Script ===
-const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
+/***** 1) КОНСТАНТЫ И УТИЛИТЫ *****/
+const WEB_APP_URL    = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
 const WEB_APP_SECRET = "MYKUB_SECRET_2025";
 
-// === Глобальные элементы ===
 const wrapper = document.getElementById("wrapper");
-const scene = document.getElementById("scene");
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modal-title");
-const modalDescription = document.getElementById("modal-description");
-const closeModal = document.querySelector(".close");
 
-// === Модальное окно ===
-closeModal.addEventListener("click", () => modal.style.display = "none");
-window.addEventListener("click", e => {
-  if (e.target === modal) modal.style.display = "none";
-});
-
-// === Сообщение на экране ===
-function showToast(msg) {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add("show"), 100);
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 500);
-  }, 4000);
+// Уведомление (внизу экрана)
+function showNotify(text) {
+  let box = document.getElementById("notify");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "notify";
+    document.body.appendChild(box);
+  }
+  box.textContent = text;
+  box.classList.add("show");
+  setTimeout(() => box.classList.remove("show"), 3000);
 }
 
-// === Отправка заявки ===
+// Отправка в Google Sheets без CORS (form-urlencoded)
 async function postToSheets(type, payload) {
   const data = { type, secret: WEB_APP_SECRET, ...payload };
   const body = new URLSearchParams({ payload: JSON.stringify(data) }).toString();
 
-  const res = await fetch(WEB_APP_URL, {
+  const res  = await fetch(WEB_APP_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-    body,
+    body
   });
 
   const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { ok: false, error: "Некорректный ответ сервера" };
-  }
+  try { return JSON.parse(text); }
+  catch { return { ok: false, error: "Некорректный ответ сервера" }; }
 }
 
-// === Создание кубов ===
-function createCubes() {
-  const total = 110;
-  const radius = 200;
-  const centerX = 0, centerY = 0;
+// Вспомогательно: создать модалку по id, если её нет
+function ensureModal(id, innerHtml) {
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement("div");
+    el.id = id;
+    el.className = "modal";
+    el.innerHTML = `
+      <div class="modal-content">
+        <span class="close" data-close="${id}">&times;</span>
+        ${innerHtml}
+      </div>
+    `;
+    document.body.appendChild(el);
+    // обработчики закрытия
+    el.querySelector(`[data-close="${id}"]`).addEventListener("click", () => el.classList.remove("show"));
+    window.addEventListener("click", (e) => { if (e.target === el) el.classList.remove("show"); });
+  }
+  return el;
+}
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add("show");
+}
 
-  for (let i = 1; i <= total; i++) {
+/***** 2) СЦЕНА: ОРБИТЫ, ЦЕНТР, КУБ ДОБРА, ГЕРОИ *****/
+
+// Настройки орбит (как у тебя было, с анимацией)
+const orbitSettings = [
+  { count: 52, radius: 580, color: "#00fff2", size: 36, direction: 1,  speed: 0.0012 }, // внешняя
+  { count: 36, radius: 460, color: "#00fff2", size: 44, direction: -1, speed: 0.0009 }, // средняя
+  { count: 22, radius: 360, color: "#00fff2", size: 54, direction: 1,  speed: 0.0011 }, // внутренняя (22 чтобы заполнить разрыв)
+];
+
+let cubeNumber = 1;
+orbitSettings.forEach((orbit) => {
+  orbit.cubes = [];
+  for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
-    cube.className = "cube";
-    cube.textContent = `#${i}`;
-    cube.dataset.id = i;
+    cube.classList.add("cube");
+    cube.textContent = `#${cubeNumber++}`;
+    cube.dataset.type = "common";
 
-    const angle = (i / total) * 2 * Math.PI;
-    const x = centerX + radius * Math.cos(angle);
-    const y = centerY + radius * Math.sin(angle);
+    const angle = (j / orbit.count) * Math.PI * 2;
+    cube.dataset.angle = angle;
 
-    cube.style.transform = `translate(${x}px, ${y}px)`;
-    cube.addEventListener("click", () => openRentModal(i));
+    Object.assign(cube.style, {
+      position: "absolute",
+      left: "50%", top: "50%",
+      width: `${orbit.size}px`, height: `${orbit.size}px`,
+      fontSize: `${Math.max(10, orbit.size * 0.38)}px`,
+      borderColor: orbit.color,
+      boxShadow: `0 0 ${orbit.size * 0.9}px ${orbit.color}`,
+      transition: "transform 0.25s ease, box-shadow 0.25s ease",
+    });
 
-    scene.appendChild(cube);
+    cube.addEventListener("mouseenter", () => {
+      cube.style.transform += " scale(1.18)";
+      cube.style.boxShadow = `0 0 ${orbit.size * 1.6}px ${orbit.color}`;
+    });
+    cube.addEventListener("mouseleave", () => {
+      cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
+    });
+
+    // Клик по номерному кубу → форма аренды
+    cube.addEventListener("click", () => openRentModal(cube.textContent.replace("#","")));
+
+    wrapper.appendChild(cube);
+    orbit.cubes.push(cube);
   }
+});
 
-  // центр, герой и куб добра
-  const centerCube = document.createElement("div");
-  centerCube.className = "cube center";
-  centerCube.textContent = "ЦЕНТР";
-  scene.appendChild(centerCube);
+// Центральный куб (аукцион)
+const centerCube = document.createElement("div");
+centerCube.classList.add("cube");
+centerCube.textContent = "ЦЕНТР";
+centerCube.dataset.type = "center";
+Object.assign(centerCube.style, {
+  width: "120px", height: "120px", fontSize: "18px",
+  borderColor: "#ff00ff",
+  boxShadow: "0 0 25px #ff00ff, 0 0 40px #ff00ff",
+  position: "absolute", left: "50%", top: "50%",
+  transform: "translate(-50%, -50%)", zIndex: "10",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+});
+centerCube.addEventListener("mouseenter", () => {
+  centerCube.style.transform = "translate(-50%, -50%) scale(1.12)";
+  centerCube.style.boxShadow = "0 0 60px #ff00ff, 0 0 90px #ff00ff";
+});
+centerCube.addEventListener("mouseleave", () => {
+  centerCube.style.transform = "translate(-50%, -50%) scale(1)";
+  centerCube.style.boxShadow = "0 0 25px #ff00ff, 0 0 40px #ff00ff";
+});
+centerCube.addEventListener("click", () => openAuctionModal()); // аукцион
+wrapper.appendChild(centerCube);
 
-  const heroCube = document.createElement("div");
-  heroCube.className = "cube hero";
-  heroCube.textContent = "ГЕРОЙ";
-  heroCube.addEventListener("click", openHeroModal);
-  scene.appendChild(heroCube);
+// Куб Добра (под центром, статичен)
+const goodCube = document.createElement("div");
+goodCube.classList.add("cube");
+goodCube.textContent = "КУБ ДОБРА";
+goodCube.dataset.type = "good";
+Object.assign(goodCube.style, {
+  width: "84px", height: "84px", fontSize: "14px",
+  borderColor: "#00ff00",
+  boxShadow: "0 0 25px #00ff00",
+  position: "absolute", left: "50%", top: "calc(50% + 150px)",
+  transform: "translateX(-50%)", zIndex: "9",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+});
+goodCube.addEventListener("mouseenter", () => {
+  goodCube.style.transform = "translateX(-50%) scale(1.1)";
+  goodCube.style.boxShadow = "0 0 50px #00ff00, 0 0 90px #00ff00";
+});
+goodCube.addEventListener("mouseleave", () => {
+  goodCube.style.transform = "translateX(-50%) scale(1)";
+  goodCube.style.boxShadow = "0 0 25px #00ff00";
+});
+goodCube.addEventListener("click", () => openStoryModal());
+wrapper.appendChild(goodCube);
 
-  const goodCube = document.createElement("div");
-  goodCube.className = "cube good";
-  goodCube.textContent = "КУБ ДОБРА";
-  goodCube.addEventListener("click", openGoodModal);
-  scene.appendChild(goodCube);
+// Герои месяца (3 куба вокруг центра, берут ссылки из data.json)
+const defaultHeroes = [
+  { label: "Герой 1", link: "#" },
+  { label: "Герой 2", link: "#" },
+  { label: "Герой 3", link: "#" },
+];
+let heroesData = defaultHeroes.slice();
+
+async function loadHeroes() {
+  try {
+    const res = await fetch("data.json", { cache: "no-store" });
+    if (res.ok) {
+      const json = await res.json();
+      if (Array.isArray(json.heroes)) heroesData = json.heroes;
+    }
+  } catch {}
+}
+loadHeroes().finally(buildHeroes);
+
+const heroes = [];
+const heroRadius = 250;
+const heroSpeed  = 0.008;
+
+function buildHeroes() {
+  const positionsDeg = [210, 330, 90]; // 8, 4, 12 часов
+  for (let i = 0; i < 3; i++) {
+    const hero = document.createElement("div");
+    hero.classList.add("cube");
+    hero.textContent = heroesData[i]?.label || `Герой ${i+1}`;
+    hero.dataset.type = "hero";
+    Object.assign(hero.style, {
+      width: "72px", height: "72px", fontSize: "13px",
+      borderColor: "#ff00ff",
+      boxShadow: "0 0 20px #ff00ff",
+      position: "absolute", left: "50%", top: "50%",
+      transition: "transform 0.25s ease, box-shadow 0.25s ease",
+      cursor: "pointer"
+    });
+    hero.dataset.angle = (positionsDeg[i] * Math.PI) / 180;
+
+    // клик — открыть ссылку героя
+    const link = heroesData[i]?.link || "#";
+    hero.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (link && link !== "#") window.open(link, "_blank", "noopener");
+    });
+
+    wrapper.appendChild(hero);
+    heroes.push(hero);
+  }
 }
 
-// === Модалка аренды ===
+/***** 3) АНИМАЦИЯ И АВТОМАСШТАБ *****/
+function animateScene() {
+  // герои
+  heroes.forEach(hero => {
+    let angle = parseFloat(hero.dataset.angle);
+    const x = Math.cos(angle) * heroRadius;
+    const y = Math.sin(angle) * heroRadius;
+    hero.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    hero.dataset.angle = angle + heroSpeed;
+  });
+
+  // орбиты
+  orbitSettings.forEach(orbit => {
+    orbit.cubes.forEach(cube => {
+      let angle = parseFloat(cube.dataset.angle);
+      angle += orbit.speed * orbit.direction;
+      cube.dataset.angle = angle;
+      const x = Math.cos(angle) * orbit.radius;
+      const y = Math.sin(angle) * orbit.radius;
+      cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    });
+  });
+
+  requestAnimationFrame(animateScene);
+}
+animateScene();
+
+// Автомасштаб под экран
+let userScale = 1;
+function scaleScene() {
+  const container = document.getElementById("container");
+  const W = container.clientWidth;
+  const H = container.clientHeight;
+  const maxRadius = Math.max(...orbitSettings.map(o => o.radius));
+  const padding = Math.min(W, H) * 0.08;
+  const sH = (H - padding * 2) / (maxRadius * 2);
+  const sW = (W - padding * 2) / (maxRadius * 2);
+  const targetScale = Math.min(sH, sW);
+  wrapper.style.transform = `translate(-50%, -50%) scale(${targetScale * userScale})`;
+}
+window.addEventListener("resize", scaleScene);
+window.addEventListener("load", scaleScene);
+scaleScene();
+window.addEventListener("wheel", (e) => {
+  if (e.ctrlKey || e.altKey || e.metaKey) {
+    e.preventDefault();
+    const delta = -e.deltaY * 0.001;
+    userScale = Math.min(Math.max(userScale + delta, 0.3), 3);
+    scaleScene();
+  }
+}, { passive: false });
+
+/***** 4) ФОРМЫ: АРЕНДА, КУБ ДОБРА, АУКЦИОН *****/
+
+// Аренда (по клику на номерной куб)
 function openRentModal(cubeId) {
-  modal.style.display = "block";
-  modalTitle.textContent = `Заявка на аренду #${cubeId}`;
-  modalDescription.innerHTML = `
-    <form id="rentForm" class="neon-form">
+  const html = `
+    <h2 id="rentTitle">Заявка на аренду #${cubeId}</h2>
+    <form id="rentForm">
       <input type="text" id="rentCube" value="#${cubeId}" readonly />
-      <input type="text" id="rentName" placeholder="Имя" required />
-      <input type="text" id="rentContact" placeholder="Контакт (телеграм/телефон)" required />
-      <textarea id="rentMessage" placeholder="Комментарий"></textarea>
-      <button type="submit">Отправить заявку</button>
+      <input type="text" id="rentName" placeholder="Ваше имя" required />
+      <input type="text" id="rentContact" placeholder="Контакт (Telegram / Email)" required />
+      <textarea id="rentMsg" placeholder="Комментарий (по желанию)"></textarea>
+      <button type="submit" class="modal-btn">Отправить заявку</button>
     </form>
   `;
+  const modal = ensureModal("rentModal", html);
+  openModal("rentModal");
 
-  document.getElementById("rentForm").addEventListener("submit", async (e) => {
+  const form = modal.querySelector("#rentForm");
+  form.onsubmit = async (e) => {
     e.preventDefault();
     const payload = {
-      cubeId,
-      name: document.getElementById("rentName").value.trim(),
-      contact: document.getElementById("rentContact").value.trim(),
-      message: document.getElementById("rentMessage").value.trim(),
+      cubeId:  String(cubeId),
+      name:    modal.querySelector("#rentName").value.trim(),
+      contact: modal.querySelector("#rentContact").value.trim(),
+      message: modal.querySelector("#rentMsg").value.trim(),
     };
     try {
       const r = await postToSheets("rent", payload);
       if (r.ok) {
-        showToast("✅ Заявка на аренду отправлена!");
-        modal.style.display = "none";
-      } else {
-        showToast("⚠️ Ошибка: " + (r.error || "неизвестная"));
-      }
+        modal.classList.remove("show");
+        showNotify("✅ Заявка на аренду отправлена!");
+        form.reset();
+      } else showNotify("❌ Ошибка отправки: " + (r.error || ""));
     } catch {
-      showToast("⚠️ Не удалось связаться с сервером.");
+      showNotify("⚠️ Не удалось связаться с сервером.");
     }
-  });
+  };
 }
 
-// === Модалка Куба Добра ===
-function openGoodModal() {
-  modal.style.display = "block";
-  modalTitle.textContent = "История для Куба Добра";
-  modalDescription.innerHTML = `
-    <form id="goodForm" class="neon-form">
-      <input type="text" id="goodName" placeholder="Имя" required />
-      <input type="text" id="goodContact" placeholder="Контакт (телеграм/телефон)" required />
-      <textarea id="goodStory" placeholder="Опиши ситуацию, в чем нужна помощь" required></textarea>
-      <button type="submit">Отправить историю</button>
+// Куб Добра (форма истории)
+function openStoryModal() {
+  const html = `
+    <h2>💚 Расскажи о своей ситуации</h2>
+    <p>Мы читаем каждую историю. Напиши, что случилось, и как тебе можно помочь.</p>
+    <form id="storyForm">
+      <input type="text" id="storyName" placeholder="Твоё имя" required />
+      <input type="text" id="storyContact" placeholder="Контакт (Telegram / Email)" required />
+      <textarea id="storyText" placeholder="Опиши свою ситуацию..." required></textarea>
+      <button type="submit" class="modal-btn">Отправить</button>
     </form>
   `;
+  const modal = ensureModal("storyModal", html);
+  openModal("storyModal");
 
-  document.getElementById("goodForm").addEventListener("submit", async (e) => {
+  const form = modal.querySelector("#storyForm");
+  form.onsubmit = async (e) => {
     e.preventDefault();
     const payload = {
-      name: document.getElementById("goodName").value.trim(),
-      contact: document.getElementById("goodContact").value.trim(),
-      story: document.getElementById("goodStory").value.trim(),
+      name:    modal.querySelector("#storyName").value.trim(),
+      contact: modal.querySelector("#storyContact").value.trim(),
+      story:   modal.querySelector("#storyText").value.trim(),
     };
     try {
       const r = await postToSheets("story", payload);
       if (r.ok) {
-        showToast("✅ История отправлена в Куб Добра!");
-        modal.style.display = "none";
-      } else {
-        showToast("⚠️ Ошибка: " + (r.error || "неизвестная"));
-      }
+        modal.classList.remove("show");
+        showNotify("✅ История отправлена. Спасибо за доверие!");
+        form.reset();
+      } else showNotify("❌ Ошибка отправки: " + (r.error || ""));
     } catch {
-      showToast("⚠️ Не удалось связаться с сервером.");
+      showNotify("⚠️ Не удалось связаться с сервером.");
     }
-  });
+  };
 }
 
-// === Модалка Героя ===
-function openHeroModal() {
-  modal.style.display = "block";
-  modalTitle.textContent = "Предложить Героя месяца";
-  modalDescription.innerHTML = `
-    <form id="heroForm" class="neon-form">
-      <input type="text" id="heroName" placeholder="Имя героя" required />
-      <input type="text" id="heroContact" placeholder="Контакт (телеграм/телефон)" required />
-      <textarea id="heroReason" placeholder="Почему он достоин звания Героя?" required></textarea>
-      <button type="submit">Отправить заявку</button>
+// Аукцион центрального куба
+function openAuctionModal() {
+  const html = `
+    <h2>💎 Аукцион центрального куба</h2>
+    <p>Укажи свою ставку и контакт. Победитель получает центр на месяц.</p>
+    <form id="auctionForm">
+      <input type="number" id="bidAmount" placeholder="Сумма ставки (руб.)" min="1" required />
+      <input type="text" id="bidContact" placeholder="Контакт (Telegram / Email)" required />
+      <textarea id="bidComment" placeholder="Комментарий (по желанию)"></textarea>
+      <button type="submit" class="modal-btn">Сделать ставку</button>
     </form>
   `;
+  const modal = ensureModal("auctionModal", html);
+  openModal("auctionModal");
 
-  document.getElementById("heroForm").addEventListener("submit", async (e) => {
+  const form = modal.querySelector("#auctionForm");
+  form.onsubmit = async (e) => {
     e.preventDefault();
     const payload = {
-      heroName: document.getElementById("heroName").value.trim(),
-      contact: document.getElementById("heroContact").value.trim(),
-      reason: document.getElementById("heroReason").value.trim(),
+      amount:  modal.querySelector("#bidAmount").value.trim(),
+      contact: modal.querySelector("#bidContact").value.trim(),
+      comment: modal.querySelector("#bidComment").value.trim(),
     };
     try {
-      const r = await postToSheets("hero", payload);
+      const r = await postToSheets("auction", payload);
       if (r.ok) {
-        showToast("✅ Герой предложен!");
-        modal.style.display = "none";
-      } else {
-        showToast("⚠️ Ошибка: " + (r.error || "неизвестная"));
-      }
+        modal.classList.remove("show");
+        showNotify("✅ Ставка отправлена! Мы свяжемся с победителем.");
+        form.reset();
+      } else showNotify("❌ Ошибка отправки: " + (r.error || ""));
     } catch {
-      showToast("⚠️ Не удалось связаться с сервером.");
+      showNotify("⚠️ Не удалось связаться с сервером.");
     }
-  });
+  };
 }
-
-// === Инициализация ===
-createCubes();
