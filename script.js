@@ -2,8 +2,8 @@ const wrapper = document.getElementById("wrapper");
 
 // === Орбиты ===
 const orbitSettings = [
-  { count: 52, radius: 580, color: "#00fff2", size: 36, direction: 1, speed: 0.0016 }, // внешняя
-  { count: 36, radius: 460, color: "#00fff2", size: 44, direction: -1, speed: 0.0014 }, // средняя
+  { count: 52, radius: 580, color: "#00fff2", size: 36, direction: 1, speed: 0.0012 }, // внешняя
+  { count: 36, radius: 460, color: "#00fff2", size: 44, direction: -1, speed: 0.0009 }, // средняя
   { count: 21, radius: 340, color: "#00fff2", size: 54, direction: 1, speed: 0.0012 }, // внутренняя
 ];
 
