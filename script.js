@@ -1,21 +1,19 @@
 const wrapper = document.getElementById("wrapper");
 
-// === Настройки орбит ===
-// внешний → внутренний
+// === Орбиты ===
 const orbitSettings = [
   { count: 52, radius: 580, color: "#00fff2", size: 36 }, // внешняя
-  { count: 36, radius: 460, color: "#00fff2", size: 44 }, // средняя — увеличили радиус
-  { count: 21, radius: 340, color: "#00fff2", size: 54 }, // внутренняя — увеличили радиус
+  { count: 36, radius: 460, color: "#00fff2", size: 44 }, // средняя
+  { count: 21, radius: 340, color: "#00fff2", size: 54 }, // внутренняя (увеличена +1 куб)
 ];
 
 let cubeNumber = 1;
 
-// === Создаём орбиты ===
+// === Создаём кубы по орбитам ===
 orbitSettings.forEach((orbit) => {
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
     cube.classList.add("cube");
-
     cube.textContent = `#${cubeNumber}`;
     cubeNumber++;
 
@@ -40,7 +38,7 @@ orbitSettings.forEach((orbit) => {
 const centerCube = document.createElement("div");
 centerCube.classList.add("cube");
 centerCube.textContent = "ЦЕНТР";
-centerCube.style.width = "110px"; // было 90
+centerCube.style.width = "110px";
 centerCube.style.height = "110px";
 centerCube.style.fontSize = "18px";
 centerCube.style.borderColor = "#ff00ff";
@@ -63,7 +61,7 @@ goodCube.style.borderColor = "#00ff00";
 goodCube.style.boxShadow = "0 0 25px #00ff00";
 goodCube.style.position = "absolute";
 goodCube.style.left = "50%";
-goodCube.style.top = "calc(50% + 140px)";
+goodCube.style.top = "calc(50% + 150px)";
 goodCube.style.transform = "translateX(-50%)";
 goodCube.style.zIndex = "9";
 wrapper.appendChild(goodCube);
@@ -72,10 +70,10 @@ wrapper.appendChild(goodCube);
 const heroes = [
   { label: "Герой 1", baseAngle: 270 },
   { label: "Герой 2", baseAngle: 30 },
-  { label: "Герой 3", baseAngle: 210 }
+  { label: "Герой 3", baseAngle: 150 },
 ];
 
-const heroRadius = 180; // чуть дальше
+const heroRadius = 250;
 const heroSpeed = 0.008;
 
 heroes.forEach(hero => {
