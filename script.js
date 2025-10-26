@@ -1,18 +1,23 @@
 const wrapper = document.getElementById("wrapper");
 
-// === Орбиты ===
+// === Настройки орбит ===
+// внешний → внутренний
 const orbitSettings = [
-  { count: 20, radius: 220, color: "#00fff2" },
-  { count: 36, radius: 380, color: "#00fff2" },
-  { count: 52, radius: 580, color: "#00fff2" }
+  { count: 52, radius: 580, color: "#00fff2", size: 28 },
+  { count: 36, radius: 380, color: "#00fff2", size: 34 },
+  { count: 20, radius: 220, color: "#00fff2", size: 42 },
 ];
+
+let cubeNumber = 1; // глобальный счётчик
 
 // === Создаём орбиты ===
 orbitSettings.forEach((orbit, i) => {
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
     cube.classList.add("cube");
-    cube.textContent = `#${j + 1 + (i * 50)}`;
+
+    cube.textContent = `#${cubeNumber}`;
+    cubeNumber++;
 
     const angle = (j / orbit.count) * Math.PI * 2;
     const x = Math.cos(angle) * orbit.radius;
@@ -21,8 +26,12 @@ orbitSettings.forEach((orbit, i) => {
     cube.style.position = "absolute";
     cube.style.left = "50%";
     cube.style.top = "50%";
+    cube.style.width = `${orbit.size}px`;
+    cube.style.height = `${orbit.size}px`;
+    cube.style.fontSize = `${orbit.size * 0.35}px`;
     cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     cube.style.borderColor = orbit.color;
+    cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
     wrapper.appendChild(cube);
   }
 });
@@ -31,8 +40,8 @@ orbitSettings.forEach((orbit, i) => {
 const centerCube = document.createElement("div");
 centerCube.classList.add("cube");
 centerCube.textContent = "ЦЕНТР";
-centerCube.style.width = "80px";
-centerCube.style.height = "80px";
+centerCube.style.width = "90px";
+centerCube.style.height = "90px";
 centerCube.style.fontSize = "14px";
 centerCube.style.borderColor = "#ff00ff";
 centerCube.style.boxShadow = "0 0 25px #ff00ff, 0 0 40px #ff00ff";
@@ -47,14 +56,14 @@ wrapper.appendChild(centerCube);
 const goodCube = document.createElement("div");
 goodCube.classList.add("cube");
 goodCube.textContent = "КУБ ДОБРА";
-goodCube.style.width = "60px";
-goodCube.style.height = "60px";
+goodCube.style.width = "65px";
+goodCube.style.height = "65px";
 goodCube.style.fontSize = "12px";
 goodCube.style.borderColor = "#00ff00";
 goodCube.style.boxShadow = "0 0 20px #00ff00";
 goodCube.style.position = "absolute";
 goodCube.style.left = "50%";
-goodCube.style.top = "calc(50% + 110px)";
+goodCube.style.top = "calc(50% + 120px)";
 goodCube.style.transform = "translateX(-50%)";
 goodCube.style.zIndex = "9";
 wrapper.appendChild(goodCube);
@@ -66,15 +75,15 @@ const heroes = [
   { label: "Герой 3", baseAngle: 210 }
 ];
 
-const heroRadius = 150;
+const heroRadius = 160;
 const heroSpeed = 0.008;
 
 heroes.forEach(hero => {
   const cube = document.createElement("div");
   cube.classList.add("cube");
   cube.textContent = hero.label;
-  cube.style.width = "50px";
-  cube.style.height = "50px";
+  cube.style.width = "55px";
+  cube.style.height = "55px";
   cube.style.fontSize = "11px";
   cube.style.borderColor = "#ff00ff";
   cube.style.boxShadow = "0 0 15px #ff00ff";
