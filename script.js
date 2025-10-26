@@ -1,5 +1,5 @@
 /***** 1) КОНСТАНТЫ И УТИЛИТЫ *****/
-const WEB_APP_URL    = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
 const WEB_APP_SECRET = "MYKUB_SECRET_2025";
 
 const wrapper = document.getElementById("wrapper");
