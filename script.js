@@ -164,29 +164,33 @@ animateScene();
 
 // === Масштабирование ===
 let userScale = 1;
+
 function scaleScene() {
   const container = document.getElementById("container");
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
 
-  const maxRadius = Math.max(...orbitSettings.map(o => o.radius)) + 250;
-  const neededSize = maxRadius * 2.6;
-  const scaleX = (availableWidth * 0.9) / neededSize;
-  const scaleY = (availableHeight * 0.9) / neededSize;
-  const baseScale = Math.min(scaleX, scaleY);
+  // Берём радиус самой внешней орбиты + запас для надписей
+  const maxRadius = Math.max(...orbitSettings.map(o => o.radius)) + 200;
 
-  const totalScale = baseScale * userScale;
-  wrapper.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
+  // Рассчитываем масштаб так, чтобы сцена занимала 85% высоты окна
+  const targetScale = (availableHeight * 0.85) / (maxRadius * 2);
+  const finalScale = targetScale * userScale;
+
+  wrapper.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
 }
 
+// Автоматически пересчитываем при открытии и изменении окна
 window.addEventListener("resize", scaleScene);
+window.addEventListener("load", scaleScene);
 scaleScene();
 
+// Добавляем ручное масштабирование колесиком (Ctrl/Alt/Meta)
 window.addEventListener("wheel", (e) => {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     e.preventDefault();
     const delta = -e.deltaY * 0.001;
-    userScale = Math.min(Math.max(userScale + delta, 0.2), 5);
+    userScale = Math.min(Math.max(userScale + delta, 0.3), 3);
     scaleScene();
   }
 }, { passive: false });
