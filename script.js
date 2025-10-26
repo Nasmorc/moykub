@@ -1,3 +1,5 @@
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwg3cUxdpd9C738PZVfqqSK4m90ICnwTZfW8QQOsmkbm73YkwRSWCfa0UPQZamEHFb77g/exec";
+
 const wrapper = document.getElementById("wrapper");
 
 // === Орбиты ===
@@ -270,3 +272,23 @@ closeModal.addEventListener("click", () => {
 window.addEventListener("click", (event) => {
   if (event.target === modal) modal.classList.remove("show");
 });
+
+// === Отправка данных в Google Sheets ===
+function sendDataToGoogle(data) {
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+  .then(() => {
+    alert("✅ Заявка успешно отправлена!");
+  })
+  .catch((error) => {
+    console.error("Ошибка отправки:", error);
+    alert("❌ Произошла ошибка при отправке данных.");
+  });
+}
+
