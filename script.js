@@ -200,3 +200,9 @@ window.addEventListener("wheel", (e) => {
     scaleScene();
   }
 }, { passive: false });
+
+// === Плавное появление сцены ===
+window.addEventListener("load", () => {
+  const wrapper = document.getElementById("scene-wrapper");
+  setTimeout(() => wrapper.classList.add("loaded"), 200); // лёгкая задержка для плавности
+});
