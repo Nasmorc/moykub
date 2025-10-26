@@ -10,25 +10,28 @@ const orbitSettings = [
 let cubeNumber = 1;
 
 // === Создаём кубы по орбитам ===
-orbitSettings.forEach((orbit, i) => {
-  orbit.cubes = []; // сохраняем ссылки на кубы
+orbitSettings.forEach((orbit) => {
+  orbit.cubes = [];
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
     cube.classList.add("cube");
     cube.textContent = `#${cubeNumber++}`;
+    cube.dataset.type = "common"; // тип куба (для цвета модалки)
 
     const angle = (j / orbit.count) * Math.PI * 2;
-    cube.dataset.angle = angle; // сохраняем текущий угол
+    cube.dataset.angle = angle;
 
-    cube.style.position = "absolute";
-    cube.style.left = "50%";
-    cube.style.top = "50%";
-    cube.style.width = `${orbit.size}px`;
-    cube.style.height = `${orbit.size}px`;
-    cube.style.fontSize = `${orbit.size * 0.4}px`;
-    cube.style.borderColor = orbit.color;
-    cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
-    cube.style.transition = "transform 0.25s ease, box-shadow 0.25s ease";
+    Object.assign(cube.style, {
+      position: "absolute",
+      left: "50%",
+      top: "50%",
+      width: `${orbit.size}px`,
+      height: `${orbit.size}px`,
+      fontSize: `${orbit.size * 0.4}px`,
+      borderColor: orbit.color,
+      boxShadow: `0 0 ${orbit.size * 0.9}px ${orbit.color}`,
+      transition: "transform 0.25s ease, box-shadow 0.25s ease",
+    });
 
     cube.addEventListener("mouseenter", () => {
       cube.style.transform += " scale(1.25)";
@@ -47,6 +50,7 @@ orbitSettings.forEach((orbit, i) => {
 const centerCube = document.createElement("div");
 centerCube.classList.add("cube");
 centerCube.textContent = "ЦЕНТР";
+centerCube.dataset.type = "center";
 Object.assign(centerCube.style, {
   width: "110px",
   height: "110px",
@@ -74,6 +78,7 @@ wrapper.appendChild(centerCube);
 const goodCube = document.createElement("div");
 goodCube.classList.add("cube");
 goodCube.textContent = "КУБ ДОБРА";
+goodCube.dataset.type = "good";
 Object.assign(goodCube.style, {
   width: "80px",
   height: "80px",
@@ -110,6 +115,7 @@ heroes.forEach(hero => {
   const cube = document.createElement("div");
   cube.classList.add("cube");
   cube.textContent = hero.label;
+  cube.dataset.type = "hero";
   Object.assign(cube.style, {
     width: "70px",
     height: "70px",
@@ -135,9 +141,8 @@ heroes.forEach(hero => {
   hero.element = cube;
 });
 
-// === Анимация вращения героев и орбит ===
+// === Анимация вращения ===
 function animateScene() {
-  // вращаем героев
   heroes.forEach(hero => {
     let angle = parseFloat(hero.element.dataset.angle);
     const x = Math.cos(angle) * heroRadius;
@@ -146,7 +151,6 @@ function animateScene() {
     hero.element.dataset.angle = angle + heroSpeed;
   });
 
-  // вращаем орбиты
   orbitSettings.forEach(orbit => {
     orbit.cubes.forEach(cube => {
       let angle = parseFloat(cube.dataset.angle);
@@ -169,29 +173,19 @@ function scaleScene() {
   const container = document.getElementById("container");
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
-
-  // Радиус самой внешней орбиты
   const maxRadius = Math.max(...orbitSettings.map(o => o.radius));
-
-  // Запас от краёв (в зависимости от экрана)
-  const padding = Math.min(availableWidth, availableHeight) * 0.08; // 8% запаса
-
-  // Расчёт масштаба под размер окна
+  const padding = Math.min(availableWidth, availableHeight) * 0.08;
   const scaleByHeight = (availableHeight - padding * 2) / (maxRadius * 2);
   const scaleByWidth = (availableWidth - padding * 2) / (maxRadius * 2);
-
-  // Берём минимальный из двух масштабов — чтобы не вылезло за экран
   const targetScale = Math.min(scaleByHeight, scaleByWidth);
   const finalScale = targetScale * userScale;
-
   wrapper.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
 }
-
 window.addEventListener("resize", scaleScene);
 window.addEventListener("load", scaleScene);
 scaleScene();
 
-// — Ручное масштабирование колесиком —
+// === Ручное масштабирование колесиком ===
 window.addEventListener("wheel", (e) => {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     e.preventDefault();
@@ -204,22 +198,33 @@ window.addEventListener("wheel", (e) => {
 // === Плавное появление сцены ===
 window.addEventListener("load", () => {
   const wrapper = document.getElementById("scene-wrapper");
-  setTimeout(() => wrapper.classList.add("loaded"), 200); // лёгкая задержка для плавности
+  setTimeout(() => wrapper.classList.add("loaded"), 200);
 });
 
-// === Модальное окно для кубов ===
+// === МОДАЛЬНОЕ ОКНО ===
 const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modal-title");
 const modalDescription = document.getElementById("modal-description");
 const closeModal = document.querySelector(".close");
 
-document.querySelectorAll(".cube").forEach(cube => {
-  cube.addEventListener("click", () => {
-    const cubeId = cube.textContent || "Куб";
-    modalTitle.textContent = cubeId;
-    modalDescription.textContent = "Описание: пока пусто. Скоро добавим из JSON!";
-    modal.classList.add("show");
-  });
+// === Делегирование кликов для всех кубов ===
+document.addEventListener("click", (event) => {
+  const cube = event.target.closest(".cube");
+  if (!cube) return;
+
+  const cubeId = cube.textContent || "Куб";
+  modalTitle.textContent = cubeId;
+  modalDescription.textContent = "Описание: пока пусто. Скоро добавим из JSON!";
+
+  // Подсветка по типу
+  const type = cube.dataset.type;
+  const modalContent = document.querySelector(".modal-content");
+
+  if (type === "good") modalContent.style.boxShadow = "0 0 25px #00ff00";
+  else if (type === "hero" || type === "center") modalContent.style.boxShadow = "0 0 25px #ff00ff";
+  else modalContent.style.boxShadow = "0 0 25px #00fff2";
+
+  modal.classList.add("show");
 });
 
 closeModal.addEventListener("click", () => {
