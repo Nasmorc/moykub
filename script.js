@@ -283,6 +283,50 @@ function sendDataToGoogle(data) {
     },
     body: JSON.stringify(data),
   })
+    // === Обработка формы Куба Добра ===
+const storyModal = document.getElementById("storyModal");
+const closeStory = document.getElementById("closeStory");
+const storyForm = document.getElementById("storyForm");
+
+closeStory.addEventListener("click", () => storyModal.classList.remove("show"));
+window.addEventListener("click", (e) => {
+  if (e.target === storyModal) storyModal.classList.remove("show");
+});
+
+storyForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = {
+    type: "story",
+    name: document.getElementById("storyName").value,
+    contact: document.getElementById("storyContact").value,
+    story: document.getElementById("storyText").value,
+    secret: "MYKUB_SECRET_2025"
+  };
+
+  try {
+    const res = await fetch(
+      "https://script.google.com/macros/s/AKfycbyefseEIon_KCKUwvq05tCq2-tUtfx1Np49yUEaCI8dhudGisUEL-RfXEffhTFEx6_rKg/exec",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    );
+
+    const json = await res.json();
+    if (json.ok) {
+      storyModal.classList.remove("show");
+      showNotify("✅ История отправлена. Спасибо за доверие!");
+      storyForm.reset();
+    } else {
+      showNotify("❌ Ошибка отправки, попробуй позже.");
+    }
+  } catch (err) {
+    showNotify("⚠️ Не удалось подключиться к серверу.");
+  }
+});
+
   .then(() => {
     showNotify("✅ Заявка успешно отправлена!");
   })
