@@ -2,24 +2,23 @@ const wrapper = document.getElementById("wrapper");
 
 // === Орбиты ===
 const orbitSettings = [
-  { count: 52, radius: 580, color: "#00fff2", size: 36 }, // внешняя
-  { count: 36, radius: 460, color: "#00fff2", size: 44 }, // средняя
-  { count: 21, radius: 340, color: "#00fff2", size: 54 }, // внутренняя
+  { count: 52, radius: 580, color: "#00fff2", size: 36, direction: 1, speed: 0.0016 }, // внешняя
+  { count: 36, radius: 460, color: "#00fff2", size: 44, direction: -1, speed: 0.0014 }, // средняя
+  { count: 21, radius: 340, color: "#00fff2", size: 54, direction: 1, speed: 0.0012 }, // внутренняя
 ];
 
 let cubeNumber = 1;
 
 // === Создаём кубы по орбитам ===
-orbitSettings.forEach((orbit) => {
+orbitSettings.forEach((orbit, i) => {
+  orbit.cubes = []; // сохраняем ссылки на кубы
   for (let j = 0; j < orbit.count; j++) {
     const cube = document.createElement("div");
     cube.classList.add("cube");
-    cube.textContent = `#${cubeNumber}`;
-    cubeNumber++;
+    cube.textContent = `#${cubeNumber++}`;
 
     const angle = (j / orbit.count) * Math.PI * 2;
-    const x = Math.cos(angle) * orbit.radius;
-    const y = Math.sin(angle) * orbit.radius;
+    cube.dataset.angle = angle; // сохраняем текущий угол
 
     cube.style.position = "absolute";
     cube.style.left = "50%";
@@ -27,19 +26,20 @@ orbitSettings.forEach((orbit) => {
     cube.style.width = `${orbit.size}px`;
     cube.style.height = `${orbit.size}px`;
     cube.style.fontSize = `${orbit.size * 0.4}px`;
-    cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     cube.style.borderColor = orbit.color;
     cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
     cube.style.transition = "transform 0.25s ease, box-shadow 0.25s ease";
+
     cube.addEventListener("mouseenter", () => {
       cube.style.transform += " scale(1.25)";
       cube.style.boxShadow = `0 0 ${orbit.size * 1.8}px ${orbit.color}`;
     });
     cube.addEventListener("mouseleave", () => {
-      cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
       cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
     });
+
     wrapper.appendChild(cube);
+    orbit.cubes.push(cube);
   }
 });
 
@@ -135,8 +135,9 @@ heroes.forEach(hero => {
   hero.element = cube;
 });
 
-// === Анимация вращения героев ===
-function animateHeroes() {
+// === Анимация вращения героев и орбит ===
+function animateScene() {
+  // вращаем героев
   heroes.forEach(hero => {
     let angle = parseFloat(hero.element.dataset.angle);
     const x = Math.cos(angle) * heroRadius;
@@ -144,9 +145,22 @@ function animateHeroes() {
     hero.element.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     hero.element.dataset.angle = angle + heroSpeed;
   });
-  requestAnimationFrame(animateHeroes);
+
+  // вращаем орбиты
+  orbitSettings.forEach(orbit => {
+    orbit.cubes.forEach(cube => {
+      let angle = parseFloat(cube.dataset.angle);
+      angle += orbit.speed * orbit.direction;
+      cube.dataset.angle = angle;
+      const x = Math.cos(angle) * orbit.radius;
+      const y = Math.sin(angle) * orbit.radius;
+      cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    });
+  });
+
+  requestAnimationFrame(animateScene);
 }
-animateHeroes();
+animateScene();
 
 // === Масштабирование ===
 let userScale = 1;
