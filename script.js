@@ -214,9 +214,9 @@ fetch("data.json")
   .then(response => response.json())
   .then(data => {
     cubeData = data;
-    console.log("Данные о кубах загружены ✅");
+    console.log("✅ Данные о кубах загружены");
   })
-  .catch(err => console.error("Ошибка загрузки JSON:", err));
+  .catch(err => console.error("❌ Ошибка загрузки JSON:", err));
 
 // === Функция открытия модалки ===
 function showModal(title, description, actionText) {
