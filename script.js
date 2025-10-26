@@ -11,7 +11,9 @@ modalOverlay.style.cssText = `
   display: none; justify-content: center; align-items: center;
   z-index: 999;
 `;
-document.body.appendChild(modalOverlay);
+document.addEventListener("DOMContentLoaded", () => {
+  document.body.appendChild(modalOverlay);
+});
 
 function closeModal() {
   modalOverlay.style.display = "none";
@@ -65,7 +67,7 @@ async function sendData(payload) {
   }
 }
 
-// === Модалки ===
+// === Формы ===
 function openRentModal(cubeId) {
   createModal(
     `Заявка на аренду ${cubeId}`,
@@ -107,9 +109,13 @@ function openAuctionModal() {
   );
 }
 
-// === Привязка событий — только после загрузки DOM ===
-window.addEventListener("DOMContentLoaded", () => {
+// === Привязка событий после полной загрузки ===
+window.addEventListener("load", () => {
   const cubes = document.querySelectorAll(".cube");
+  if (!cubes.length) {
+    console.warn("⚠️ Кубы не найдены на странице");
+    return;
+  }
   cubes.forEach(cube => {
     cube.addEventListener("click", () => {
       const text = cube.textContent.trim();
