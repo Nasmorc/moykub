@@ -1,4 +1,4 @@
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwg3cUxdpd9C738PZVfqqSK4m90ICnwTZfW8QQOsmkbm73YkwRSWCfa0UPQZamEHFb77g/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyefseEIon_KCKUwvq05tCq2-tUtfx1Np49yUEaCI8dhudGisUEL-RfXEffhTFEx6_rKg/exec";
 
 const wrapper = document.getElementById("wrapper");
 
