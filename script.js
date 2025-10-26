@@ -1,5 +1,5 @@
 // === URL и секрет Google Apps Script ===
-const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbz1fhqjJuHhf-OrNgN_1jRwTLUY-n1S0P8monQkyLPJsID6rgGGHz3dC5eFD3r99K3Xpw/exec";
+const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbzNFG8RkytNbZ-eiWSNRj0kwMRFlT8BR2NdRgCEfznadWqU-KuLy7SjyALBVQnYjwO6Rw/exec";
 const WEB_APP_SECRET = "MYKUB_SECRET_2025";
 
 const wrapper = document.getElementById("wrapper");
