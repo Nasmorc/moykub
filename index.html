@@ -6,6 +6,22 @@
   <title>МОЙ КУБ</title>
   <link rel="stylesheet" href="style.css">
 </head>
+  <!-- === Модальное окно КУБА ДОБРА === -->
+<div id="storyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeStory">&times;</span>
+    <h2>💚 Расскажи о своей ситуации</h2>
+    <p>Мы читаем каждую историю. Напиши, что случилось, и как тебе можно помочь.</p>
+
+    <form id="storyForm">
+      <input type="text" id="storyName" placeholder="Твоё имя" required />
+      <input type="text" id="storyContact" placeholder="Контакт (Telegram / Email)" required />
+      <textarea id="storyText" placeholder="Опиши свою историю..." required></textarea>
+      <button type="submit">Отправить</button>
+    </form>
+  </div>
+</div>
+
 <body>
   <div id="title-layer">
     <h1>МОЙ КУБ</h1>
