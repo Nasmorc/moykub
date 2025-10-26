@@ -181,4 +181,41 @@ h1 {
   opacity: 1;
   bottom: 60px;
 }
+#storyForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+#storyForm input, #storyForm textarea {
+  background: rgba(0,255,255,0.05);
+  border: 1px solid cyan;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+#storyForm textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+#storyForm button {
+  background: cyan;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#storyForm button:hover {
+  background: #00bfbf;
+  color: #fff;
+}
 
