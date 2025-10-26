@@ -284,7 +284,7 @@ function sendDataToGoogle(data) {
     body: JSON.stringify(data),
   })
   .then(() => {
-    alert("✅ Заявка успешно отправлена!");
+    showNotify("✅ Заявка успешно отправлена!");
   })
   .catch((error) => {
     console.error("Ошибка отправки:", error);
@@ -306,3 +306,14 @@ document.addEventListener("click", (e) => {
     modal.classList.remove("show");
   }
 });
+function showNotify(text) {
+  let box = document.getElementById("notify");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "notify";
+    document.body.appendChild(box);
+  }
+  box.textContent = text;
+  box.classList.add("show");
+  setTimeout(() => box.classList.remove("show"), 3000);
+}
