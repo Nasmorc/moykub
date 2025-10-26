@@ -3,9 +3,9 @@ const wrapper = document.getElementById("wrapper");
 // === Настройки орбит ===
 // внешний → внутренний
 const orbitSettings = [
-  { count: 52, radius: 580, color: "#00fff2", size: 36 }, // было 28
-  { count: 36, radius: 380, color: "#00fff2", size: 44 }, // было 34
-  { count: 20, radius: 220, color: "#00fff2", size: 54 }, // было 42
+  { count: 52, radius: 580, color: "#00fff2", size: 36 }, // внешняя
+  { count: 36, radius: 460, color: "#00fff2", size: 44 }, // средняя — увеличили радиус
+  { count: 20, radius: 300, color: "#00fff2", size: 54 }, // внутренняя — увеличили радиус
 ];
 
 let cubeNumber = 1;
