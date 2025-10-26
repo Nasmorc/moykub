@@ -143,3 +143,20 @@ h1 {
   color: #fff;
   transform: scale(1.1);
 }
+
+.modal-btn {
+  background: cyan;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.modal-btn:hover {
+  background: #00ffaa;
+  transform: scale(1.05);
+}
