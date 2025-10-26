@@ -162,7 +162,7 @@ function animateScene() {
 }
 animateScene();
 
-// === Масштабирование ===
+// === Умное масштабирование ===
 let userScale = 1;
 
 function scaleScene() {
@@ -170,11 +170,18 @@ function scaleScene() {
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
 
-  // Радиус самой внешней орбиты + запас
-  const maxRadius = Math.max(...orbitSettings.map(o => o.radius)) + 200;
+  // Радиус самой внешней орбиты
+  const maxRadius = Math.max(...orbitSettings.map(o => o.radius));
 
-  // Увеличили масштаб до 95% высоты
-  const targetScale = (availableHeight * 0.95) / (maxRadius * 2);
+  // Запас от краёв (в зависимости от экрана)
+  const padding = Math.min(availableWidth, availableHeight) * 0.08; // 8% запаса
+
+  // Расчёт масштаба под размер окна
+  const scaleByHeight = (availableHeight - padding * 2) / (maxRadius * 2);
+  const scaleByWidth = (availableWidth - padding * 2) / (maxRadius * 2);
+
+  // Берём минимальный из двух масштабов — чтобы не вылезло за экран
+  const targetScale = Math.min(scaleByHeight, scaleByWidth);
   const finalScale = targetScale * userScale;
 
   wrapper.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
@@ -184,6 +191,7 @@ window.addEventListener("resize", scaleScene);
 window.addEventListener("load", scaleScene);
 scaleScene();
 
+// — Ручное масштабирование колесиком —
 window.addEventListener("wheel", (e) => {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     e.preventDefault();
