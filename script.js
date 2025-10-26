@@ -5,7 +5,7 @@ const wrapper = document.getElementById("wrapper");
 const orbitSettings = [
   { count: 52, radius: 580, color: "#00fff2", size: 36 }, // внешняя
   { count: 36, radius: 460, color: "#00fff2", size: 44 }, // средняя — увеличили радиус
-  { count: 20, radius: 300, color: "#00fff2", size: 54 }, // внутренняя — увеличили радиус
+  { count: 21, radius: 340, color: "#00fff2", size: 54 }, // внутренняя — увеличили радиус
 ];
 
 let cubeNumber = 1;
