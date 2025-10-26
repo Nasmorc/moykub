@@ -206,3 +206,28 @@ window.addEventListener("load", () => {
   const wrapper = document.getElementById("scene-wrapper");
   setTimeout(() => wrapper.classList.add("loaded"), 200); // лёгкая задержка для плавности
 });
+
+// === Модальное окно для кубов ===
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalDescription = document.getElementById("modal-description");
+const closeModal = document.querySelector(".close");
+
+document.querySelectorAll(".cube").forEach(cube => {
+  cube.addEventListener("click", () => {
+    const cubeId = cube.textContent || "Куб";
+    modalTitle.textContent = cubeId;
+    modalDescription.textContent = "Описание: пока пусто. Скоро добавим из JSON!";
+    modal.classList.add("show");
+  });
+});
+
+closeModal.addEventListener("click", () => {
+  modal.classList.remove("show");
+});
+
+window.addEventListener("click", (event) => {
+  if (event.target === modal) {
+    modal.classList.remove("show");
+  }
+});
