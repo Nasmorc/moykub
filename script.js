@@ -291,4 +291,18 @@ function sendDataToGoogle(data) {
     alert("❌ Произошла ошибка при отправке данных.");
   });
 }
+// === Обработка кликов по кнопке внутри модалки ===
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("modal-btn")) {
+    const cubeTitle = document.getElementById("modal-title").textContent;
+    const cubeDescription = document.getElementById("modal-description").textContent;
 
+    sendDataToGoogle({
+      cube: cubeTitle,
+      description: cubeDescription,
+      timestamp: new Date().toISOString(),
+    });
+
+    modal.classList.remove("show");
+  }
+});
