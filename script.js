@@ -201,38 +201,72 @@ window.addEventListener("load", () => {
   setTimeout(() => wrapper.classList.add("loaded"), 200);
 });
 
-// === МОДАЛЬНОЕ ОКНО ===
+// === Модальное окно для кубов ===
 const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modal-title");
 const modalDescription = document.getElementById("modal-description");
 const closeModal = document.querySelector(".close");
 
-// === Делегирование кликов для всех кубов ===
-document.addEventListener("click", (event) => {
-  const cube = event.target.closest(".cube");
+let cubeData = {}; // сюда загрузим JSON
+
+// Загружаем данные из data.json
+fetch("data.json")
+  .then(response => response.json())
+  .then(data => {
+    cubeData = data;
+    console.log("Данные о кубах загружены ✅");
+  })
+  .catch(err => console.error("Ошибка загрузки JSON:", err));
+
+// === Функция открытия модалки ===
+function showModal(title, description, actionText) {
+  modalTitle.textContent = title;
+  modalDescription.innerHTML = `${description}<br><br><button class="modal-btn">${actionText}</button>`;
+  modal.classList.add("show");
+}
+
+// === Обработчики кликов на кубы ===
+document.addEventListener("click", (e) => {
+  const cube = e.target.closest(".cube");
   if (!cube) return;
 
-  const cubeId = cube.textContent || "Куб";
-  modalTitle.textContent = cubeId;
-  modalDescription.textContent = "Описание: пока пусто. Скоро добавим из JSON!";
+  const text = cube.textContent.trim();
 
-  // Подсветка по типу
-  const type = cube.dataset.type;
-  const modalContent = document.querySelector(".modal-content");
+  // Центральный куб
+  if (text === "ЦЕНТР") {
+    const d = cubeData.center;
+    showModal(d.title, d.description, d.action);
+    return;
+  }
 
-  if (type === "good") modalContent.style.boxShadow = "0 0 25px #00ff00";
-  else if (type === "hero" || type === "center") modalContent.style.boxShadow = "0 0 25px #ff00ff";
-  else modalContent.style.boxShadow = "0 0 25px #00fff2";
+  // Куб Добра
+  if (text === "КУБ ДОБРА") {
+    const d = cubeData.good;
+    showModal(d.title, d.description, d.action);
+    return;
+  }
 
-  modal.classList.add("show");
+  // Кубы героев
+  if (text.includes("Герой")) {
+    const index = parseInt(text.replace(/\D/g, ""), 10) - 1;
+    const d = cubeData.heroes[index] || cubeData.heroes[0];
+    showModal(d.title, d.description, d.action);
+    return;
+  }
+
+  // Остальные (обычные орбиты)
+  const d = cubeData.orbitCubes;
+  showModal(
+    `${d.title}${text.replace("#", "")}`,
+    `${d.description}<br>Стоимость: ${d.price}`,
+    d.action
+  );
 });
 
+// === Закрытие модалки ===
 closeModal.addEventListener("click", () => {
   modal.classList.remove("show");
 });
-
 window.addEventListener("click", (event) => {
-  if (event.target === modal) {
-    modal.classList.remove("show");
-  }
+  if (event.target === modal) modal.classList.remove("show");
 });
