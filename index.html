@@ -2,68 +2,22 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>МОЙ КУБ</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Заголовок на заднем плане -->
   <div id="title-layer">
     <h1>МОЙ КУБ</h1>
     <div class="subtitle">Куб Добра и Герои месяца</div>
   </div>
 
-  <!-- Сцена -->
   <div id="container">
     <div id="wrapper">
       <div id="scene"></div>
     </div>
   </div>
 
-  <!-- Модалка: описание (кнопка внутри откроет форму) -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeInfo">&times;</span>
-      <h2 id="modal-title">Название куба</h2>
-      <p id="modal-description">Описание куба появится здесь.</p>
-      <button class="modal-btn" id="modal-action">Действие</button>
-    </div>
-  </div>
-
-  <!-- Модалка: форма "КУБ ДОБРА" -->
-  <div id="storyModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeStory">&times;</span>
-      <h2>💚 Расскажи о своей ситуации</h2>
-      <p>Мы читаем каждую историю. Напиши, что случилось, и как тебе можно помочь.</p>
-      <form id="storyForm">
-        <input type="text" id="storyName" placeholder="Твоё имя" required />
-        <input type="text" id="storyContact" placeholder="Контакт (Telegram / Email)" required />
-        <textarea id="storyText" placeholder="Опиши свою ситуацию..." required></textarea>
-        <button type="submit" class="modal-btn">Отправить</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Модалка: форма "АРЕНДА КУБА" -->
-  <div id="rentModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeRent">&times;</span>
-      <h2 id="rentTitle">Заявка на аренду</h2>
-      <form id="rentForm">
-        <input type="text" id="rentCube" placeholder="Номер куба" readonly />
-        <input type="text" id="rentName" placeholder="Ваше имя" required />
-        <input type="text" id="rentContact" placeholder="Контакт (Telegram / Email)" required />
-        <textarea id="rentMsg" placeholder="Комментарий (по желанию)"></textarea>
-        <button type="submit" class="modal-btn">Отправить заявку</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Контейнер для ненавязчивых уведомлений -->
-  <div id="notify"></div>
-
-  <!-- Скрипт в самом конце -->
   <script src="script.js"></script>
 </body>
 </html>
