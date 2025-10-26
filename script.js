@@ -170,22 +170,20 @@ function scaleScene() {
   const availableWidth = container.clientWidth;
   const availableHeight = container.clientHeight;
 
-  // Берём радиус самой внешней орбиты + запас для надписей
+  // Радиус самой внешней орбиты + запас
   const maxRadius = Math.max(...orbitSettings.map(o => o.radius)) + 200;
 
-  // Рассчитываем масштаб так, чтобы сцена занимала 85% высоты окна
-  const targetScale = (availableHeight * 0.85) / (maxRadius * 2);
+  // Увеличили масштаб до 95% высоты
+  const targetScale = (availableHeight * 0.95) / (maxRadius * 2);
   const finalScale = targetScale * userScale;
 
   wrapper.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
 }
 
-// Автоматически пересчитываем при открытии и изменении окна
 window.addEventListener("resize", scaleScene);
 window.addEventListener("load", scaleScene);
 scaleScene();
 
-// Добавляем ручное масштабирование колесиком (Ctrl/Alt/Meta)
 window.addEventListener("wheel", (e) => {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     e.preventDefault();
