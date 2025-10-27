@@ -1,256 +1,221 @@
-// ====== Настройки ======
-const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec"; // <- ВАША ссылка от Google Apps Script
-const WEB_APP_SECRET = "MYKUB_SECRET_2025"; // <- Должен совпадать с SECRET в Apps Script
+/* ================== КОНФИГ по отправке ================== */
+const WEB_APP_URL    = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
+const WEB_APP_SECRET = "MYKUB_SECRET_2025";
 
-// ====== Небольшая утилита ======
-function $(sel, root=document){ return root.querySelector(sel); }
-function $all(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
-
-function showToast(text, isError=false){
-  const t = $('#toast');
-  t.style.display = 'block';
-  t.textContent = (isError ? 'Ошибка: ' : '') + text;
-  t.style.background = isError ? 'rgba(220,60,60,.95)' : 'rgba(0,200,180,.95)';
-  clearTimeout(t._tm);
-  t._tm = setTimeout(()=> t.style.display = 'none', 4000);
+/* универсальная отправка в Apps Script (payload в form-urlencoded) */
+async function postToGAS(payload){
+  const body = "payload="+encodeURIComponent(JSON.stringify(payload));
+  const res = await fetch(WEB_APP_URL,{
+    method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8" },
+    body
+  });
+  return res.json();
 }
 
-// ====== Модалки: show/hide ======
-const overlay = $('#overlay');
-function showModal(id){
-  // скрыть все модалки сначала
-  $all('.modal').forEach(m => m.style.display = 'none');
-  const m = document.getElementById(id);
-  if (!m) return;
-  m.style.display = 'block';
-  overlay.style.display = 'block';
-  // scroll to top of modal (если нужно)
-  m.scrollTop = 0;
-}
-function hideAllModals(){
-  $all('.modal').forEach(m => m.style.display = 'none');
-  overlay.style.display = 'none';
+/* ================== СЦЕНА / ОТРИСОВКА ================== */
+const container = document.getElementById("container");
+
+async function loadData(){
+  const res = await fetch("data.json?"+Date.now());
+  return res.json();
 }
 
-// закрытие крестиком
-document.addEventListener('click', function(e){
-  if (e.target.matches('.modal-close')) {
-    hideAllModals();
-  }
-});
-
-// закрытие кликом по overlay
-overlay.addEventListener('click', hideAllModals);
-
-// если нажали Escape
-document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape') hideAllModals();
-});
-
-// ====== Отправка в Google Apps Script ======
-async function postToServer(payload){
-  try {
-    payload.secret = WEB_APP_SECRET;
-    const res = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const json = await res.json();
-    return json;
-  } catch (err) {
-    console.error('postToServer error', err);
-    return { ok:false, error: String(err) };
-  }
+function polarToXY(cx, cy, radius, angleRad){
+  return {
+    x: cx + radius * Math.cos(angleRad),
+    y: cy + radius * Math.sin(angleRad)
+  };
 }
 
-// ====== Обработчики отправки каждой формы ======
-document.getElementById('rent-send').addEventListener('click', async () => {
-  const cube = $('#rent-cube').value;
-  const name = $('#rent-name').value.trim();
-  const contact = $('#rent-contact').value.trim();
-  const link = $('#rent-link').value.trim();
-  const comment = $('#rent-comment').value.trim();
+function createCube(text, className){
+  const d = document.createElement("div");
+  d.className = "cube "+className;
+  d.textContent = text;
+  return d;
+}
 
-  if (!cube || !name || !contact) {
-    showToast('Заполните номер куба, имя и контакт', true);
-    return;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2200);
+}
+
+function buildScene(data){
+  container.innerHTML = "";
+  const scene = document.createElement("div");
+  scene.className = "scene";
+  container.appendChild(scene);
+
+  // три орбиты
+  const r1 = document.createElement("div"); r1.className="ring r1";
+  const r2 = document.createElement("div"); r2.className="ring r2";
+  const r3 = document.createElement("div"); r3.className="ring r3";
+  scene.append(r1,r2,r3);
+
+  const cx = 450, cy = 450; // центр сцены
+  const count = data.orbitCubes?.count || 110;
+
+  // наружная орбита (#1..#110)
+  for(let i=0;i<count;i++){
+    const a = (i / count) * Math.PI*2 - Math.PI/2;
+    const {x,y} = polarToXY(cx, cy, 430, a);
+    const d = createCube(`#${i+1}`, "orb");
+    d.style.left = (x-27)+"px";
+    d.style.top  = (y-27)+"px";
+    // клик → аренда
+    d.addEventListener("click", ()=> openRentModal(i+1));
+    scene.appendChild(d);
   }
 
-  const payload = {
-    type: 'rent',
-    cubeId: cube,
-    name, contact, message: comment, link
-  };
+  // внутренняя орбита: 3 героя
+  const heroLabels = data.heroes?.map(h=>h.label) || ["Герой 1","Герой 2","Герой 3"];
+  const heroAngles = [ -Math.PI/6, Math.PI/2, Math.PI*5/6 ]; // условно 3 точки
+  heroLabels.forEach((label, idx)=>{
+    const {x,y} = polarToXY(cx, cy, 230, heroAngles[idx] || 0);
+    const d = createCube(label, "hero");
+    d.style.left = (x-40)+"px";
+    d.style.top  = (y-30)+"px";
+    d.addEventListener("click", ()=> openHeroModal());
+    scene.appendChild(d);
+  });
 
-  showToast('Отправка...');
-  const r = await postToServer(payload);
-  if (r && r.ok) {
-    showToast('Заявка отправлена');
-    hideAllModals();
-  } else {
-    showToast(r && r.error ? r.error : 'Server error', true);
+  // центр
+  const center = createCube("ЦЕНТР", "center cube-center");
+  center.style.left = (cx-70)+"px";
+  center.style.top  = (cy-70)+"px";
+  center.addEventListener("click", ()=> openAuctionModal());
+  scene.appendChild(center);
+
+  // куб добра
+  const good = createCube("КУБ ДОБРА", "good");
+  const gd = polarToXY(cx, cy, 300, Math.PI/2);
+  good.style.left = (gd.x-50)+"px";
+  good.style.top  = (gd.y-34)+"px";
+  good.addEventListener("click", ()=> openStoryModal());
+  scene.appendChild(good);
+}
+
+/* ================== МОДАЛКИ (открыть/закрыть) ================== */
+const overlayEl = document.getElementById("overlay");
+
+function openModal(modal){
+  modal?.classList.add("show");
+  overlayEl?.classList.add("show");
+}
+function closeModal(modal){
+  modal?.classList.remove("show");
+  overlayEl?.classList.remove("show");
+}
+overlayEl.addEventListener("click", ()=> {
+  document.querySelectorAll(".modal.show").forEach(m=>closeModal(m));
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.key==="Escape"){
+    document.querySelectorAll(".modal.show").forEach(m=>closeModal(m));
   }
 });
-
-// Auction
-document.getElementById('auction-send').addEventListener('click', async () => {
-  const bid = $('#auction-bid').value.trim();
-  const contact = $('#auction-contact').value.trim();
-  const link = $('#auction-link').value.trim();
-  const comment = $('#auction-comment').value.trim();
-
-  if (!bid || !contact) {
-    showToast('Укажите ставку и контакт', true);
-    return;
-  }
-
-  const payload = {
-    type: 'auction',
-    bid: bid,
-    contact,
-    link,
-    comment
-  };
-
-  showToast('Отправка ставки...');
-  const r = await postToServer(payload);
-  if (r && r.ok) {
-    showToast('Ставка принята');
-    hideAllModals();
-  } else {
-    showToast(r && r.error ? r.error : 'Server error', true);
-  }
+document.querySelectorAll(".modal .close,[data-close]").forEach(btn=>{
+  btn.addEventListener("click", (e)=> closeModal(e.target.closest(".modal")));
 });
 
-// Story (Куб добра)
-document.getElementById('story-send').addEventListener('click', async () => {
-  const name = $('#story-name').value.trim();
-  const contact = $('#story-contact').value.trim();
-  const link = $('#story-link').value.trim();
-  const story = $('#story-text').value.trim();
+/* ===== конкретные открытия ===== */
+function openRentModal(num){
+  document.getElementById("rent-cube").value = num;
+  document.getElementById("rent-title").textContent = `Заявка на аренду #${num}`;
+  openModal(document.getElementById("modal-rent"));
+}
+function openAuctionModal(){
+  openModal(document.getElementById("modal-auction"));
+}
+function openStoryModal(){
+  openModal(document.getElementById("modal-story"));
+}
+function openHeroModal(){
+  openModal(document.getElementById("modal-hero"));
+}
 
-  if (!name || !contact || !story) {
-    showToast('Заполните имя, контакт и историю', true);
-    return;
-  }
-
-  const payload = {
-    type: 'story',
-    name, contact, story, link
-  };
-
-  showToast('Отправка...');
-  const r = await postToServer(payload);
-  if (r && r.ok) {
-    showToast('История отправлена');
-    hideAllModals();
-  } else {
-    showToast(r && r.error ? r.error : 'Server error', true);
-  }
-});
-
-// Hero
-document.getElementById('hero-send').addEventListener('click', async () => {
-  const heroName = $('#hero-name').value.trim();
-  const contact = $('#hero-contact').value.trim();
-  const link = $('#hero-link').value.trim();
-  const reason = $('#hero-reason').value.trim();
-
-  if (!heroName || !contact) {
-    showToast('Заполните имя героя и контакт', true);
-    return;
-  }
-
-  const payload = {
-    type: 'hero',
-    heroName,
-    contact,
-    link,
-    reason
-  };
-
-  showToast('Отправка...');
-  const r = await postToServer(payload);
-  if (r && r.ok) {
-    showToast('Заявка отправлена');
-    hideAllModals();
-  } else {
-    showToast(r && r.error ? r.error : 'Server error', true);
-  }
-});
-
-// ====== Внешние вызовы: открытие модалок ======
-// Предполагаем, что кубы в DOM имеют:
-// - orbit-кубы: class "cube" и data-id с номером (#90 -> 90)
-// - центральный куб: id="center-cube"
-// - куб добра: id="good-cube"
-// - герои: class "hero-cube" и data-hero-index или data-link и data-label
-// Ниже — делегируем клики по document и открываем нужную модалку.
-
-// У тебя уже есть механизм рендера кубов — здесь просто перехват клика
-document.addEventListener('click', function(e){
-  const el = e.target.closest && e.target.closest('.cube, .hero-cube, #center-cube, #good-cube');
-  if (!el) return;
-
-  // Если это герой и у него ссылка — переходим по ссылке (если занят),
-  // иначе открываем форму "hero"
-  if (el.classList.contains('hero-cube')) {
-    const link = el.dataset.link;
-    const label = el.dataset.label || 'Герой';
-    if (link && link.length) {
-      // если установлен внешний профиль — переходим
-      window.open(link, '_blank');
-      return;
-    } else {
-      // открыть форму для предложения героя
-      $('#hero-name').value = label;
-      showModal('modal-hero');
-      return;
+/* ================== ОТПРАВКИ ФОРМ ================== */
+// Аренда
+document.getElementById("rent-form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const cubeId   = document.getElementById("rent-cube").value.trim();
+  const name     = document.getElementById("rent-name").value.trim();
+  const contact  = document.getElementById("rent-contact").value.trim();
+  const link     = document.getElementById("rent-link").value.trim();
+  const message  = document.getElementById("rent-comment").value.trim();
+  if(!cubeId || !contact){ toast("Укажите куб и контакт"); return; }
+  try{
+    const r = await postToGAS({ type:"rent", secret:WEB_APP_SECRET, cubeId, name, contact, link, message });
+    if(r.ok){
+      toast("Заявка отправлена!");
+      e.target.reset(); closeModal(document.getElementById("modal-rent"));
+    }else{
+      toast("Ошибка: "+(r.error||"неизвестно"));
     }
-  }
-
-  // Куб центра: открыть аукцион
-  if (el.id === 'center-cube' || el.id === 'center') {
-    // очистим поля
-    $('#auction-bid').value = '';
-    $('#auction-contact').value = '';
-    $('#auction-link').value = '';
-    $('#auction-comment').value = '';
-    showModal('modal-auction');
-    return;
-  }
-
-  // Куб добра
-  if (el.id === 'good-cube' || el.id === 'good') {
-    $('#story-name').value = '';
-    $('#story-contact').value = '';
-    $('#story-link').value = '';
-    $('#story-text').value = '';
-    showModal('modal-story');
-    return;
-  }
-
-  // орбитальный куб — открыть аренду
-  if (el.classList.contains('cube')) {
-    const cubeId = el.dataset.id || el.textContent || '';
-    $('#rent-cube').value = cubeId.replace('#','').trim();
-    $('#rent-cube-label').textContent = ' #' + $('#rent-cube').value;
-    $('#rent-name').value = '';
-    $('#rent-contact').value = '';
-    $('#rent-link').value = '';
-    $('#rent-comment').value = '';
-    showModal('modal-rent');
-    return;
-  }
+  }catch(err){ toast("Сеть недоступна"); }
 });
 
-// на случай, если DOM-кубы у тебя имеют другую структуру — напиши мне, я подправлю селекторы.
+// Аукцион
+document.getElementById("auction-form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const bid     = document.getElementById("auction-bid").value.trim();
+  const contact = document.getElementById("auction-contact").value.trim();
+  const link    = document.getElementById("auction-link").value.trim();
+  const comment = document.getElementById("auction-comment").value.trim();
+  if(!bid || !contact){ toast("Ставка и контакт обязательны"); return; }
+  try{
+    const r = await postToGAS({ type:"auction", secret:WEB_APP_SECRET, bid, contact, link, comment });
+    if(r.ok){
+      toast("Ставка отправлена!");
+      e.target.reset(); closeModal(document.getElementById("modal-auction"));
+    }else{
+      toast("Ошибка: "+(r.error||"неизвестно"));
+    }
+  }catch(err){ toast("Сеть недоступна"); }
+});
 
-// ====== Инициализация ======
-(function init(){
-  // просто убедиться, что элементы есть
-  if (!overlay) console.warn('Overlay not found');
-  // скрыть все модалки
-  hideAllModals();
-})();
+// История
+document.getElementById("story-form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const name    = document.getElementById("story-name").value.trim();
+  const contact = document.getElementById("story-contact").value.trim();
+  const link    = document.getElementById("story-link").value.trim();
+  const story   = document.getElementById("story-text").value.trim();
+  if(!contact || !story){ toast("Контакт и история обязательны"); return; }
+  try{
+    const r = await postToGAS({ type:"story", secret:WEB_APP_SECRET, name, contact, link, story });
+    if(r.ok){
+      toast("История отправлена!");
+      e.target.reset(); closeModal(document.getElementById("modal-story"));
+    }else{
+      toast("Ошибка: "+(r.error||"неизвестно"));
+    }
+  }catch(err){ toast("Сеть недоступна"); }
+});
+
+// Герой
+document.getElementById("hero-form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const heroName = document.getElementById("hero-name").value.trim();
+  const from     = document.getElementById("hero-from").value.trim();
+  const contact  = document.getElementById("hero-contact").value.trim();
+  const reason   = document.getElementById("hero-reason").value.trim();
+  if(!heroName || !contact){ toast("Имя героя и контакт обязательны"); return; }
+  try{
+    const r = await postToGAS({ type:"hero", secret:WEB_APP_SECRET, heroName, from, contact, reason });
+    if(r.ok){
+      toast("Отправлено!");
+      e.target.reset(); closeModal(document.getElementById("modal-hero"));
+    }else{
+      toast("Ошибка: "+(r.error||"неизвестно"));
+    }
+  }catch(err){ toast("Сеть недоступна"); }
+});
+
+/* ================== СТАРТ ================== */
+loadData().then(buildScene).catch(()=>{
+  // если data.json не найден — всё равно построим дефолт
+  buildScene({ orbitCubes:{count:110}, heroes:[{label:"Герой 1"},{label:"Герой 2"},{label:"Герой 3"}] });
+});
