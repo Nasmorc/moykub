@@ -140,3 +140,125 @@ button:hover {
     <div id="modal-body">Загрузка…</div>
   </div>
 </div>
+<script>
+// ======================
+// OPEN MODAL
+// ======================
+function openModal(html) {
+  document.getElementById("modal-body").innerHTML = html;
+  document.getElementById("modal").style.display = "flex";
+}
+
+// CLOSE MODAL
+document.getElementById("modal-close").onclick = () => {
+  document.getElementById("modal").style.display = "none";
+};
+window.onclick = (e) => {
+  if (e.target === document.getElementById("modal")) {
+    document.getElementById("modal").style.display = "none";
+  }
+};
+
+// ✅ Google Apps Script API
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
+const SECRET = "MYKUB_SECRET_2025";
+
+// ✅ Common send function
+async function sendToServer(payload) {
+  payload.secret = SECRET;
+  try {
+    const res = await fetch(WEB_APP_URL, {
+      method: "POST",
+      headers: {"Content-Type": "text/plain"},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "Unknown error");
+    alert("✅ Заявка отправлена!");
+    document.getElementById("modal").style.display = "none";
+  } catch (e) {
+    alert("❌ Ошибка: " + e);
+  }
+}
+
+// ✅ FORM: RENT
+function showRentForm(cubeId) {
+  openModal(`
+    <h3>Заявка на аренду куба #${cubeId}</h3>
+    <input id="rentName" placeholder="Имя"/>
+    <input id="rentContact" placeholder="Контакт (телеграм / телефон)"/>
+    <input id="rentLink" placeholder="Ссылка (на профиль / сайт)"/>
+    <textarea id="rentMsg" placeholder="Что хотите разместить?"></textarea>
+    <button onclick="submitRent(${cubeId})">Отправить</button>
+  `);
+}
+function submitRent(cubeId) {
+  sendToServer({
+    type: "rent",
+    cubeId,
+    name: document.getElementById("rentName").value,
+    contact: document.getElementById("rentContact").value,
+    link: document.getElementById("rentLink").value,
+    message: document.getElementById("rentMsg").value
+  });
+}
+
+// ✅ FORM: GOOD CUBE (История)
+function showGoodForm() {
+  openModal(`
+    <h3>Куб Добра — рассказать историю</h3>
+    <input id="storyName" placeholder="Ваше имя"/>
+    <input id="storyContact" placeholder="Контакт для связи"/>
+    <textarea id="storyText" placeholder="Опишите ситуацию"></textarea>
+    <button onclick="submitStory()">Отправить историю</button>
+  `);
+}
+function submitStory() {
+  sendToServer({
+    type: "story",
+    name: document.getElementById("storyName").value,
+    contact: document.getElementById("storyContact").value,
+    story: document.getElementById("storyText").value
+  });
+}
+
+// ✅ FORM: HERO
+function showHeroForm() {
+  openModal(`
+    <h3>Стать Героем месяца</h3>
+    <input id="heroName" placeholder="Ваше имя / бренд"/>
+    <input id="heroContact" placeholder="Контакт"/>
+    <textarea id="heroReason" placeholder="Кого и как вы помогли?"></textarea>
+    <button onclick="submitHero()">Отправить</button>
+  `);
+}
+function submitHero() {
+  sendToServer({
+    type: "hero",
+    heroName: document.getElementById("heroName").value,
+    contact: document.getElementById("heroContact").value,
+    reason: document.getElementById("heroReason").value
+  });
+}
+
+// ✅ FORM: AUCTION
+function showAuctionForm() {
+  openModal(`
+    <h3>💎 Аукцион центрального куба</h3>
+    <input id="auctionBid" type="number" placeholder="Ставка (₽)"/>
+    <input id="auctionContact" placeholder="Контакт"/>
+    <input id="auctionLink" placeholder="Ссылка на профиль / сайт"/>
+    <textarea id="auctionMsg" placeholder="Комментарий (необязательно)"></textarea>
+    <button onclick="submitAuction()">Сделать ставку</button>
+  `);
+}
+function submitAuction() {
+  sendToServer({
+    type: "auction",
+    bid: document.getElementById("auctionBid").value,
+    contact: document.getElementById("auctionContact").value,
+    link: document.getElementById("auctionLink").value,
+    message: document.getElementById("auctionMsg").value
+  });
+}
+</script>
