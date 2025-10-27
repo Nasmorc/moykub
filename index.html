@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>МОЙ КУБ</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>МОЙ КУБ — Куб Добра и Герои месяца</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div id="title-layer">
@@ -13,69 +13,127 @@
   </div>
 
   <div id="container">
-    <div id="wrapper">
-      <div id="scene"></div>
+    <!-- три орбиты + внутренняя сцена отрисовываются скриптом -->
+  </div>
+
+  <!-- фон затемнения -->
+  <div id="overlay"></div>
+
+  <!-- ===== МОДАЛКА: АРЕНДА ===== -->
+  <div id="modal-rent" class="modal">
+    <div class="modal__window">
+      <button class="close" data-close>×</button>
+      <h2 id="rent-title">Заявка на аренду</h2>
+      <form id="rent-form">
+        <div class="row">
+          <label>Номер куба</label>
+          <input id="rent-cube" name="cube" readonly>
+        </div>
+        <div class="row">
+          <label>Имя</label>
+          <input id="rent-name" name="name" placeholder="Как к вам обращаться">
+        </div>
+        <div class="row">
+          <label>Контакт (телеграм / телефон)</label>
+          <input id="rent-contact" name="contact" placeholder="@username или +7...">
+        </div>
+        <div class="row">
+          <label>Ссылка (на профиль / сайт)</label>
+          <input id="rent-link" name="link" placeholder="https://...">
+        </div>
+        <div class="row">
+          <label>Комментарий</label>
+          <textarea id="rent-comment" name="message" placeholder="Коротко, что хотите разместить"></textarea>
+        </div>
+        <button class="btn" type="submit">Отправить заявку</button>
+      </form>
     </div>
   </div>
 
-  <!-- overlay для закрытия модалок -->
-  <div id="overlay" class="overlay" style="display:none"></div>
-
-  <!-- МОДАЛКА: аренда -->
-  <div id="modal-rent" class="modal" style="display:none">
-    <button class="modal-close">×</button>
-    <h2>Заявка на аренду <span id="rent-cube-label"></span></h2>
-    <div class="form-row">
-      <label>Номер куба <input id="rent-cube" readonly></label>
-      <label>Имя <input id="rent-name"></label>
-      <label>Контакт (телеграм / телефон) <input id="rent-contact"></label>
-      <label>Ссылка (на профиль / сайт) <input id="rent-link" placeholder="https://"></label>
-      <label>Комментарий <textarea id="rent-comment"></textarea></label>
+  <!-- ===== МОДАЛКА: АУКЦИОН (ЦЕНТР) ===== -->
+  <div id="modal-auction" class="modal">
+    <div class="modal__window">
+      <button class="close" data-close>×</button>
+      <h2>💎 Аукцион центрального куба</h2>
+      <p class="hint">Укажи свою ставку и контакт. Победитель получает центр на месяц.</p>
+      <form id="auction-form" data-form="auction">
+        <div class="row">
+          <label>Ставка</label>
+          <input id="auction-bid" name="bid" placeholder="Например: 5000">
+        </div>
+        <div class="row">
+          <label>Контакт</label>
+          <input id="auction-contact" name="contact" placeholder="@username или +7...">
+        </div>
+        <div class="row">
+          <label>Ссылка (на профиль / сайт)</label>
+          <input id="auction-link" name="link" placeholder="https://...">
+        </div>
+        <div class="row">
+          <label>Комментарий</label>
+          <textarea id="auction-comment" name="comment" placeholder="Коротко, что планируете в центре"></textarea>
+        </div>
+        <button class="btn" type="submit">Сделать ставку</button>
+      </form>
     </div>
-    <button id="rent-send" class="btn">Отправить заявку</button>
   </div>
 
-  <!-- МОДАЛКА: аукцион (центр) -->
-  <div id="modal-auction" class="modal" style="display:none">
-    <button class="modal-close">×</button>
-    <h2>Аукцион центрального куба</h2>
-    <div class="form-row">
-      <label>Ставка (число) <input id="auction-bid" type="number" min="0"></label>
-      <label>Контакт (телеграм / телефон) <input id="auction-contact"></label>
-      <label>Ссылка (на профиль / сайт) <input id="auction-link" placeholder="https://"></label>
-      <label>Комментарий <textarea id="auction-comment"></textarea></label>
+  <!-- ===== МОДАЛКА: ИСТОРИЯ (КУБ ДОБРА) ===== -->
+  <div id="modal-story" class="modal">
+    <div class="modal__window">
+      <button class="close" data-close>×</button>
+      <h2>КУБ ДОБРА</h2>
+      <form id="story-form">
+        <div class="row">
+          <label>Имя</label>
+          <input id="story-name" name="name" placeholder="Как к вам обращаться">
+        </div>
+        <div class="row">
+          <label>Контакт</label>
+          <input id="story-contact" name="contact" placeholder="@username или +7...">
+        </div>
+        <div class="row">
+          <label>Ссылка (по желанию)</label>
+          <input id="story-link" name="link" placeholder="https://...">
+        </div>
+        <div class="row">
+          <label>История / ситуация</label>
+          <textarea id="story-text" name="story" placeholder="Опишите, что случилось и чем можно помочь"></textarea>
+        </div>
+        <button class="btn" type="submit">Рассказать</button>
+      </form>
     </div>
-    <button id="auction-send" class="btn">Сделать ставку</button>
   </div>
 
-  <!-- МОДАЛКА: куб добра (story) -->
-  <div id="modal-story" class="modal" style="display:none">
-    <button class="modal-close">×</button>
-    <h2>Рассказать о ситуации / Куб добра</h2>
-    <div class="form-row">
-      <label>Имя <input id="story-name"></label>
-      <label>Контакт (телеграм / телефон) <input id="story-contact"></label>
-      <label>Ссылка (на профиль / сайт) <input id="story-link" placeholder="https://"></label>
-      <label>История <textarea id="story-text"></textarea></label>
+  <!-- ===== МОДАЛКА: ГЕРОЙ ===== -->
+  <div id="modal-hero" class="modal">
+    <div class="modal__window">
+      <button class="close" data-close>×</button>
+      <h2>Предложить Героя</h2>
+      <form id="hero-form">
+        <div class="row">
+          <label>Имя героя</label>
+          <input id="hero-name" name="heroName" placeholder="Кого предлагаете">
+        </div>
+        <div class="row">
+          <label>От кого</label>
+          <input id="hero-from" name="from" placeholder="Ваше имя">
+        </div>
+        <div class="row">
+          <label>Контакт</label>
+          <input id="hero-contact" name="contact" placeholder="@username или +7...">
+        </div>
+        <div class="row">
+          <label>Почему он герой?</label>
+          <textarea id="hero-reason" name="reason" placeholder="Коротко"></textarea>
+        </div>
+        <button class="btn" type="submit">Отправить</button>
+      </form>
     </div>
-    <button id="story-send" class="btn">Отправить историю</button>
   </div>
 
-  <!-- МОДАЛКА: герой -->
-  <div id="modal-hero" class="modal" style="display:none">
-    <button class="modal-close">×</button>
-    <h2>Предложить героя / Реклама</h2>
-    <div class="form-row">
-      <label>Имя героя <input id="hero-name"></label>
-      <label>Контакт (телеграм / телефон) <input id="hero-contact"></label>
-      <label>Ссылка (профиль / сайт) <input id="hero-link" placeholder="https://"></label>
-      <label>Описание / причина <textarea id="hero-reason"></textarea></label>
-    </div>
-    <button id="hero-send" class="btn">Отправить</button>
-  </div>
-
-  <!-- TOAST -->
-  <div id="toast" class="toast" style="display:none"></div>
+  <!-- небольшой тост -->
+  <div id="toast"></div>
 
   <script src="script.js"></script>
 </body>
