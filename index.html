@@ -262,3 +262,80 @@ function submitAuction() {
   });
 }
 </script>
+<script>
+// ========= КОНФИГУРАЦИЯ КУБОВ =========
+
+// Центральный куб — всегда аукцион
+const centerCubeId = "CENTER";
+
+// Куб Добра
+const goodCubeId = "GOOD";
+
+// Кубы Героя (может быть несколько)
+const heroCubes = ["HERO1", "HERO2", "HERO3"];
+
+// Кубы обычной аренды
+const rentCubes = Array.from({ length: 130 }, (_, i) => i + 1); // #1..#130
+
+
+// ====== РЕНДЕРИМ ВСЁ ======
+function renderCubes() {
+  const wrapper = document.getElementById("wrapper");
+  wrapper.innerHTML = ""; // очистка
+
+
+  // 🔹 Центральный куб
+  const center = createCube(centerCubeId, "ЦЕНТР", "center-cube");
+  center.onclick = () => showAuctionForm();
+  wrapper.appendChild(center);
+
+
+  // 🔹 Куб Добра
+  const good = createCube(goodCubeId, "КУБ ДОБРА", "good-cube");
+  good.onclick = () => showGoodForm();
+  wrapper.appendChild(good);
+
+
+  // 🔹 Кубы Героя
+  heroCubes.forEach((id, index) => {
+    const el = createCube(id, "Герой " + (index + 1), "hero-cube");
+    el.onclick = () => showHeroForm();
+    wrapper.appendChild(el);
+  });
+
+
+  // 🔹 Обычные кубы
+  rentCubes.forEach(num => {
+    const el = createCube(num, "#" + num);
+    el.onclick = () => showRentForm(num);
+    wrapper.appendChild(el);
+  });
+
+
+  positionCubes();
+}
+
+
+// ====== СОЗДАНИЕ ЭЛЕМЕНТА КУБА ======
+function createCube(id, label, extraClass = "") {
+  const cube = document.createElement("div");
+  cube.className = "cube " + extraClass;
+  cube.dataset.id = id;
+  cube.textContent = label;
+  return cube;
+}
+
+
+// ====== ПОЗИЦИИ НА ОРБИТЕ ======
+// 💡 Полная твоя анимация пока остаётся как была!
+// Я просто вызову твою функцию позиционирования
+function positionCubes() {
+  if (typeof updateCubePositions === "function") {
+    updateCubePositions();
+  }
+}
+
+
+// Инициализация
+renderCubes();
+</script>
