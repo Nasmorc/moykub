@@ -12,98 +12,93 @@
     <div class="subtitle">Куб Добра и Герои месяца</div>
   </div>
 
-  <!-- Сцена -->
+  <!-- Сцена (тут остаётся твоя отрисовка орбит через JS) -->
   <div id="container">
     <div id="wrapper">
       <div id="scene"></div>
     </div>
   </div>
 
-  <!-- Универсальная модалка -->
-  <div class="modal" id="modal" aria-hidden="true">
-    <div class="modal__dialog" role="dialog" aria-modal="true">
-      <button class="modal__close" type="button" data-close>×</button>
+  <!-- ===== Универсальная модалка (одно окно на все типы заявок) ===== -->
+  <div id="modal" class="modal">
+    <div class="modal__backdrop" data-close></div>
 
-      <!-- Вкладка: аренда -->
-      <form class="modal__content" id="form-rent" data-form="rent" hidden>
-        <h2>Заявка на аренду <span id="rent-cube-label"></span></h2>
+    <div class="modal__content">
+      <button type="button" class="modal__close" id="modal-close" aria-label="Закрыть">×</button>
 
-        <label>Номер куба
-          <input type="text" id="rent-cube" name="cubeId" readonly />
-        </label>
+      <h2 id="modal-title">Заявка</h2>
 
-        <label>Имя
-          <input type="text" id="rent-name" name="name" required />
-        </label>
-
-        <label>Контакт (телеграм / телефон)
-          <input type="text" id="rent-contact" name="contact" required />
-        </label>
-
-        <label>Ссылка (на профиль / сайт)
-          <input type="url" id="rent-link" name="link" placeholder="https://..." />
-        </label>
-
-        <label>Комментарий
-          <textarea id="rent-msg" name="message" rows="4" placeholder="Кратко опишите, что хотите разместить"></textarea>
-        </label>
-
-        <button type="submit" class="btn">Отправить заявку</button>
+      <!-- Форма аренды / аукциона (динамически показываю нужные поля) -->
+      <form id="form-rent" class="form hidden" autocomplete="off">
+        <div class="form__row">
+          <label>Номер куба</label>
+          <input id="rent-cubeId" type="text" readonly>
+        </div>
+        <div class="form__row">
+          <label>Имя</label>
+          <input id="rent-name" type="text" placeholder="Имя"/>
+        </div>
+        <div class="form__row">
+          <label>Контакт (телеграм / телефон)</label>
+          <input id="rent-contact" type="text" placeholder="@ник или номер"/>
+        </div>
+        <div class="form__row">
+          <label>Ссылка (на профиль / сайт)</label>
+          <input id="rent-link" type="url" placeholder="https://..."/>
+        </div>
+        <div class="form__row">
+          <label>Комментарий</label>
+          <textarea id="rent-message" rows="3" placeholder="Кратко опишите, что хотите разместить"></textarea>
+        </div>
+        <button type="submit" class="btn btn--action">Отправить заявку</button>
       </form>
 
-      <!-- Вкладка: история (Куб Добра) -->
-      <form class="modal__content" id="form-story" data-form="story" hidden>
-        <h2>Куб Добра — расскажите о своей ситуации</h2>
+      <!-- Форма КУБ ДОБРА (история) -->
+      <form id="form-story" class="form hidden" autocomplete="off">
+        <div class="form__row">
+          <label>Имя</label>
+          <input id="story-name" type="text" placeholder="Имя"/>
+        </div>
+        <div class="form__row">
+          <label>Контакт (телеграм / телефон)</label>
+          <input id="story-contact" type="text" placeholder="@ник или номер"/>
+        </div>
+        <div class="form__row">
+          <label>Ваша история/ситуация</label>
+          <textarea id="story-text" rows="5" placeholder="Кратко опишите, что происходит"></textarea>
+        </div>
 
-        <label>Имя
-          <input type="text" id="story-name" name="name" required />
-        </label>
+        <div class="form__hint">
+          * После модерации история будет опубликована на неделю. Ниже появится кнопка “Готов помочь”.
+        </div>
 
-        <label>Контакт (телеграм / телефон)
-          <input type="text" id="story-contact" name="contact" required />
-        </label>
-
-        <label>Ссылка (на профиль / сайт)
-          <input type="url" id="story-link" name="link" placeholder="https://..." />
-        </label>
-
-        <label>История / просьба о помощи
-          <textarea id="story-text" name="story" rows="5" required></textarea>
-        </label>
-
-        <button type="submit" class="btn">Отправить</button>
+        <button type="submit" class="btn btn--action">Отправить</button>
       </form>
 
-      <!-- Вкладка: аукцион (Центральный куб) -->
-      <form class="modal__content" id="form-auction" data-form="auction" hidden>
-        <h2>💎 Аукцион центрального куба</h2>
-        <p class="muted">Укажите ставку и контакт. Победитель получает центр на месяц.</p>
-
-        <label>Ставка (₽)
-          <input type="number" id="auction-bid" name="bid" min="1" required />
-        </label>
-
-        <label>Контакт (телеграм / телефон)
-          <input type="text" id="auction-contact" name="contact" required />
-        </label>
-
-        <label>Ссылка (на профиль / сайт)
-          <input type="url" id="auction-link" name="link" placeholder="https://..." />
-        </label>
-
-        <label>Комментарий
-          <textarea id="auction-comment" name="comment" rows="3" placeholder="Опционально"></textarea>
-        </label>
-
-        <button type="submit" class="btn">Сделать ставку</button>
+      <!-- Форма АУКЦИОН (центр) -->
+      <form id="form-auction" class="form hidden" autocomplete="off">
+        <p class="form__lead">Укажи свою ставку и контакт. Победитель получает центр на месяц.</p>
+        <div class="form__row">
+          <label>Ставка (число)</label>
+          <input id="auction-bid" type="number" min="1" step="1" placeholder="Например, 1000"/>
+        </div>
+        <div class="form__row">
+          <label>Контакт (телеграм / телефон)</label>
+          <input id="auction-contact" type="text" placeholder="@ник или номер"/>
+        </div>
+        <div class="form__row">
+          <label>Ссылка (на профиль / сайт)</label>
+          <input id="auction-link" type="url" placeholder="https://..."/>
+        </div>
+        <div class="form__row">
+          <label>Комментарий (необязательно)</label>
+          <textarea id="auction-comment" rows="3" placeholder="Кратко поясни, что будешь размещать"></textarea>
+        </div>
+        <button type="submit" class="btn btn--action">Сделать ставку</button>
       </form>
 
-      <!-- Сообщение -->
-      <div class="modal__content" id="modal-status" hidden>
-        <h2 id="status-title">Готово</h2>
-        <p id="status-text">Ваше сообщение отправлено.</p>
-        <button type="button" class="btn" data-close>Ок</button>
-      </div>
+      <!-- Низ модалки: системные сообщения -->
+      <div id="toast" class="toast hidden"></div>
     </div>
   </div>
 
