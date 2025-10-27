@@ -1,83 +1,121 @@
-:root{
-  --bg:#06070d;
-  --cyan:#00fff2;
-  --white:#fff;
-  --pink:#ff00ff;
-  --green:#12ff61;
-}
-
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  background: radial-gradient(circle at center, #000010 30%, #000 100%);
-  color:var(--cyan);
+/* ===== ФОН САЙТА ===== */
+body {
+  margin: 0;
+  background: #000C13;
   font-family: Arial, sans-serif;
-  overflow:hidden;
+  overflow-x: hidden;
+  color: #fff;
 }
 
-#title-layer{
-  position:absolute;left:50%;top:3%;
-  transform:translateX(-50%);
-  text-align:center;z-index:2;pointer-events:none;
-}
-#title-layer h1{
-  margin:0;font-size:68px;
-  color:rgba(0,255,255,.16);
-  text-shadow:0 0 30px rgba(0,255,255,.35);
-}
-.subtitle{
-  margin-top:8px;font-size:22px;color:rgba(0,255,255,.25);
+h1 {
+  font-size: 64px;
+  font-weight: 800;
+  color: #00F7FF;
+  text-shadow: 0 0 20px #00F7FF;
+  text-align: center;
+  margin-top: 30px;
 }
 
-/* Сцена */
-#container{position:fixed;inset:0;z-index:1;overflow:hidden}
-#wrapper{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);transform-origin:center}
+.subtitle {
+  text-align: center;
+  font-size: 24px;
+  color: #61FFFF;
+  margin-top: 10px;
+}
 
-/* === МОДАЛКА === */
-.modal{position:fixed;inset:0;display:none;z-index:1000}
-.modal.show{display:block}
-.modal__backdrop{
-  position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter: blur(4px);
+/* ===== РАЗМЕТКА СЦЕНЫ (оставил как у тебя) ===== */
+#container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
 }
-.modal__content{
-  position:absolute;left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:min(880px,calc(100vw - 28px));
-  background:rgba(0,0,0,.86);
-  border:2px solid var(--cyan);
-  box-shadow:0 0 28px var(--cyan), inset 0 0 28px rgba(0,255,255,.15);
-  border-radius:16px;padding:28px;
-  color:var(--white);
+#scene {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
-.modal__close{
-  position:absolute;right:12px;top:8px;
-  width:36px;height:36px;border:0;border-radius:9px;
-  font-size:28px;line-height:36px;text-align:center;
-  color:var(--cyan);background:transparent;cursor:pointer;
-}
-.modal__close:hover{transform:scale(1.08)}
-h2{margin:0 0 18px 0;color:var(--cyan);letter-spacing:.5px}
 
-/* формы */
-.form.hidden{display:none}
-.form__row{display:flex;gap:14px;align-items:center;margin:10px 0}
-.form__row label{min-width:240px;color:var(--cyan)}
-.form__row input,.form__row textarea{
-  flex:1 1 auto;border:1px solid rgba(0,255,255,.35);background:rgba(0,0,0,.6);
-  color:var(--white);border-radius:10px;padding:12px 14px;outline:none
+/* ===== MODAL UI ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  display: none;
+  z-index: 900;
 }
-.form__lead{margin:0 0 10px 0;color:#bff}
-.form__hint{margin:12px 0 18px 0;color:#9ff;font-size:13px;opacity:.9}
-.btn{
-  display:inline-block;border:0;border-radius:12px;padding:14px 18px;
-  background:var(--cyan);color:#002b2b;font-weight:700;cursor:pointer
-}
-.btn:hover{filter:brightness(1.05)}
-.btn--action{width:100%;margin-top:8px}
 
-/* тост */
-.toast{margin-top:14px;padding:12px 14px;border-radius:10px;font-weight:600}
-.toast.hidden{display:none}
-.toast.ok{background:#073; color:#bff}
-.toast.err{background:#430; color:#ffd}
+.overlay.show {
+  display: block;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  z-index: 1000;
+}
+.modal.show {
+  display: grid;
+}
+
+.modal-card {
+  width: min(90%, 600px);
+  padding: 25px;
+  background: rgba(2, 18, 20, 0.95);
+  border: 2px solid #00FFF6;
+  border-radius: 14px;
+  box-shadow: 0 0 14px #00FFF6;
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 30px;
+  color: #00FFF6;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-form input,
+.modal-form textarea {
+  background: #001418;
+  border: 1px solid #00FFF6;
+  padding: 10px 12px;
+  color: #D9FFFF;
+  border-radius: 8px;
+}
+
+.btn {
+  background: #00FFF6;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #012326;
+  border: 1px solid #00FFF6;
+  padding: 12px 18px;
+  border-radius: 10px;
+  display: none;
+  box-shadow: 0 0 12px #00FFF6;
+}
+.toast.show {
+  display: block;
+}
