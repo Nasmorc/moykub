@@ -1,242 +1,233 @@
-/*************************************************
- * КОНФИГ API
- *************************************************/
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec"; // ← твой актуальный /exec
+/**********************
+ *  КОНСТАНТЫ
+ **********************/
+const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
+// ВНИМАНИЕ: это тот самый “секрет” — он должен 1-в-1 совпадать с константой SECRET в твоём Apps Script
 const WEB_APP_SECRET = "MYKUB_SECRET_2025";
 
-/*************************************************
- * БАЗОВАЯ СЦЕНА (минимально — только клики)
- *************************************************/
-const wrapper = document.getElementById("wrapper");
-const scene = document.getElementById("scene");
+/*
+  — Не трогаю твою отрисовку сцены: предполагаю, что где-то дальше внизу у тебя создаются кубы,
+    у обычных кубов есть click → openRent(cubeId), у центра click → openAuction(), у Куба Добра click → openStory().
 
-// Пара орбит как пример (оставил твою структуру чисел)
-const orbitSettings = [
-  { count: 60, radius: 600, size: 36 }, // внешняя
-  { count: 44, radius: 480, size: 42 }, // средняя
-  { count: 26, radius: 360, size: 52 }, // внутренняя
-];
+  Если этих вызовов ещё нет — просто привяжи:
+    centerCubeEl.addEventListener('click', openAuction);
+    goodCubeEl.addEventListener('click', openStory);
+    обычныйКуб.addEventListener('click', () => openRent(number));
+*/
 
-let cubeNumber = 1;
+/**********************
+ *  УНИВЕРСАЛЬНОЕ ОКНО
+ **********************/
+const modal    = document.getElementById('modal');
+const modalBox = modal.querySelector('.modal__content');
+const modalTitle = document.getElementById('modal-title');
+const toast    = document.getElementById('toast');
 
-// Создаём орбиты с кубами
-orbitSettings.forEach((orbit) => {
-  for (let j = 0; j < orbit.count; j++) {
-    const cube = document.createElement("div");
-    cube.className = "cube";
-    cube.textContent = `#${cubeNumber}`;
-    cube.dataset.type = "rent";          // тип: обычная аренда
-    cube.dataset.cubeId = cubeNumber;    // номер для формы
+const formRent    = document.getElementById('form-rent');
+const formStory   = document.getElementById('form-story');
+const formAuction = document.getElementById('form-auction');
 
-    placeOnOrbit(cube, orbit.radius, j, orbit.count);
-    setCubeStyle(cube, orbit.size);
-    scene.appendChild(cube);
+function showToast(msg, ok=true){
+  toast.textContent = msg;
+  toast.classList.remove('hidden','ok','err');
+  toast.classList.add(ok ? 'ok' : 'err');
+}
 
-    cubeNumber++;
-  }
+function clearToast(){
+  toast.classList.add('hidden');
+  toast.textContent = '';
+}
+
+function showModal(which){
+  // показать только нужную форму
+  formRent.classList.add('hidden');
+  formStory.classList.add('hidden');
+  formAuction.classList.add('hidden');
+
+  clearToast();
+  modal.classList.add('show');
+
+  if(which === 'rent')   formRent.classList.remove('hidden');
+  if(which === 'story')  formStory.classList.remove('hidden');
+  if(which === 'auction')formAuction.classList.remove('hidden');
+}
+
+function closeModal(){
+  modal.classList.remove('show');
+  clearToast();
+}
+
+// закрытие: крестик, фон, Escape
+document.getElementById('modal-close').addEventListener('click', closeModal);
+modal.addEventListener('click', (e)=>{
+  if(e.target.dataset.close !== undefined) closeModal();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && modal.classList.contains('show')) closeModal();
 });
 
-// Центральный куб — АУКЦИОН
-const centerCube = document.createElement("div");
-centerCube.className = "cube cube--center";
-centerCube.textContent = "ЦЕНТР";
-centerCube.dataset.type = "auction";
-centerCube.style.left = "50%";
-centerCube.style.top = "50%";
-centerCube.style.transform = "translate(-50%, -50%)";
-scene.appendChild(centerCube);
-
-// Куб Добра
-const goodCube = document.createElement("div");
-goodCube.className = "cube cube--good";
-goodCube.textContent = "КУБ ДОБРА";
-goodCube.dataset.type = "story";
-goodCube.style.left = "50%";
-goodCube.style.top = "calc(50% + 170px)";
-goodCube.style.transform = "translateX(-50%)";
-scene.appendChild(goodCube);
-
-// геометрия
-function placeOnOrbit(el, radius, idx, total) {
-  const angle = (idx / total) * Math.PI * 2;
-  const x = Math.cos(angle) * radius;
-  const y = Math.sin(angle) * radius;
-  el.style.left = "50%";
-  el.style.top = "50%";
-  el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+/**********************
+ * ОТКРЫТИЯ МОДАЛОК
+ **********************/
+function openRent(cubeId){
+  modalTitle.textContent = `Заявка на аренду #${cubeId}`;
+  document.getElementById('rent-cubeId').value = cubeId;
+  document.getElementById('rent-name').value = '';
+  document.getElementById('rent-contact').value = '';
+  document.getElementById('rent-link').value = '';
+  document.getElementById('rent-message').value = '';
+  showModal('rent');
 }
 
-function setCubeStyle(cube, size) {
-  cube.style.width = `${size}px`;
-  cube.style.height = `${size}px`;
-  cube.style.fontSize = `${Math.round(size * 0.38)}px`;
+function openStory(){
+  modalTitle.textContent = 'КУБ ДОБРА';
+  document.getElementById('story-name').value = '';
+  document.getElementById('story-contact').value = '';
+  document.getElementById('story-text').value = '';
+  showModal('story');
 }
 
-/*************************************************
- * МОДАЛКИ
- *************************************************/
-const modal = document.getElementById("modal");
-const modalDialog = modal.querySelector(".modal__dialog");
-
-// формы
-const formRent    = document.getElementById("form-rent");
-const formStory   = document.getElementById("form-story");
-const formAuction = document.getElementById("form-auction");
-const statusBox   = document.getElementById("modal-status");
-const statusTitle = document.getElementById("status-title");
-const statusText  = document.getElementById("status-text");
-
-const rentCubeInput  = document.getElementById("rent-cube");
-const rentCubeLabel  = document.getElementById("rent-cube-label");
-
-// делегирование кликов по сцене
-scene.addEventListener("click", (e) => {
-  const cube = e.target.closest(".cube");
-  if (!cube) return;
-
-  const type = cube.dataset.type;
-  if (type === "rent") {
-    openModal("rent", { cubeId: cube.dataset.cubeId || "" });
-  } else if (type === "story") {
-    openModal("story");
-  } else if (type === "auction") {
-    openModal("auction");
-  }
-});
-
-// открытие
-function openModal(kind, data = {}) {
-  hideAllForms();
-
-  if (kind === "rent") {
-    rentCubeInput.value = data.cubeId || "";
-    rentCubeLabel.textContent = data.cubeId ? `#${data.cubeId}` : "";
-    formRent.hidden = false;
-  }
-  if (kind === "story") {
-    formStory.hidden = false;
-  }
-  if (kind === "auction") {
-    formAuction.hidden = false;
-  }
-
-  statusBox.hidden = true;
-
-  modal.setAttribute("aria-hidden", "false");
-  modal.classList.add("show");
+function openAuction(){
+  modalTitle.textContent = '💎 Аукцион центрального куба';
+  document.getElementById('auction-bid').value = '';
+  document.getElementById('auction-contact').value = '';
+  document.getElementById('auction-link').value = '';
+  document.getElementById('auction-comment').value = '';
+  showModal('auction');
 }
 
-// закрытие
-function closeModal() {
-  modal.classList.remove("show");
-  modal.setAttribute("aria-hidden", "true");
-  hideAllForms();
+/**********************
+ * ОТПРАВКА НА СЕРВЕР (в один формат)
+ **********************/
+async function sendToSheet(payload){
+  // Apps Script у нас читает данные из параметра payload (URL-encoded JSON)
+  const params = new URLSearchParams();
+  params.set('payload', JSON.stringify(payload));
+
+  // НИЖЕ — method: POST (но важен именно параметр payload)
+  const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+    body: params.toString()
+  });
+
+  const data = await res.json().catch(()=>({ok:false,error:'bad_json'}));
+  return data;
 }
 
-function hideAllForms() {
-  formRent.hidden = true;
-  formStory.hidden = true;
-  formAuction.hidden = true;
-  statusBox.hidden = true;
-}
-
-// крестики и фон
-modal.addEventListener("click", (e) => {
-  if (e.target === modal || e.target.hasAttribute("data-close")) {
-    closeModal();
-  }
-});
-modalDialog.addEventListener("click", (e) => e.stopPropagation());
-
-/*************************************************
- * ОТПРАВКА ФОРМ
- *************************************************/
-formRent.addEventListener("submit", async (e) => {
+/**********************
+ * ХЕНДЛЕРЫ ФОРМ
+ **********************/
+formRent.addEventListener('submit', async (e)=>{
   e.preventDefault();
+  clearToast();
+
+  const cubeId  = (document.getElementById('rent-cubeId').value || '').toString().replace('#','');
+  const name    = document.getElementById('rent-name').value.trim();
+  const contact = document.getElementById('rent-contact').value.trim();
+  const link    = document.getElementById('rent-link').value.trim();
+  const message = document.getElementById('rent-message').value.trim();
+
+  if(!cubeId || !name || !contact){
+    showToast('Заполни номер куба, имя и контакт.', false); return;
+  }
+
   const payload = {
-    type: "rent",
+    type: 'rent',
     secret: WEB_APP_SECRET,
-    cubeId: (document.getElementById("rent-cube").value || "").trim(),
-    name: (document.getElementById("rent-name").value || "").trim(),
-    contact: (document.getElementById("rent-contact").value || "").trim(),
-    link: (document.getElementById("rent-link").value || "").trim(),
-    message: (document.getElementById("rent-msg").value || "").trim()
+    cubeId, name, contact, link, message
   };
-  await postPayload(payload, "Заявка отправлена!", "Мы свяжемся с вами.");
-});
 
-formStory.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const payload = {
-    type: "story",
-    secret: WEB_APP_SECRET,
-    name: (document.getElementById("story-name").value || "").trim(),
-    contact: (document.getElementById("story-contact").value || "").trim(),
-    link: (document.getElementById("story-link").value || "").trim(),
-    story: (document.getElementById("story-text").value || "").trim()
-  };
-  await postPayload(payload, "История отправлена!", "Спасибо, мы обязательно прочтём.");
-});
-
-formAuction.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const payload = {
-    type: "auction",
-    secret: WEB_APP_SECRET,
-    bid: Number(document.getElementById("auction-bid").value || 0),
-    contact: (document.getElementById("auction-contact").value || "").trim(),
-    link: (document.getElementById("auction-link").value || "").trim(),
-    comment: (document.getElementById("auction-comment").value || "").trim()
-  };
-  await postPayload(payload, "Ставка принята!", "Удачи в аукционе!");
-});
-
-// отправка
-async function postPayload(payload, okTitle, okText) {
-  try {
-    const params = new URLSearchParams();
-    params.set("payload", JSON.stringify(payload));
-
-    const res = await fetch(WEB_APP_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-      body: params.toString()
-    });
-
-    const data = await res.json().catch(() => ({}));
-    if (data && data.ok) {
-      showStatus(okTitle, okText);
-    } else {
-      const msg = (data && data.error) ? String(data.error) : "Ошибка отправки";
-      showStatus("Ошибка", msg);
+  try{
+    const r = await sendToSheet(payload);
+    if(r.ok){
+      showToast('Заявка отправлена. Спасибо!');
+      setTimeout(closeModal, 800);
+    }else{
+      showToast('Ошибка: ' + (r.error || 'unknown'), false);
     }
-  } catch (err) {
-    showStatus("Ошибка сети", "Не удалось связаться с сервером.");
+  }catch(err){
+    showToast('Сеть: не удалось связаться с сервером.', false);
   }
-}
+});
 
-function showStatus(title, text) {
-  hideAllForms();
-  statusTitle.textContent = title;
-  statusText.textContent  = text;
-  statusBox.hidden = false;
-}
+formStory.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  clearToast();
 
-/*************************************************
- * МАСШТАБИРОВАНИЕ (как у тебя)
- *************************************************/
-let userScale = 1;
-function scaleScene() {
-  const cont = document.getElementById("container");
-  const w = cont.clientWidth;
-  const h = cont.clientHeight;
-  const maxR = 600; // радиус внешней орбиты
-  const padding = Math.min(w, h) * 0.08;
-  const sH = (h - padding * 2) / (maxR * 2);
-  const sW = (w - padding * 2) / (maxR * 2);
-  const s = Math.min(sH, sW) * userScale;
-  wrapper.style.transform = `translate(-50%, -50%) scale(${s})`;
-}
-window.addEventListener("resize", scaleScene);
-window.addEventListener("load", scaleScene);
-scaleScene();
+  const name    = document.getElementById('story-name').value.trim();
+  const contact = document.getElementById('story-contact').value.trim();
+  const story   = document.getElementById('story-text').value.trim();
+
+  if(!name || !contact || !story){
+    showToast('Имя, контакт и история обязательны.', false); return;
+  }
+
+  const payload = {
+    type: 'story',
+    secret: WEB_APP_SECRET,
+    name, contact, story
+  };
+
+  try{
+    const r = await sendToSheet(payload);
+    if(r.ok){
+      showToast('История отправлена. Спасибо!');
+      setTimeout(closeModal, 800);
+    }else{
+      showToast('Ошибка: ' + (r.error || 'unknown'), false);
+    }
+  }catch(err){
+    showToast('Сеть: не удалось связаться с сервером.', false);
+  }
+});
+
+formAuction.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  clearToast();
+
+  const bid     = document.getElementById('auction-bid').value.trim();
+  const contact = document.getElementById('auction-contact').value.trim();
+  const link    = document.getElementById('auction-link').value.trim();
+  const comment = document.getElementById('auction-comment').value.trim();
+
+  if(!bid || !contact){
+    showToast('Нужны ставка и контакт.', false); return;
+  }
+
+  const payload = {
+    type: 'auction',
+    secret: WEB_APP_SECRET,
+    bid, contact, link, comment
+  };
+
+  try{
+    const r = await sendToSheet(payload);
+    if(r.ok){
+      showToast('Ставка принята! Удачи в аукционе.');
+      setTimeout(closeModal, 800);
+    }else{
+      showToast('Ошибка: ' + (r.error || 'unknown'), false);
+    }
+  }catch(err){
+    showToast('Сеть: не удалось связаться с сервером.', false);
+  }
+});
+
+/********************************************
+ * НИЖЕ — пример привязки кликов (если нужно)
+ ********************************************/
+/*
+// пример: при создании обычных кубов
+document.querySelectorAll('.cube.rent').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    openRent(el.dataset.cubeId); // где data-cube-id проставляешь при генерации
+  });
+});
+
+// центральный куб:
+document.getElementById('center-cube').addEventListener('click', openAuction);
+
+// куб добра:
+document.getElementById('good-cube').addEventListener('click', openStory);
+*/
