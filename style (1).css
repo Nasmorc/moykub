@@ -1,0 +1,176 @@
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #000010 30%, #000 100%);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Arial", sans-serif;
+  color: #00fff2;
+}
+
+/* Заголовок */
+#title-layer {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 0;           /* за сценой */
+  pointer-events: none;
+}
+
+h1 {
+  font-size: 72px;
+  color: rgba(0, 255, 255, 0.15);
+  text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 24px;
+  color: rgba(0, 255, 255, 0.2);
+  margin: 10px 0 0;
+}
+
+/* Контейнер */
+#container {
+  position: fixed;
+  inset: 0;
+  z-index: 1;          /* сцена над заголовком */
+  overflow: hidden;
+}
+
+/* Обёртка — центр сцены */
+#wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+}
+
+/* Сцена */
+#scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+}
+
+/* Кубы */
+.cube {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  border: 2px solid #00fff2;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00fff2, 0 0 20px #00fff2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: #00fff2;
+  background: transparent;
+}
+
+/* === Модалки === */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-content {
+  position: relative;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid cyan;
+  box-shadow: 0 0 25px cyan, inset 0 0 25px cyan;
+  border-radius: 15px;
+  padding: 30px 40px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  color: #fff;
+  animation: popIn 0.35s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.close {
+  color: cyan;
+  font-size: 32px;
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.close:hover { color: #fff; transform: scale(1.1); }
+
+.modal-btn {
+  background: cyan;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+.modal-btn:hover { background: #00ffaa; transform: scale(1.05); }
+
+/* Поля форм */
+#storyForm, #rentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+#storyForm input, #storyForm textarea,
+#rentForm input,  #rentForm  textarea {
+  background: rgba(0,255,255,0.05);
+  border: 1px solid cyan;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 15px;
+  outline: none;
+}
+#storyForm textarea, #rentForm textarea {
+  resize: vertical; min-height: 90px;
+}
+
+/* Уведомления */
+#notify {
+  position: fixed;
+  bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 255, 255, 0.15);
+  border: 1px solid #00fff2;
+  box-shadow: 0 0 15px #00fff2;
+  color: #00fff2;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 18px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease, bottom 0.5s ease;
+  z-index: 2000;
+}
+#notify.show { opacity: 1; bottom: 60px; }
