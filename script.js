@@ -1,103 +1,41 @@
-// === НАСТРОЙКИ ===
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
-const WEB_APP_SECRET = "MYKUB_SECRET_2025";
+document.addEventListener("DOMContentLoaded", () => {
 
-// === ГЛАВНАЯ ФУНКЦИЯ ОТПРАВКИ ===
-async function sendToSheet(type, dataObj) {
-    const data = {
-        secret: WEB_APP_SECRET,
-        type,
-        ...dataObj
+    const container = document.getElementById("container");
+
+    const CONFIG = {
+        totalCubes: 130,
+        center: {
+            label: "ЦЕНТР",
+            class: "cube center"
+        },
+        goodCube: {
+            label: "КУБ ДОБРА",
+            class: "cube good"
+        },
+        heroes: [
+            { label: "Герой 1", class: "cube hero" },
+            { label: "Герой 2", class: "cube hero" },
+            { label: "Герой 3", class: "cube hero" }
+        ]
     };
 
-    try {
-        const res = await fetch(WEB_APP_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
+    function createCube(label, className) {
+        const cube = document.createElement("div");
+        cube.className = className;
+        cube.textContent = label;
+        return cube;
+    }
 
-        const json = await res.json();
-        console.log("Ответ сервера:", json);
-
-        if (json.ok) {
-            alert("✅ Успешно отправлено!");
-            closeModals();
-        } else {
-            alert("⚠ Ошибка сервера: " + json.error);
+    function renderCubes() {
+        for (let i = 1; i <= CONFIG.totalCubes; i++) {
+            container.appendChild(createCube(`#${i}`, "cube orbit"));
         }
-
-    } catch (err) {
-        alert("❌ Ошибка сети: " + err.message);
-        console.error(err);
+        container.appendChild(createCube(CONFIG.heroes[0].label, CONFIG.heroes[0].class));
+        container.appendChild(createCube(CONFIG.center.label, CONFIG.center.class));
+        container.appendChild(createCube(CONFIG.heroes[1].label, CONFIG.heroes[1].class));
+        container.appendChild(createCube(CONFIG.goodCube.label, CONFIG.goodCube.class));
+        container.appendChild(createCube(CONFIG.heroes[2].label, CONFIG.heroes[2].class));
     }
-}
 
-// === МОДАЛКИ ===
-const overlay = document.getElementById("overlay");
-const modalRent = document.getElementById("modal-rent");
-const modalAuction = document.getElementById("modal-auction");
-
-// Закрытие модалок
-overlay.onclick = closeModals;
-document.querySelectorAll(".close-modal").forEach(btn =>
-    btn.onclick = closeModals
-);
-
-function closeModals() {
-    overlay.style.display = "none";
-    modalRent.style.display = "none";
-    modalAuction.style.display = "none";
-}
-
-// === КЛИК НА КУБ ===
-document.addEventListener("click", e => {
-    const cube = e.target.closest(".cube");
-    if (!cube) return;
-
-    const idText = cube.textContent.trim();
-
-    if (idText === "Центр") {
-        openModalAuction("Центральный куб");
-    } else if (idText.startsWith("#")) {
-        const number = idText.slice(1);
-        openModalRent(number);
-    }
+    renderCubes();
 });
-
-// === ОТКРЫТИЕ ФОРМ ===
-function openModalRent(num) {
-    document.getElementById("rent-cube").value = num;
-    overlay.style.display = "block";
-    modalRent.style.display = "block";
-}
-
-function openModalAuction(label) {
-    document.getElementById("auction-label").innerText = label;
-    overlay.style.display = "block";
-    modalAuction.style.display = "block";
-}
-
-// === КНОПКИ ОТПРАВКИ ===
-
-// 🔹 Аренда обычного куба
-document.getElementById("send-rent").onclick = () => {
-    sendToSheet("rent", {
-        cubeId: document.getElementById("rent-cube").value,
-        name: document.getElementById("rent-name").value,
-        contact: document.getElementById("rent-contact").value,
-        link: document.getElementById("rent-link").value,
-        message: document.getElementById("rent-msg").value
-    });
-};
-
-// 🔸 Ставка на аукцион центра
-document.getElementById("send-auction").onclick = () => {
-    sendToSheet("auction", {
-        bid: document.getElementById("auction-bid").value,
-        name: document.getElementById("auction-name").value,
-        contact: document.getElementById("auction-contact").value,
-        link: document.getElementById("auction-link").value,
-        message: document.getElementById("auction-msg").value
-    });
-};
