@@ -1,341 +1,91 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>МОЙ КУБ</title>
-<link rel="stylesheet" href="style.css">
-
-<style>
-body {
-  margin: 0;
-  background: #02060d;
-  font-family: Arial, sans-serif;
-  color: #00f2ff;
-  text-align: center;
-  overflow-x: hidden;
-}
-
-h1 {
-  font-size: 70px;
-  margin-top: 20px;
-  text-shadow: 0 0 25px #00f2ff;
-}
-
-h2 {
-  font-size: 24px;
-  margin-top: -20px;
-  margin-bottom: 50px;
-}
-
-#cube-container {
-  width: 1400px;
-  height: 1400px;
-  position: relative;
-  margin: 0 auto;
-}
-
-.cube {
-  width: 50px;
-  height: 50px;
-  background: rgba(0,255,255,0.1);
-  border: 2px solid #00f2ff;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #00f2ff;
-  position: absolute;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.cube:hover {
-  transform: scale(1.25);
-  box-shadow: 0 0 15px #00f2ff;
-}
-
-.center-cube {
-  background: rgba(255,0,255,0.1);
-  border: 2px solid #ff00ff;
-}
-
-.good-cube {
-  background: rgba(0,255,0,0.1);
-  border: 2px solid #4aff00;
-}
-
-.hero-cube {
-  background: rgba(255,0,255,0.15);
-  border: 2px solid #ff00ff;
-}
-
-/* === Modal === */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.7);
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #00121c;
-  padding: 20px;
-  border-radius: 12px;
-  width: 750px;
-  max-width: 90%;
-  color: #00eaff;
-  border: 2px solid #00eaff;
-  text-align: left;
-}
-
-.modal-close {
-  color: #ff5050;
-  cursor: pointer;
-  font-size: 26px;
-  float: right;
-  font-weight: bold;
-}
-
-input, textarea {
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  background: #00eaff;
-  color: black;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-button:hover {
-  background: #00d5e0;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>МОЙ КУБ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>МОЙ КУБ</h1>
-<h2>Куб Добра и Герои месяца</h2>
 
-<div id="cube-container"></div>
-
-<!-- ✅ MODAL -->
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <span id="modal-close" class="modal-close">×</span>
-    <div id="modal-body">Загрузка…</div>
+  <div id="title-layer">
+    <h1>МОЙ КУБ</h1>
+    <div class="subtitle">Куб Добра и Герои месяца</div>
   </div>
-</div>
-<script>
-// ======================
-// OPEN MODAL
-// ======================
-function openModal(html) {
-  document.getElementById("modal-body").innerHTML = html;
-  document.getElementById("modal").style.display = "flex";
-}
 
-// CLOSE MODAL
-document.getElementById("modal-close").onclick = () => {
-  document.getElementById("modal").style.display = "none";
-};
-window.onclick = (e) => {
-  if (e.target === document.getElementById("modal")) {
-    document.getElementById("modal").style.display = "none";
-  }
-};
+  <div id="container">
+    <div id="wrapper">
+      <div id="scene"></div>
+    </div>
+  </div>
 
-// ✅ Google Apps Script API
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
-const SECRET = "MYKUB_SECRET_2025";
+  <!-- ===== OVERLAY ===== -->
+  <div id="overlay" class="overlay"></div>
 
-// ✅ Common send function
-async function sendToServer(payload) {
-  payload.secret = SECRET;
-  try {
-    const res = await fetch(WEB_APP_URL, {
-      method: "POST",
-      headers: {"Content-Type": "text/plain"},
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || "Unknown error");
-    alert("✅ Заявка отправлена!");
-    document.getElementById("modal").style.display = "none";
-  } catch (e) {
-    alert("❌ Ошибка: " + e);
-  }
-}
+  <!-- ===== MODAL RENT ===== -->
+  <div id="modal-rent" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>Заявка на аренду <span id="rent-cube-title"></span></h2>
+      <form id="form-rent" class="modal-form">
+        <input id="rent-cube" type="text" readonly>
+        <input id="rent-name" type="text" placeholder="Имя" required>
+        <input id="rent-contact" type="text" placeholder="Телеграм / Телефон" required>
+        <input id="rent-link" type="url" placeholder="Ссылка (на профиль / сайт)">
+        <textarea id="rent-message" rows="3"
+          placeholder="Кратко опишите, что хотите разместить"></textarea>
+        <button type="submit" class="btn">Отправить заявку</button>
+      </form>
+    </div>
+  </div>
 
-// ✅ FORM: RENT
-function showRentForm(cubeId) {
-  openModal(`
-    <h3>Заявка на аренду куба #${cubeId}</h3>
-    <input id="rentName" placeholder="Имя"/>
-    <input id="rentContact" placeholder="Контакт (телеграм / телефон)"/>
-    <input id="rentLink" placeholder="Ссылка (на профиль / сайт)"/>
-    <textarea id="rentMsg" placeholder="Что хотите разместить?"></textarea>
-    <button onclick="submitRent(${cubeId})">Отправить</button>
-  `);
-}
-function submitRent(cubeId) {
-  sendToServer({
-    type: "rent",
-    cubeId,
-    name: document.getElementById("rentName").value,
-    contact: document.getElementById("rentContact").value,
-    link: document.getElementById("rentLink").value,
-    message: document.getElementById("rentMsg").value
-  });
-}
+  <!-- ===== MODAL AUCTION ===== -->
+  <div id="modal-auction" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>💎 Аукцион центрального куба</h2>
+      <form id="form-auction" class="modal-form">
+        <input id="auction-bid" type="number" placeholder="Ставка" min="1" required>
+        <input id="auction-contact" type="text" placeholder="Контакт" required>
+        <input id="auction-link" type="url" placeholder="Ссылка (на профиль / сайт)">
+        <textarea id="auction-comment" rows="3" placeholder="Комментарий"></textarea>
+        <button type="submit" class="btn">Сделать ставку</button>
+      </form>
+    </div>
+  </div>
 
-// ✅ FORM: GOOD CUBE (История)
-function showGoodForm() {
-  openModal(`
-    <h3>Куб Добра — рассказать историю</h3>
-    <input id="storyName" placeholder="Ваше имя"/>
-    <input id="storyContact" placeholder="Контакт для связи"/>
-    <textarea id="storyText" placeholder="Опишите ситуацию"></textarea>
-    <button onclick="submitStory()">Отправить историю</button>
-  `);
-}
-function submitStory() {
-  sendToServer({
-    type: "story",
-    name: document.getElementById("storyName").value,
-    contact: document.getElementById("storyContact").value,
-    story: document.getElementById("storyText").value
-  });
-}
+  <!-- ===== MODAL STORY ===== -->
+  <div id="modal-story" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>Рассказать о своей ситуации</h2>
+      <form id="form-story" class="modal-form">
+        <input id="story-name" type="text" placeholder="Имя" required>
+        <input id="story-contact" type="text" placeholder="Контакт" required>
+        <textarea id="story-text" rows="4" placeholder="Опиши свою ситуацию" required></textarea>
+        <button type="submit" class="btn">Отправить</button>
+      </form>
+    </div>
+  </div>
 
-// ✅ FORM: HERO
-function showHeroForm() {
-  openModal(`
-    <h3>Стать Героем месяца</h3>
-    <input id="heroName" placeholder="Ваше имя / бренд"/>
-    <input id="heroContact" placeholder="Контакт"/>
-    <textarea id="heroReason" placeholder="Кого и как вы помогли?"></textarea>
-    <button onclick="submitHero()">Отправить</button>
-  `);
-}
-function submitHero() {
-  sendToServer({
-    type: "hero",
-    heroName: document.getElementById("heroName").value,
-    contact: document.getElementById("heroContact").value,
-    reason: document.getElementById("heroReason").value
-  });
-}
+  <!-- ===== MODAL HERO ===== -->
+  <div id="modal-hero" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>Заявка героя месяца</h2>
+      <form id="form-hero" class="modal-form">
+        <input id="hero-name" type="text" placeholder="Имя героя" required>
+        <input id="hero-contact" type="text" placeholder="Контакт" required>
+        <input id="hero-link" type="url" placeholder="Ссылка (на профиль / сайт)">
+        <textarea id="hero-reason" rows="4" placeholder="За что награждаем?" required></textarea>
+        <button type="submit" class="btn">Отправить</button>
+      </form>
+    </div>
+  </div>
 
-// ✅ FORM: AUCTION
-function showAuctionForm() {
-  openModal(`
-    <h3>💎 Аукцион центрального куба</h3>
-    <input id="auctionBid" type="number" placeholder="Ставка (₽)"/>
-    <input id="auctionContact" placeholder="Контакт"/>
-    <input id="auctionLink" placeholder="Ссылка на профиль / сайт"/>
-    <textarea id="auctionMsg" placeholder="Комментарий (необязательно)"></textarea>
-    <button onclick="submitAuction()">Сделать ставку</button>
-  `);
-}
-function submitAuction() {
-  sendToServer({
-    type: "auction",
-    bid: document.getElementById("auctionBid").value,
-    contact: document.getElementById("auctionContact").value,
-    link: document.getElementById("auctionLink").value,
-    message: document.getElementById("auctionMsg").value
-  });
-}
-</script>
-<script>
-// ========= КОНФИГУРАЦИЯ КУБОВ =========
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
 
-// Центральный куб — всегда аукцион
-const centerCubeId = "CENTER";
-
-// Куб Добра
-const goodCubeId = "GOOD";
-
-// Кубы Героя (может быть несколько)
-const heroCubes = ["HERO1", "HERO2", "HERO3"];
-
-// Кубы обычной аренды
-const rentCubes = Array.from({ length: 130 }, (_, i) => i + 1); // #1..#130
-
-
-// ====== РЕНДЕРИМ ВСЁ ======
-function renderCubes() {
-  const wrapper = document.getElementById("wrapper");
-  wrapper.innerHTML = ""; // очистка
-
-
-  // 🔹 Центральный куб
-  const center = createCube(centerCubeId, "ЦЕНТР", "center-cube");
-  center.onclick = () => showAuctionForm();
-  wrapper.appendChild(center);
-
-
-  // 🔹 Куб Добра
-  const good = createCube(goodCubeId, "КУБ ДОБРА", "good-cube");
-  good.onclick = () => showGoodForm();
-  wrapper.appendChild(good);
-
-
-  // 🔹 Кубы Героя
-  heroCubes.forEach((id, index) => {
-    const el = createCube(id, "Герой " + (index + 1), "hero-cube");
-    el.onclick = () => showHeroForm();
-    wrapper.appendChild(el);
-  });
-
-
-  // 🔹 Обычные кубы
-  rentCubes.forEach(num => {
-    const el = createCube(num, "#" + num);
-    el.onclick = () => showRentForm(num);
-    wrapper.appendChild(el);
-  });
-
-
-  positionCubes();
-}
-
-
-// ====== СОЗДАНИЕ ЭЛЕМЕНТА КУБА ======
-function createCube(id, label, extraClass = "") {
-  const cube = document.createElement("div");
-  cube.className = "cube " + extraClass;
-  cube.dataset.id = id;
-  cube.textContent = label;
-  return cube;
-}
-
-
-// ====== ПОЗИЦИИ НА ОРБИТЕ ======
-// 💡 Полная твоя анимация пока остаётся как была!
-// Я просто вызову твою функцию позиционирования
-function positionCubes() {
-  if (typeof updateCubePositions === "function") {
-    updateCubePositions();
-  }
-}
-
-
-// Инициализация
-renderCubes();
-</script>
+  <script src="script.js"></script>
+</body>
+</html>
