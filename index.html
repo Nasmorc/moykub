@@ -1,107 +1,142 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>МОЙ КУБ</title>
-  <link rel="stylesheet" href="style.css"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МОЙ КУБ</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+  margin: 0;
+  background: #02060d;
+  font-family: Arial, sans-serif;
+  color: #00f2ff;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+h1 {
+  font-size: 70px;
+  margin-top: 20px;
+  text-shadow: 0 0 25px #00f2ff;
+}
+
+h2 {
+  font-size: 24px;
+  margin-top: -20px;
+  margin-bottom: 50px;
+}
+
+#cube-container {
+  width: 1400px;
+  height: 1400px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.cube {
+  width: 50px;
+  height: 50px;
+  background: rgba(0,255,255,0.1);
+  border: 2px solid #00f2ff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #00f2ff;
+  position: absolute;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.cube:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 15px #00f2ff;
+}
+
+.center-cube {
+  background: rgba(255,0,255,0.1);
+  border: 2px solid #ff00ff;
+}
+
+.good-cube {
+  background: rgba(0,255,0,0.1);
+  border: 2px solid #4aff00;
+}
+
+.hero-cube {
+  background: rgba(255,0,255,0.15);
+  border: 2px solid #ff00ff;
+}
+
+/* === Modal === */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #00121c;
+  padding: 20px;
+  border-radius: 12px;
+  width: 750px;
+  max-width: 90%;
+  color: #00eaff;
+  border: 2px solid #00eaff;
+  text-align: left;
+}
+
+.modal-close {
+  color: #ff5050;
+  cursor: pointer;
+  font-size: 26px;
+  float: right;
+  font-weight: bold;
+}
+
+input, textarea {
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: #00eaff;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+button:hover {
+  background: #00d5e0;
+}
+</style>
 </head>
 <body>
-  <div id="title-layer">
-    <h1>МОЙ КУБ</h1>
-    <div class="subtitle">Куб Добра и Герои месяца</div>
+<h1>МОЙ КУБ</h1>
+<h2>Куб Добра и Герои месяца</h2>
+
+<div id="cube-container"></div>
+
+<!-- ✅ MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span id="modal-close" class="modal-close">×</span>
+    <div id="modal-body">Загрузка…</div>
   </div>
-
-  <!-- Сцена (тут остаётся твоя отрисовка орбит через JS) -->
-  <div id="container">
-    <div id="wrapper">
-      <div id="scene"></div>
-    </div>
-  </div>
-
-  <!-- ===== Универсальная модалка (одно окно на все типы заявок) ===== -->
-  <div id="modal" class="modal">
-    <div class="modal__backdrop" data-close></div>
-
-    <div class="modal__content">
-      <button type="button" class="modal__close" id="modal-close" aria-label="Закрыть">×</button>
-
-      <h2 id="modal-title">Заявка</h2>
-
-      <!-- Форма аренды / аукциона (динамически показываю нужные поля) -->
-      <form id="form-rent" class="form hidden" autocomplete="off">
-        <div class="form__row">
-          <label>Номер куба</label>
-          <input id="rent-cubeId" type="text" readonly>
-        </div>
-        <div class="form__row">
-          <label>Имя</label>
-          <input id="rent-name" type="text" placeholder="Имя"/>
-        </div>
-        <div class="form__row">
-          <label>Контакт (телеграм / телефон)</label>
-          <input id="rent-contact" type="text" placeholder="@ник или номер"/>
-        </div>
-        <div class="form__row">
-          <label>Ссылка (на профиль / сайт)</label>
-          <input id="rent-link" type="url" placeholder="https://..."/>
-        </div>
-        <div class="form__row">
-          <label>Комментарий</label>
-          <textarea id="rent-message" rows="3" placeholder="Кратко опишите, что хотите разместить"></textarea>
-        </div>
-        <button type="submit" class="btn btn--action">Отправить заявку</button>
-      </form>
-
-      <!-- Форма КУБ ДОБРА (история) -->
-      <form id="form-story" class="form hidden" autocomplete="off">
-        <div class="form__row">
-          <label>Имя</label>
-          <input id="story-name" type="text" placeholder="Имя"/>
-        </div>
-        <div class="form__row">
-          <label>Контакт (телеграм / телефон)</label>
-          <input id="story-contact" type="text" placeholder="@ник или номер"/>
-        </div>
-        <div class="form__row">
-          <label>Ваша история/ситуация</label>
-          <textarea id="story-text" rows="5" placeholder="Кратко опишите, что происходит"></textarea>
-        </div>
-
-        <div class="form__hint">
-          * После модерации история будет опубликована на неделю. Ниже появится кнопка “Готов помочь”.
-        </div>
-
-        <button type="submit" class="btn btn--action">Отправить</button>
-      </form>
-
-      <!-- Форма АУКЦИОН (центр) -->
-      <form id="form-auction" class="form hidden" autocomplete="off">
-        <p class="form__lead">Укажи свою ставку и контакт. Победитель получает центр на месяц.</p>
-        <div class="form__row">
-          <label>Ставка (число)</label>
-          <input id="auction-bid" type="number" min="1" step="1" placeholder="Например, 1000"/>
-        </div>
-        <div class="form__row">
-          <label>Контакт (телеграм / телефон)</label>
-          <input id="auction-contact" type="text" placeholder="@ник или номер"/>
-        </div>
-        <div class="form__row">
-          <label>Ссылка (на профиль / сайт)</label>
-          <input id="auction-link" type="url" placeholder="https://..."/>
-        </div>
-        <div class="form__row">
-          <label>Комментарий (необязательно)</label>
-          <textarea id="auction-comment" rows="3" placeholder="Кратко поясни, что будешь размещать"></textarea>
-        </div>
-        <button type="submit" class="btn btn--action">Сделать ставку</button>
-      </form>
-
-      <!-- Низ модалки: системные сообщения -->
-      <div id="toast" class="toast hidden"></div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
+</div>
