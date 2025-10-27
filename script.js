@@ -1,76 +1,178 @@
-// === URL твоего Google Apps Script ===
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
-const WEB_APP_SECRET = "MYKUB_SECRET_2025";
+const wrapper = document.getElementById("wrapper");
 
-// === Элементы ===
-const modal = document.getElementById("rentModal");
-const closeBtn = document.getElementById("closeModal");
-const notify = document.getElementById("notify");
+// === Орбиты ===
+const orbitSettings = [
+  { count: 52, radius: 580, color: "#00fff2", size: 36 }, // внешняя
+  { count: 36, radius: 460, color: "#00fff2", size: 44 }, // средняя
+  { count: 21, radius: 340, color: "#00fff2", size: 54 }, // внутренняя
+];
 
-// === Закрытие модалки ===
-closeBtn.addEventListener("click", () => modal.classList.remove("show"));
-modal.addEventListener("click", (e) => {
-  if (e.target === modal) modal.classList.remove("show");
-});
+let cubeNumber = 1;
 
-// === Открыть форму аренды ===
-function openRentModal(cubeId) {
-  modal.classList.add("show");
-  document.getElementById("rentCubeId").value = cubeId;
-}
+// === Создаём кубы по орбитам ===
+orbitSettings.forEach((orbit) => {
+  for (let j = 0; j < orbit.count; j++) {
+    const cube = document.createElement("div");
+    cube.classList.add("cube");
+    cube.textContent = `#${cubeNumber}`;
+    cubeNumber++;
 
-// === Показ уведомления ===
-function showNotify(text, good = true) {
-  notify.innerText = text;
-  notify.style.borderColor = good ? "#0f0" : "#f00";
-  notify.classList.add("show");
-  setTimeout(() => notify.classList.remove("show"), 3500);
-}
+    const angle = (j / orbit.count) * Math.PI * 2;
+    const x = Math.cos(angle) * orbit.radius;
+    const y = Math.sin(angle) * orbit.radius;
 
-// === Отправка данных в Google ===
-async function sendToGoogle(type, payload) {
-  const body = {
-    secret: WEB_APP_SECRET,
-    type,
-    ...payload
-  };
-
-  try {
-    const r = await fetch(WEB_APP_URL, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(body)
+    cube.style.position = "absolute";
+    cube.style.left = "50%";
+    cube.style.top = "50%";
+    cube.style.width = `${orbit.size}px`;
+    cube.style.height = `${orbit.size}px`;
+    cube.style.fontSize = `${orbit.size * 0.4}px`;
+    cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    cube.style.borderColor = orbit.color;
+    cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
+    cube.style.transition = "transform 0.25s ease, box-shadow 0.25s ease";
+    cube.addEventListener("mouseenter", () => {
+      cube.style.transform += " scale(1.25)";
+      cube.style.boxShadow = `0 0 ${orbit.size * 1.8}px ${orbit.color}`;
     });
-
-    const data = await r.json();
-    if (data.ok) showNotify("✅ Заявка успешно отправлена!");
-    else throw new Error(data.error || "Ошибка сервера");
-  } catch(e) {
-    showNotify("❌ Ошибка: " + e.message, false);
+    cube.addEventListener("mouseleave", () => {
+      cube.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+      cube.style.boxShadow = `0 0 ${orbit.size * 0.9}px ${orbit.color}`;
+    });
+    wrapper.appendChild(cube);
   }
+});
+
+// === Центральный куб ===
+const centerCube = document.createElement("div");
+centerCube.classList.add("cube");
+centerCube.textContent = "ЦЕНТР";
+Object.assign(centerCube.style, {
+  width: "110px",
+  height: "110px",
+  fontSize: "18px",
+  borderColor: "#ff00ff",
+  boxShadow: "0 0 25px #ff00ff, 0 0 40px #ff00ff",
+  position: "absolute",
+  left: "50%",
+  top: "50%",
+  transform: "translate(-50%, -50%)",
+  zIndex: "10",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+});
+centerCube.addEventListener("mouseenter", () => {
+  centerCube.style.transform = "translate(-50%, -50%) scale(1.15)";
+  centerCube.style.boxShadow = "0 0 60px #ff00ff, 0 0 90px #ff00ff";
+});
+centerCube.addEventListener("mouseleave", () => {
+  centerCube.style.transform = "translate(-50%, -50%) scale(1)";
+  centerCube.style.boxShadow = "0 0 25px #ff00ff, 0 0 40px #ff00ff";
+});
+wrapper.appendChild(centerCube);
+
+// === Куб Добра ===
+const goodCube = document.createElement("div");
+goodCube.classList.add("cube");
+goodCube.textContent = "КУБ ДОБРА";
+Object.assign(goodCube.style, {
+  width: "80px",
+  height: "80px",
+  fontSize: "14px",
+  borderColor: "#00ff00",
+  boxShadow: "0 0 25px #00ff00",
+  position: "absolute",
+  left: "50%",
+  top: "calc(50% + 150px)",
+  transform: "translateX(-50%)",
+  zIndex: "9",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+});
+goodCube.addEventListener("mouseenter", () => {
+  goodCube.style.transform = "translateX(-50%) scale(1.15)";
+  goodCube.style.boxShadow = "0 0 50px #00ff00, 0 0 90px #00ff00";
+});
+goodCube.addEventListener("mouseleave", () => {
+  goodCube.style.transform = "translateX(-50%) scale(1)";
+  goodCube.style.boxShadow = "0 0 25px #00ff00";
+});
+wrapper.appendChild(goodCube);
+
+// === Герои ===
+const heroes = [
+  { label: "Герой 1", baseAngle: 210 },
+  { label: "Герой 2", baseAngle: 330 },
+  { label: "Герой 3", baseAngle: 90 },
+];
+const heroRadius = 250;
+const heroSpeed = 0.008;
+
+heroes.forEach(hero => {
+  const cube = document.createElement("div");
+  cube.classList.add("cube");
+  cube.textContent = hero.label;
+  Object.assign(cube.style, {
+    width: "70px",
+    height: "70px",
+    fontSize: "13px",
+    borderColor: "#ff00ff",
+    boxShadow: "0 0 20px #ff00ff",
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transition: "transform 0.25s ease, box-shadow 0.25s ease",
+  });
+  cube.dataset.angle = (hero.baseAngle * Math.PI) / 180;
+
+  cube.addEventListener("mouseenter", () => {
+    cube.style.transform += " scale(1.2)";
+    cube.style.boxShadow = "0 0 50px #ff00ff, 0 0 80px #ff00ff";
+  });
+  cube.addEventListener("mouseleave", () => {
+    cube.style.boxShadow = "0 0 20px #ff00ff";
+  });
+
+  wrapper.appendChild(cube);
+  hero.element = cube;
+});
+
+// === Анимация вращения героев ===
+function animateHeroes() {
+  heroes.forEach(hero => {
+    let angle = parseFloat(hero.element.dataset.angle);
+    const x = Math.cos(angle) * heroRadius;
+    const y = Math.sin(angle) * heroRadius;
+    hero.element.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    hero.element.dataset.angle = angle + heroSpeed;
+  });
+  requestAnimationFrame(animateHeroes);
+}
+animateHeroes();
+
+// === Масштабирование ===
+let userScale = 1;
+function scaleScene() {
+  const container = document.getElementById("container");
+  const availableWidth = container.clientWidth;
+  const availableHeight = container.clientHeight;
+
+  const maxRadius = Math.max(...orbitSettings.map(o => o.radius)) + 250;
+  const neededSize = maxRadius * 2.6;
+  const scaleX = (availableWidth * 0.9) / neededSize;
+  const scaleY = (availableHeight * 0.9) / neededSize;
+  const baseScale = Math.min(scaleX, scaleY);
+
+  const totalScale = baseScale * userScale;
+  wrapper.style.transform = `translate(-50%, -50%) scale(${totalScale})`;
 }
 
-// === Отправка обычной аренды ===
-document.getElementById("rentSubmit").addEventListener("click", () => {
-  sendToGoogle("rent", {
-    cubeId: document.getElementById("rentCubeId").value,
-    name: document.getElementById("rentName").value,
-    contact: document.getElementById("rentContact").value,
-    link: document.getElementById("rentLink").value,
-    message: document.getElementById("rentMsg").value
-  });
+window.addEventListener("resize", scaleScene);
+scaleScene();
 
-  modal.classList.remove("show");
-});
-
-// === Отправка на АУКЦИОН ===
-document.getElementById("auctionSubmit").addEventListener("click", () => {
-  sendToGoogle("auction", {
-    bid: document.getElementById("auctionBid").value,
-    contact: document.getElementById("auctionContact").value,
-    link: document.getElementById("auctionLink").value,
-    message: document.getElementById("auctionMsg").value
-  });
-
-  modal.classList.remove("show");
-});
+window.addEventListener("wheel", (e) => {
+  if (e.ctrlKey || e.altKey || e.metaKey) {
+    e.preventDefault();
+    const delta = -e.deltaY * 0.001;
+    userScale = Math.min(Math.max(userScale + delta, 0.2), 5);
+    scaleScene();
+  }
+}, { passive: false });
