@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <div id="title-layer">
     <h1>МОЙ КУБ</h1>
     <div class="subtitle">Куб Добра и Герои месяца</div>
@@ -18,73 +17,6 @@
       <div id="scene"></div>
     </div>
   </div>
-
-  <!-- ===== OVERLAY ===== -->
-  <div id="overlay" class="overlay"></div>
-
-  <!-- ===== MODAL RENT ===== -->
-  <div id="modal-rent" class="modal">
-    <div class="modal-card">
-      <button class="modal-close" data-close>&times;</button>
-      <h2>Заявка на аренду <span id="rent-cube-title"></span></h2>
-      <form id="form-rent" class="modal-form">
-        <input id="rent-cube" type="text" readonly>
-        <input id="rent-name" type="text" placeholder="Имя" required>
-        <input id="rent-contact" type="text" placeholder="Телеграм / Телефон" required>
-        <input id="rent-link" type="url" placeholder="Ссылка (на профиль / сайт)">
-        <textarea id="rent-message" rows="3"
-          placeholder="Кратко опишите, что хотите разместить"></textarea>
-        <button type="submit" class="btn">Отправить заявку</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ===== MODAL AUCTION ===== -->
-  <div id="modal-auction" class="modal">
-    <div class="modal-card">
-      <button class="modal-close" data-close>&times;</button>
-      <h2>💎 Аукцион центрального куба</h2>
-      <form id="form-auction" class="modal-form">
-        <input id="auction-bid" type="number" placeholder="Ставка" min="1" required>
-        <input id="auction-contact" type="text" placeholder="Контакт" required>
-        <input id="auction-link" type="url" placeholder="Ссылка (на профиль / сайт)">
-        <textarea id="auction-comment" rows="3" placeholder="Комментарий"></textarea>
-        <button type="submit" class="btn">Сделать ставку</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ===== MODAL STORY ===== -->
-  <div id="modal-story" class="modal">
-    <div class="modal-card">
-      <button class="modal-close" data-close>&times;</button>
-      <h2>Рассказать о своей ситуации</h2>
-      <form id="form-story" class="modal-form">
-        <input id="story-name" type="text" placeholder="Имя" required>
-        <input id="story-contact" type="text" placeholder="Контакт" required>
-        <textarea id="story-text" rows="4" placeholder="Опиши свою ситуацию" required></textarea>
-        <button type="submit" class="btn">Отправить</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ===== MODAL HERO ===== -->
-  <div id="modal-hero" class="modal">
-    <div class="modal-card">
-      <button class="modal-close" data-close>&times;</button>
-      <h2>Заявка героя месяца</h2>
-      <form id="form-hero" class="modal-form">
-        <input id="hero-name" type="text" placeholder="Имя героя" required>
-        <input id="hero-contact" type="text" placeholder="Контакт" required>
-        <input id="hero-link" type="url" placeholder="Ссылка (на профиль / сайт)">
-        <textarea id="hero-reason" rows="4" placeholder="За что награждаем?" required></textarea>
-        <button type="submit" class="btn">Отправить</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- TOAST -->
-  <div id="toast" class="toast"></div>
 
   <script src="script.js"></script>
 </body>
