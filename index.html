@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>МОЙ КУБ</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div id="title-layer">
@@ -12,9 +12,98 @@
     <div class="subtitle">Куб Добра и Герои месяца</div>
   </div>
 
+  <!-- Сцена -->
   <div id="container">
     <div id="wrapper">
       <div id="scene"></div>
+    </div>
+  </div>
+
+  <!-- Универсальная модалка -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal__dialog" role="dialog" aria-modal="true">
+      <button class="modal__close" type="button" data-close>×</button>
+
+      <!-- Вкладка: аренда -->
+      <form class="modal__content" id="form-rent" data-form="rent" hidden>
+        <h2>Заявка на аренду <span id="rent-cube-label"></span></h2>
+
+        <label>Номер куба
+          <input type="text" id="rent-cube" name="cubeId" readonly />
+        </label>
+
+        <label>Имя
+          <input type="text" id="rent-name" name="name" required />
+        </label>
+
+        <label>Контакт (телеграм / телефон)
+          <input type="text" id="rent-contact" name="contact" required />
+        </label>
+
+        <label>Ссылка (на профиль / сайт)
+          <input type="url" id="rent-link" name="link" placeholder="https://..." />
+        </label>
+
+        <label>Комментарий
+          <textarea id="rent-msg" name="message" rows="4" placeholder="Кратко опишите, что хотите разместить"></textarea>
+        </label>
+
+        <button type="submit" class="btn">Отправить заявку</button>
+      </form>
+
+      <!-- Вкладка: история (Куб Добра) -->
+      <form class="modal__content" id="form-story" data-form="story" hidden>
+        <h2>Куб Добра — расскажите о своей ситуации</h2>
+
+        <label>Имя
+          <input type="text" id="story-name" name="name" required />
+        </label>
+
+        <label>Контакт (телеграм / телефон)
+          <input type="text" id="story-contact" name="contact" required />
+        </label>
+
+        <label>Ссылка (на профиль / сайт)
+          <input type="url" id="story-link" name="link" placeholder="https://..." />
+        </label>
+
+        <label>История / просьба о помощи
+          <textarea id="story-text" name="story" rows="5" required></textarea>
+        </label>
+
+        <button type="submit" class="btn">Отправить</button>
+      </form>
+
+      <!-- Вкладка: аукцион (Центральный куб) -->
+      <form class="modal__content" id="form-auction" data-form="auction" hidden>
+        <h2>💎 Аукцион центрального куба</h2>
+        <p class="muted">Укажите ставку и контакт. Победитель получает центр на месяц.</p>
+
+        <label>Ставка (₽)
+          <input type="number" id="auction-bid" name="bid" min="1" required />
+        </label>
+
+        <label>Контакт (телеграм / телефон)
+          <input type="text" id="auction-contact" name="contact" required />
+        </label>
+
+        <label>Ссылка (на профиль / сайт)
+          <input type="url" id="auction-link" name="link" placeholder="https://..." />
+        </label>
+
+        <label>Комментарий
+          <textarea id="auction-comment" name="comment" rows="3" placeholder="Опционально"></textarea>
+        </label>
+
+        <button type="submit" class="btn">Сделать ставку</button>
+      </form>
+
+      <!-- Сообщение -->
+      <div class="modal__content" id="modal-status" hidden>
+        <h2 id="status-title">Готово</h2>
+        <p id="status-text">Ваше сообщение отправлено.</p>
+        <button type="button" class="btn" data-close>Ок</button>
+      </div>
     </div>
   </div>
 
