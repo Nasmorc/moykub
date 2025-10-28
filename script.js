@@ -1,5 +1,5 @@
 /***** 0) НАСТРОЙКИ *****/
-const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbx6tsy4hyZw_iOKlU5bUSEAVjckwY7SYh4zyaVLn5AftRg7T0gztg3K1AdIOUWCL7Nc_Q/exec";
+const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbwr9O6Vu7bd8W4BWaGNDssYqy-tXKbeak9v6Eu1IGrRpJ9Z1gulqf6xPAJPxYB_HbFIWA/exec";
 const WEB_APP_SECRET = "MYKUB_SECRET_2025";
 
 const wrapper = document.getElementById("wrapper");
@@ -39,9 +39,11 @@ async function postToSheets(type, payload) {
   try { return JSON.parse(text); } catch { return { ok:false, error:"Некорректный ответ сервера" }; }
 }
 
-/***** Генератор модалки *****/
+/***** Генератор модалки (универсальный и стабильный) *****/
 function ensureModal(id, innerHtml) {
   let el = document.getElementById(id);
+
+  // создаём, если нет
   if (!el) {
     el = document.createElement("div");
     el.id = id;
@@ -55,26 +57,42 @@ function ensureModal(id, innerHtml) {
         position:relative;max-width:520px;width:92%;padding:26px 28px;border-radius:16px;
         background:rgba(0,0,0,.9);border:2px solid cyan;box-shadow:0 0 25px cyan, inset 0 0 25px cyan;
         color:#fff;text-align:left">
-        <span class="close" data-close="${id}" style="
+        <span class="close" style="
           position:absolute;right:16px;top:10px;font-size:28px;color:cyan;cursor:pointer;">&times;</span>
         ${innerHtml}
       </div>
     `;
     document.body.appendChild(el);
 
-    // закрытие
-    el.querySelector(`[data-close="${id}"]`).addEventListener("click", () => el.classList.remove("show"));
-    window.addEventListener("click", (e) => { if (e.target === el) el.classList.remove("show"); });
+    // обработчик крестика
+    el.querySelector(".close").addEventListener("click", () => closeModal(id));
+    // закрытие по клику вне окна
+    el.addEventListener("click", (e) => {
+      if (e.target === el) closeModal(id);
+    });
+  } else {
+    // если модалка уже есть — просто обновляем содержимое
+    el.querySelector(".modal-content").innerHTML = `
+      <span class="close" style="
+        position:absolute;right:16px;top:10px;font-size:28px;color:cyan;cursor:pointer;">&times;</span>
+      ${innerHtml}
+    `;
+    el.querySelector(".close").addEventListener("click", () => closeModal(id));
   }
+
   return el;
 }
+
 function openModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.add("show"), (el.style.display = "flex");
 }
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove("show"), (el.style.display = "none");
+  if (el) {
+    el.classList.remove("show");
+    el.style.display = "none";
+  }
 }
 
 /***** 1) СЦЕНА *****/
@@ -363,16 +381,26 @@ function openAuctionModal() {
       link:    modal.querySelector("#auctionLink").value.trim(),
       comment: modal.querySelector("#auctionComment").value.trim(),
     };
+
     if (!payload.amount || !payload.contact) {
-      showNotify("⚠️ Укажи ставку и контакт"); return;
+      showNotify("⚠️ Укажи ставку и контакт"); 
+      return;
     }
 
     try {
+      console.log("Отправка ставки:", payload); // 🔍 лог
       const r = await postToSheets("auction", payload);
+      console.log("Ответ от сервера:", r); // 🔍 лог
       if (r.ok) {
-        closeModal("auctionModal"); form.reset();
+        closeModal("auctionModal"); 
+        form.reset();
         showNotify("✅ Ставка отправлена!");
-      } else showNotify("❌ Ошибка: " + (r.error || ""));
-    } catch { showNotify("⚠️ Не удалось связаться с сервером"); }
+      } else {
+        showNotify("❌ Ошибка: " + (r.error || "Неизвестно"));
+      }
+    } catch (err) {
+      console.error("Ошибка при отправке аукциона:", err);
+      showNotify("⚠️ Не удалось связаться с сервером");
+    }
   };
 }
