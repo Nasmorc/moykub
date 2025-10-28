@@ -363,16 +363,26 @@ function openAuctionModal() {
       link:    modal.querySelector("#auctionLink").value.trim(),
       comment: modal.querySelector("#auctionComment").value.trim(),
     };
+
     if (!payload.amount || !payload.contact) {
-      showNotify("⚠️ Укажи ставку и контакт"); return;
+      showNotify("⚠️ Укажи ставку и контакт"); 
+      return;
     }
 
     try {
+      console.log("Отправка ставки:", payload); // 🔍 лог
       const r = await postToSheets("auction", payload);
+      console.log("Ответ от сервера:", r); // 🔍 лог
       if (r.ok) {
-        closeModal("auctionModal"); form.reset();
+        closeModal("auctionModal"); 
+        form.reset();
         showNotify("✅ Ставка отправлена!");
-      } else showNotify("❌ Ошибка: " + (r.error || ""));
-    } catch { showNotify("⚠️ Не удалось связаться с сервером"); }
+      } else {
+        showNotify("❌ Ошибка: " + (r.error || "Неизвестно"));
+      }
+    } catch (err) {
+      console.error("Ошибка при отправке аукциона:", err);
+      showNotify("⚠️ Не удалось связаться с сервером");
+    }
   };
 }
