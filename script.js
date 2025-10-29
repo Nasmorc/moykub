@@ -412,6 +412,18 @@ async function markBusyCubes() {
 
     data.forEach(item => {
       const cubeEl = [...document.querySelectorAll(".cube")].find(el => el.textContent.replace('#', '').trim() == item.cube);
+        // подмена внешнего вида куба
+  if (item.photo) {
+    cubeEl.style.backgroundImage = `url(${item.photo})`;
+    cubeEl.style.backgroundSize = "cover";
+    cubeEl.style.backgroundPosition = "center";
+    cubeEl.style.border = "2px solid #00ffff";
+  }
+      
+  // всплывающая подсказка
+  if (item.desc || item.name) {
+    cubeEl.title = `${item.name || ''} — ${item.desc || ''}`;
+  }
       if (!cubeEl) return;
 
       // если есть фото — ставим его как фон
