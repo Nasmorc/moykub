@@ -388,9 +388,9 @@ function openAuctionModal() {
     }
 
     try {
-      console.log("Отправка ставки:", payload); // 🔍 лог
+      console.log("Отправка ставки:", payload);
       const r = await postToSheets("auction", payload);
-      console.log("Ответ от сервера:", r); // 🔍 лог
+      console.log("Ответ от сервера:", r);
       if (r.ok) {
         closeModal("auctionModal"); 
         form.reset();
@@ -403,6 +403,8 @@ function openAuctionModal() {
       showNotify("⚠️ Не удалось связаться с сервером");
     }
   };
+} // ←←← ВОТ ЭТОЙ СКОБКИ НЕ ХВАТАЛО
+
 /***** Обновление внешнего вида занятых кубов *****/
 async function markBusyCubes() {
   try {
