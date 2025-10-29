@@ -421,7 +421,10 @@ async function markBusyCubes() {
 
       // помечаем занятым и подменяем фон
       cubeEl.classList.add("busy");
-      if (item.photo) {
+     if (item.photo.includes("drive.google.com")) {
+  item.photo = item.photo
+    .replace("/file/d/", "/uc?export=view&id=")
+    .replace("/view?usp=sharing", "");
   cubeEl.style.backgroundImage = `url("${item.photo}")`;
   cubeEl.style.backgroundSize = "cover";
   cubeEl.style.backgroundPosition = "center";
