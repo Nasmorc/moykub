@@ -388,9 +388,9 @@ function openAuctionModal() {
     }
 
     try {
-      console.log("Отправка ставки:", payload);
+      console.log("Отправка ставки:", payload); // 🔍 лог
       const r = await postToSheets("auction", payload);
-      console.log("Ответ от сервера:", r);
+      console.log("Ответ от сервера:", r); // 🔍 лог
       if (r.ok) {
         closeModal("auctionModal"); 
         form.reset();
@@ -403,7 +403,7 @@ function openAuctionModal() {
       showNotify("⚠️ Не удалось связаться с сервером");
     }
   };
-} // ←←← ВОТ ЭТОЙ СКОБКИ НЕ ХВАТАЛО
+}
 
 /***** Обновление внешнего вида занятых кубов *****/
 async function markBusyCubes() {
@@ -419,12 +419,11 @@ async function markBusyCubes() {
       });
       if (!cubeEl) return;
 
-      // исправление ссылки с imgbb
+      // Имгбб: исправление ссылки предпросмотра
       if (item.photo.includes("ibb.co/") && !item.photo.includes("i.ibb.co/")) {
         item.photo = item.photo.replace("https://ibb.co/", "https://i.ibb.co/") + ".jpg";
       }
 
-      // применяем занятость
       cubeEl.classList.add("busy");
       cubeEl.style.backgroundImage = `url('${item.photo}')`;
       cubeEl.style.backgroundSize = "cover";
@@ -435,7 +434,6 @@ async function markBusyCubes() {
       cubeEl.style.boxShadow = "0 0 25px #00ffff, inset 0 0 25px #00ffff";
       cubeEl.setAttribute("data-tip", `${item.name} — ${item.desc || ''}`);
 
-      // действие при клике: модалка владельца
       cubeEl.addEventListener("click", e => {
         e.stopPropagation();
         showOwnerModal(item);
@@ -447,6 +445,8 @@ async function markBusyCubes() {
 }
 window.addEventListener("load", markBusyCubes);
 
+
+
 /***** Модалка владельца *****/
 function showOwnerModal(item) {
   const modal = document.createElement("div");
@@ -454,17 +454,12 @@ function showOwnerModal(item) {
   modal.innerHTML = `
     <div class="owner-modal-content">
       <img src="${item.photo}" alt="${item.name}" class="owner-avatar">
-      <h2>${item.name}</h2>
+      <h2>${item.name || ""}</h2>
       <p>${item.desc || "Без описания"}</p>
-      <a href="${item.link}" target="_blank" class="owner-link">Перейти</a>
+      <a href="${item.link || "#"}" target="_blank" class="owner-link">Перейти</a>
       <span class="owner-close">×</span>
-    </div>
-  `;
+    </div>`;
   document.body.appendChild(modal);
-
   modal.querySelector(".owner-close").onclick = () => modal.remove();
-  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 }
-
-}
-window.addEventListener("load", markBusyCubes);
