@@ -403,12 +403,12 @@ function openAuctionModal() {
       showNotify("⚠️ Не удалось связаться с сервером");
     }
   };
-  /***** Обновление внешнего вида занятых кубов *****/
+/***** Обновление внешнего вида занятых кубов *****/
 async function markBusyCubes() {
   try {
-    console.log("Запрос занятых кубов:", data);
     const res = await fetch(WEB_APP_URL);
     const data = await res.json();
+    console.log("Запрос занятых кубов:", data);
 
     data.forEach(item => {
       const cubeEl = [...document.querySelectorAll(".cube")].find(el => el.textContent === `#${item.cube}`);
