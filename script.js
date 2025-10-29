@@ -410,7 +410,7 @@ async function markBusyCubes() {
   try {
     const res = await fetch(WEB_APP_URL);
     const data = await res.json();
-    console.log("Запрос занятых кубов:", data);
+    console.log("Занятые кубы:", data);
 
     data.forEach(item => {
       const cubeEl = [...document.querySelectorAll(".cube")].find(el => {
@@ -419,31 +419,52 @@ async function markBusyCubes() {
       });
       if (!cubeEl) return;
 
-      // Исправление ссылки, если это imgbb
+      // исправление ссылки с imgbb
       if (item.photo.includes("ibb.co/") && !item.photo.includes("i.ibb.co/")) {
-        item.photo = item.photo
-          .replace("https://ibb.co/", "https://i.ibb.co/") + ".jpg";
+        item.photo = item.photo.replace("https://ibb.co/", "https://i.ibb.co/") + ".jpg";
       }
 
-      // Помечаем занятым
+      // применяем занятость
       cubeEl.classList.add("busy");
-
-      // Устанавливаем фон
       cubeEl.style.backgroundImage = `url('${item.photo}')`;
       cubeEl.style.backgroundSize = "cover";
       cubeEl.style.backgroundPosition = "center";
       cubeEl.style.backgroundRepeat = "no-repeat";
-
-      // Убираем текст и добавляем подсказку
       cubeEl.style.color = "transparent";
       cubeEl.style.border = "2px solid #00ffff";
       cubeEl.style.boxShadow = "0 0 25px #00ffff, inset 0 0 25px #00ffff";
+      cubeEl.setAttribute("data-tip", `${item.name} — ${item.desc || ''}`);
 
-      const tip = [item.name, item.desc].filter(Boolean).join(" — ");
-      if (tip) cubeEl.setAttribute("data-tip", tip);
+      // действие при клике: модалка владельца
+      cubeEl.addEventListener("click", e => {
+        e.stopPropagation();
+        showOwnerModal(item);
+      });
     });
   } catch (err) {
     console.error("Ошибка при обновлении кубов:", err);
   }
+}
+window.addEventListener("load", markBusyCubes);
+
+/***** Модалка владельца *****/
+function showOwnerModal(item) {
+  const modal = document.createElement("div");
+  modal.className = "owner-modal";
+  modal.innerHTML = `
+    <div class="owner-modal-content">
+      <img src="${item.photo}" alt="${item.name}" class="owner-avatar">
+      <h2>${item.name}</h2>
+      <p>${item.desc || "Без описания"}</p>
+      <a href="${item.link}" target="_blank" class="owner-link">Перейти</a>
+      <span class="owner-close">×</span>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.querySelector(".owner-close").onclick = () => modal.remove();
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+}
+
 }
 window.addEventListener("load", markBusyCubes);
