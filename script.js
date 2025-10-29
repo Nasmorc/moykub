@@ -422,8 +422,14 @@ async function markBusyCubes() {
       // помечаем занятым и подменяем фон
       cubeEl.classList.add("busy");
       if (item.photo) {
-        cubeEl.style.setProperty("background-image", `url(${item.photo})`, "important");
-      }
+  cubeEl.style.backgroundImage = `url("${item.photo}")`;
+  cubeEl.style.backgroundSize = "cover";
+  cubeEl.style.backgroundPosition = "center";
+  cubeEl.style.backgroundRepeat = "no-repeat";
+  cubeEl.style.border = "2px solid #00ffff";
+  cubeEl.style.boxShadow = "0 0 25px #00ffff, inset 0 0 25px #00ffff";
+  cubeEl.style.color = "transparent";
+}
       // подсказка (имя + описание)
       const tip = [item.name, item.desc].filter(Boolean).join(" — ");
       if (tip) cubeEl.setAttribute("data-tip", tip);
