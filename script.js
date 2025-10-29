@@ -1,5 +1,5 @@
 /***** 0) НАСТРОЙКИ *****/
-const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbzgZKNi7110PQ--3yAp6ULk30oRTLtj4ICRv0AwuOAaCbcktlHYqnJMAcoXACrnVaLGOA/exec";
+const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbyRycNIb8G5-LRFLbcDSUoQ3l_5YSbocf8wFRC7IiEaWLZNioetisj70liDefbs8DTbqw/exec";
 const WEB_APP_SECRET = "MYKUB_SECRET_2025";
 
 const wrapper = document.getElementById("wrapper");
