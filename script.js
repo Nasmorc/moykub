@@ -411,7 +411,7 @@ async function markBusyCubes() {
     console.log("Запрос занятых кубов:", data);
 
     data.forEach(item => {
-      const cubeEl = [...document.querySelectorAll(".cube")].find(el => el.textContent === `#${item.cube}`);
+      const cubeEl = [...document.querySelectorAll(".cube")].find(el => el.textContent.replace('#', '').trim() == item.cube);
       if (!cubeEl) return;
 
       // если есть фото — ставим его как фон
