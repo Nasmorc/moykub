@@ -186,6 +186,11 @@ h1 {
 
 /* хинт по наведению */
 .cube.busy:hover::after{
+  /* исправление перекрытия картинки */
+.cube.busy {
+  background-color: transparent !important;  /* убрать заливку */
+  background-blend-mode: normal !important;
+}
   content: attr(data-tip);
   position: absolute;
   bottom: 110%;
