@@ -406,6 +406,7 @@ function openAuctionModal() {
   /***** Обновление внешнего вида занятых кубов *****/
 async function markBusyCubes() {
   try {
+    console.log("Запрос занятых кубов:", data);
     const res = await fetch(WEB_APP_URL);
     const data = await res.json();
 
