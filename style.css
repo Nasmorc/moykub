@@ -174,3 +174,29 @@ h1 {
   z-index: 2000;
 }
 #notify.show { opacity: 1; bottom: 60px; }
+/* занятый куб: подменяем фон и свечение, прячем номер */
+.cube.busy{
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: transparent !important;
+  border: 2px solid #00ffff !important;
+  box-shadow: 0 0 25px #00ffff, inset 0 0 25px #00ffff !important;
+}
+
+/* хинт по наведению */
+.cube.busy:hover::after{
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.85);
+  color: #0ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 9999;
+}
