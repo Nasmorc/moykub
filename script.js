@@ -412,11 +412,12 @@ async function markBusyCubes() {
     const data = await res.json();
     console.log("Запрос занятых кубов:", data);
 
-    data.forEach(item => {
-      const cubeEl = [...document.querySelectorAll(".cube")].find(
-        el => el.textContent.replace('#', '').trim() == item.cube
-      );
-      if (!cubeEl) return;
+ data.forEach(item => {
+  const cubeEl = [...document.querySelectorAll(".cube")].find(el => {
+    const num = el.textContent.replace(/[^0-9]/g, "").trim();
+    return num == item.cube;
+  });
+  if (!cubeEl) return;
 
       // --- подмена внешнего вида ---
      if (item.photo) {
