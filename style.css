@@ -188,8 +188,15 @@ h1 {
 .cube.busy:hover::after{
   /* исправление перекрытия картинки */
 .cube.busy {
-  background-color: transparent !important;  /* убрать заливку */
-  background-blend-mode: normal !important;
+  background-color: transparent !important;
+  background-image: var(--photo);
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-clip: padding-box !important;
+  color: transparent !important;
+  border: 2px solid #00ffff !important;
+  box-shadow: 0 0 25px #00ffff, inset 0 0 25px #00ffff !important;
 }
   content: attr(data-tip);
   position: absolute;
