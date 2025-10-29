@@ -419,29 +419,31 @@ async function markBusyCubes() {
       });
       if (!cubeEl) return;
 
-      // помечаем занятым и подменяем фон
+      // Исправление ссылки, если это imgbb
+      if (item.photo.includes("ibb.co/") && !item.photo.includes("i.ibb.co/")) {
+        item.photo = item.photo
+          .replace("https://ibb.co/", "https://i.ibb.co/") + ".jpg";
+      }
+
+      // Помечаем занятым
       cubeEl.classList.add("busy");
-     if (item.photo.includes("drive.google.com")) {
-  item.photo = item.photo
-    .replace("/file/d/", "/uc?export=view&id=")
-    .replace("/view?usp=sharing", "");
-  cubeEl.style.backgroundImage = `url("${item.photo}")`;
-  cubeEl.style.backgroundSize = "cover";
-  cubeEl.style.backgroundPosition = "center";
-  cubeEl.style.backgroundRepeat = "no-repeat";
-  cubeEl.style.border = "2px solid #00ffff";
-  cubeEl.style.boxShadow = "0 0 25px #00ffff, inset 0 0 25px #00ffff";
-  cubeEl.style.color = "transparent";
-}
-      // подсказка (имя + описание)
+
+      // Устанавливаем фон
+      cubeEl.style.backgroundImage = `url('${item.photo}')`;
+      cubeEl.style.backgroundSize = "cover";
+      cubeEl.style.backgroundPosition = "center";
+      cubeEl.style.backgroundRepeat = "no-repeat";
+
+      // Убираем текст и добавляем подсказку
+      cubeEl.style.color = "transparent";
+      cubeEl.style.border = "2px solid #00ffff";
+      cubeEl.style.boxShadow = "0 0 25px #00ffff, inset 0 0 25px #00ffff";
+
       const tip = [item.name, item.desc].filter(Boolean).join(" — ");
       if (tip) cubeEl.setAttribute("data-tip", tip);
     });
-
   } catch (err) {
     console.error("Ошибка при обновлении кубов:", err);
   }
 }
-
-// запускаем после отрисовки сцены
 window.addEventListener("load", markBusyCubes);
