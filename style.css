@@ -227,3 +227,77 @@ h1 {
   pointer-events: none;
   z-index: 9999;
 }
+/* всплывающая подсказка */
+.cube.busy:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: #0ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 9999;
+}
+
+/* модалка владельца */
+.owner-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.owner-modal-content {
+  background: rgba(0,0,20,0.95);
+  border: 2px solid #00ffff;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  color: #0ff;
+  box-shadow: 0 0 30px #00ffff;
+  max-width: 350px;
+  width: 90%;
+  position: relative;
+}
+
+.owner-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border: 2px solid #00ffff;
+}
+
+.owner-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: #000;
+  background: #00ffff;
+  padding: 8px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.owner-link:hover {
+  background: #0ff5ff;
+}
+
+.owner-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 22px;
+  color: #00ffff;
+}
+
