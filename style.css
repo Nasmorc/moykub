@@ -15,7 +15,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  z-index: 0;           /* за сценой */
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -36,7 +36,7 @@ h1 {
 #container {
   position: fixed;
   inset: 0;
-  z-index: 1;          /* сцена над заголовком */
+  z-index: 1;
   overflow: hidden;
 }
 
@@ -78,8 +78,10 @@ h1 {
   display: none;
   position: fixed;
   z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(6px);
   justify-content: center;
@@ -107,8 +109,14 @@ h1 {
 }
 
 @keyframes popIn {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .close {
@@ -120,7 +128,10 @@ h1 {
   cursor: pointer;
   transition: 0.2s;
 }
-.close:hover { color: #fff; transform: scale(1.1); }
+.close:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
 
 .modal-btn {
   background: cyan;
@@ -133,18 +144,24 @@ h1 {
   font-size: 16px;
   transition: 0.3s;
 }
-.modal-btn:hover { background: #00ffaa; transform: scale(1.05); }
+.modal-btn:hover {
+  background: #00ffaa;
+  transform: scale(1.05);
+}
 
 /* Поля форм */
-#storyForm, #rentForm {
+#storyForm,
+#rentForm {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-top: 12px;
 }
-#storyForm input, #storyForm textarea,
-#rentForm input,  #rentForm  textarea {
-  background: rgba(0,255,255,0.05);
+#storyForm input,
+#storyForm textarea,
+#rentForm input,
+#rentForm textarea {
+  background: rgba(0, 255, 255, 0.05);
   border: 1px solid cyan;
   color: #fff;
   border-radius: 10px;
@@ -152,14 +169,17 @@ h1 {
   font-size: 15px;
   outline: none;
 }
-#storyForm textarea, #rentForm textarea {
-  resize: vertical; min-height: 90px;
+#storyForm textarea,
+#rentForm textarea {
+  resize: vertical;
+  min-height: 90px;
 }
 
 /* Уведомления */
 #notify {
   position: fixed;
-  bottom: 40px; left: 50%;
+  bottom: 40px;
+  left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 255, 255, 0.15);
   border: 1px solid #00fff2;
@@ -173,23 +193,14 @@ h1 {
   transition: opacity 0.5s ease, bottom 0.5s ease;
   z-index: 2000;
 }
-#notify.show { opacity: 1; bottom: 60px; }
-/* занятый куб: подменяем фон и свечение, прячем номер */
-.cube.busy{
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  color: transparent !important;
-  border: 2px solid #00ffff !important;
-  box-shadow: 0 0 25px #00ffff, inset 0 0 25px #00ffff !important;
+#notify.show {
+  opacity: 1;
+  bottom: 60px;
 }
 
-/* хинт по наведению */
-.cube.busy:hover::after{
-  /* исправление перекрытия картинки */
+/* === ЗАНЯТЫЕ КУБЫ === */
 .cube.busy {
   background-color: transparent !important;
-  background-image: var(--photo);
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: cover !important;
@@ -198,12 +209,15 @@ h1 {
   border: 2px solid #00ffff !important;
   box-shadow: 0 0 25px #00ffff, inset 0 0 25px #00ffff !important;
 }
+
+/* Подсказка при наведении */
+.cube.busy:hover::after {
   content: attr(data-tip);
   position: absolute;
   bottom: 110%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,.85);
+  background: rgba(0, 0, 0, 0.85);
   color: #0ff;
   padding: 6px 10px;
   border-radius: 8px;
