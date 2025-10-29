@@ -406,37 +406,30 @@ function openAuctionModal() {
 } // ←←← ВОТ ЭТОЙ СКОБКИ НЕ ХВАТАЛО
 
 /***** Обновление внешнего вида занятых кубов *****/
+/***** Обновление внешнего вида занятых кубов *****/
 async function markBusyCubes() {
   try {
     const res = await fetch(WEB_APP_URL);
     const data = await res.json();
     console.log("Запрос занятых кубов:", data);
 
- data.forEach(item => {
-  const cubeEl = [...document.querySelectorAll(".cube")].find(el => {
-    const num = el.textContent.replace(/[^0-9]/g, "").trim();
-    return num == item.cube;
-  });
-  if (!cubeEl) return;
+    data.forEach(item => {
+      const cubeEl = [...document.querySelectorAll(".cube")].find(el => {
+        const num = el.textContent.replace(/[^0-9]/g, "").trim();
+        return num == item.cube;
+      });
+      if (!cubeEl) return;
 
-      // --- подмена внешнего вида ---
-     if (item.photo) {
-  cubeEl.style.backgroundImage = `url(${item.photo})`;
-  cubeEl.style.backgroundSize = "cover";
-  cubeEl.style.backgroundPosition = "center";
-  cubeEl.style.backgroundRepeat = "no-repeat";
-  cubeEl.style.border = "2px solid #00ffff";
-  cubeEl.style.boxShadow = "0 0 25px #00ffff, inset 0 0 25px #00ffff";
-  cubeEl.style.color = "transparent";
-  cubeEl.style.setProperty("background-image", `url(${item.photo})`, "important");
-  cubeEl.style.setProperty("background-size", "cover", "important");
-}
-
-      // --- всплывающая подсказка ---
-      if (item.desc || item.name) {
-        cubeEl.title = `${item.name || ''} — ${item.desc || ''}`;
+      // помечаем занятым и подменяем фон
+      cubeEl.classList.add("busy");
+      if (item.photo) {
+        cubeEl.style.setProperty("background-image", `url(${item.photo})`, "important");
       }
+      // подсказка (имя + описание)
+      const tip = [item.name, item.desc].filter(Boolean).join(" — ");
+      if (tip) cubeEl.setAttribute("data-tip", tip);
     });
+
   } catch (err) {
     console.error("Ошибка при обновлении кубов:", err);
   }
