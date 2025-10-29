@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Админка — Мой Куб</title>
+  <style>
+    body {
+      background: #0a0a0f;
+      color: #e0e0e0;
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 { color: #3ae2ce; }
+    .tabs {
+      margin-bottom: 20px;
+    }
+    button {
+      background: #1e1e2f;
+      color: #3ae2ce;
+      border: 1px solid #3ae2ce;
+      border-radius: 6px;
+      padding: 8px 16px;
+      margin: 0 4px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background: #3ae2ce; color: #0a0a0f; }
+    button.active { background: #3ae2ce; color: #0a0a0f; }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 90%;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+    }
+    input {
+      width: 100%;
+      background: #111;
+      color: #fff;
+      border: 1px solid #333;
+      padding: 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>⚙ Панель администратора — Мой Куб</h1>
+
+  <div class="tabs">
+    <button id="tabRent" class="active" onclick="loadData('getRent')">Аренда</button>
+    <button id="tabAuction" onclick="loadData('getAuction')">Аукцион</button>
+    <button id="tabStory" onclick="loadData('getStory')">Куб Добра</button>
+    <button id="tabHeroes" onclick="loadData('getHeroes')">Герои</button>
+  </div>
+
+  <div id="content">
+    <table id="dataTable"></table>
+  </div>
+
+  <script>
+  async function loadData(action) {
+    document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tab' + action.replace('get','')).classList.add('active');
+
+    const res = await fetch(`/api/sheets?action=${action}`);
+    const json = await res.json();
+
+    if (!json.ok) {
+      document.getElementById('dataTable').innerHTML = `<tr><td>Ошибка: ${json.error}</td></tr>`;
+      return;
+    }
+
+    renderTable(json.data);
+  }
+
+  async function saveHeroes() {
+    const table = document.getElementById('dataTable');
+    const rows = [...table.querySelectorAll('tr')].map(tr =>
+      [...tr.querySelectorAll('input')].map(td => td.value)
+    );
+
+    const payload = { type: 'updateHeroes', rows };
+    const res = await fetch('/api/sheets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    alert(json.ok ? "✅ Сохранено!" : "❌ Ошибка сохранения");
+  }
+
+  function renderTable(data) {
+    const table = document.getElementById('dataTable');
+    table.innerHTML = "";
+    if (!data || data.length === 0) {
+      table.innerHTML = "<tr><td>Нет данных</td></tr>";
+      return;
+    }
+
+    const headers = data[0];
+    const isHeroes = headers.includes("photo") && headers.includes("video");
+
+    const headerRow = "<tr>" + headers.map(h => `<th>${h}</th>`).join('') + "</tr>";
+    const rows = data.slice(1).map(r =>
+      "<tr>" + r.map(c =>
+        `<td>${isHeroes ? `<input value="${c || ''}">` : (c || '')}</td>`
+      ).join('') + "</tr>"
+    ).join('');
+
+    table.innerHTML = headerRow + rows;
+
+    if (isHeroes) {
+      const btn = document.createElement('button');
+      btn.textContent = "💾 Сохранить изменения";
+      btn.style.marginTop = "15px";
+      btn.onclick = saveHeroes;
+      table.parentElement.appendChild(btn);
+    }
+  }
+
+  loadData('getRent');
+  </script>
+</body>
+</html>
