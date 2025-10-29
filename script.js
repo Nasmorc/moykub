@@ -411,54 +411,26 @@ async function markBusyCubes() {
     console.log("Запрос занятых кубов:", data);
 
     data.forEach(item => {
-      const cubeEl = [...document.querySelectorAll(".cube")].find(el => el.textContent.replace('#', '').trim() == item.cube);
-        // подмена внешнего вида куба
-  if (item.photo) {
-    cubeEl.style.backgroundImage = `url(${item.photo})`;
-    cubeEl.style.backgroundSize = "cover";
-    cubeEl.style.backgroundPosition = "center";
-    cubeEl.style.border = "2px solid #00ffff";
-  }
-      
-  // всплывающая подсказка
-  if (item.desc || item.name) {
-    cubeEl.title = `${item.name || ''} — ${item.desc || ''}`;
-  }
+      const cubeEl = [...document.querySelectorAll(".cube")].find(
+        el => el.textContent.replace('#', '').trim() == item.cube
+      );
       if (!cubeEl) return;
 
-      // если есть фото — ставим его как фон
+      // --- подмена внешнего вида ---
       if (item.photo) {
-        cubeEl.style.background = `url(${item.photo}) center/cover no-repeat`;
-        cubeEl.style.border = "2px solid lime";
-        cubeEl.style.boxShadow = "0 0 25px lime, inset 0 0 25px lime";
+        cubeEl.style.backgroundImage = `url(${item.photo})`;
+        cubeEl.style.backgroundSize = "cover";
+        cubeEl.style.backgroundPosition = "center";
+        cubeEl.style.border = "2px solid #00ffff";
+        cubeEl.style.boxShadow = "0 0 25px #00ffff, inset 0 0 25px #00ffff";
         cubeEl.style.color = "transparent";
       }
 
-      // при наведении — показать описание или имя
-      const tooltip = document.createElement("div");
-      tooltip.className = "tooltip";
-      tooltip.innerHTML = item.desc || item.name || "Куб занят";
-      Object.assign(tooltip.style, {
-        position: "absolute",
-        bottom: "110%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        background: "rgba(0,0,0,0.85)",
-        color: "#0f0",
-        padding: "6px 10px",
-        borderRadius: "8px",
-        fontSize: "13px",
-        whiteSpace: "nowrap",
-        display: "none",
-        zIndex: "9999"
-      });
-      cubeEl.style.position = "relative";
-      cubeEl.appendChild(tooltip);
-
-      cubeEl.addEventListener("mouseenter", () => (tooltip.style.display = "block"));
-      cubeEl.addEventListener("mouseleave", () => (tooltip.style.display = "none"));
+      // --- всплывающая подсказка ---
+      if (item.desc || item.name) {
+        cubeEl.title = `${item.name || ''} — ${item.desc || ''}`;
+      }
     });
-
   } catch (err) {
     console.error("Ошибка при обновлении кубов:", err);
   }
@@ -466,5 +438,3 @@ async function markBusyCubes() {
 
 // запускаем после отрисовки сцены
 window.addEventListener("load", markBusyCubes);
-
-}
