@@ -406,7 +406,6 @@ function openAuctionModal() {
 } // ←←← ВОТ ЭТОЙ СКОБКИ НЕ ХВАТАЛО
 
 /***** Обновление внешнего вида занятых кубов *****/
-/***** Обновление внешнего вида занятых кубов *****/
 async function markBusyCubes() {
   try {
     const res = await fetch(WEB_APP_URL);
