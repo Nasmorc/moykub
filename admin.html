@@ -173,7 +173,12 @@ async function assignCube(){
     body: JSON.stringify({type: t, secret: SECRET, ...item})
   }).then(r=>r.json());
 
-  if (r.ok){ toast('✅ Сохранено'); refreshActive(); }
+  if (r.ok){
+  toast('✅ Сохранено');
+  await fetch('/api/update-json'); // 🔥 обновляем data.json для сайта
+  refreshActive();
+}
+
   else toast('Ошибка: '+(r.error||'')); 
 }
 
