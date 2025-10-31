@@ -1,251 +1,279 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Админка — Мой Куб</title>
-  <style>
-    body {
-      background: #0a0a0a;
-      color: #00f5d4;
-      font-family: "Segoe UI", sans-serif;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-    button {
-      background: #0a0a0a;
-      border: 1px solid #00f5d4;
-      color: #00f5d4;
-      padding: 8px 16px;
-      margin: 5px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #00f5d4;
-      color: #000;
-    }
-    table {
-      width: 90%;
-      margin: 20px auto;
-      border-collapse: collapse;
-      background: #111;
-      color: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th, td {
-      border: 1px solid #222;
-      padding: 8px 10px;
-    }
-    th {
-      background: #00f5d4;
-      color: #000;
-      font-weight: bold;
-    }
-    input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      color: #fff;
-      outline: none;
-      text-align: center;
-    }
-    input:focus {
-      background: #1a1a1a;
-    }
-    .actions {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    .deleteBtn {
-      background: #ff3b30;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .addBtn {
-      background: #00f5d4;
-      color: #000;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Админка — Мой Куб</title>
+<style>
+  body{background:#0a0a0a;color:#00f5d4;font-family:Segoe UI,sans-serif;text-align:center;margin:0;padding:32px}
+  h1{margin:0 0 12px}
+  .tabs button{background:#0a0a0a;border:1px solid #00f5d4;color:#00f5d4;margin:4px;padding:8px 14px;border-radius:6px;cursor:pointer}
+  .tabs button.active,.tabs button:hover{background:#00f5d4;color:#000}
+  table{width:92%;margin:18px auto;border-collapse:collapse;background:#111;color:#fff;border-radius:8px;overflow:hidden}
+  th,td{border:1px solid #222;padding:8px}
+  th{background:#00f5d4;color:#000}
+  input,select,textarea{width:100%;background:transparent;border:1px solid #1f1f1f;color:#fff;padding:6px;border-radius:6px}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:end;width:92%;margin:10px auto}
+  .row .full{grid-column:1/-1}
+  .btn{background:#00f5d4;color:#000;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
+  .btn.secondary{background:#0a0a0a;border:1px solid #00f5d4;color:#00f5d4}
+  .flex{display:flex;gap:10px;justify-content:center}
+  .note{opacity:.8}
+</style>
 </head>
 <body>
   <h1>⚙ Панель администратора — Мой Куб</h1>
-  <div>
-    <button onclick="loadData('getRent')">Аренда</button>
-    <button onclick="loadData('getAuction')">Аукцион</button>
-    <button onclick="loadData('getStory')">Куб Добра</button>
-    <button onclick="loadData('getHeroes')">Герои</button>
+
+  <div class="tabs">
+    <button onclick="loadTab('getRent', this)">Аренда</button>
+    <button onclick="loadTab('getAuction', this)">Аукцион</button>
+    <button onclick="loadTab('getStory', this)">Куб Добра</button>
+    <button onclick="loadTab('getHeroes', this)">Герои</button>
+  </div>
+
+  <div id="assignForm" style="display:none">
+    <h3>🧩 Выдать / Обновить куб</h3>
+    <div class="row">
+      <div>
+        <label>Тип</label>
+        <select id="fType">
+          <option value="rent">Обычный куб</option>
+          <option value="center">Центральный куб</option>
+          <option value="heroes">Герой месяца</option>
+          <option value="story">Куб Добра</option>
+        </select>
+      </div>
+      <div id="cubeWrap">
+        <label>Куб</label>
+        <select id="fCube"></select>
+      </div>
+      <div>
+        <label>Имя</label>
+        <input id="fName" />
+      </div>
+      <div>
+        <label>Контакт / @tg / телефон</label>
+        <input id="fContact" />
+      </div>
+      <div>
+        <label>Ссылка</label>
+        <input id="fLink" />
+      </div>
+      <div class="full">
+        <label>Фото (URL)</label>
+        <input id="fPhoto" />
+      </div>
+      <div class="full">
+        <label>Описание</label>
+        <textarea id="fDesc" rows="3"></textarea>
+      </div>
+      <div class="full" id="videoWrap" style="display:none">
+        <label>Видео (для Героя)</label>
+        <input id="fVideo" />
+      </div>
+    </div>
+    <div class="flex">
+      <button class="btn" onclick="assignCube()">✅ Выдать / Обновить</button>
+      <button class="btn secondary" onclick="clearCube()">🗑 Очистить содержимое куба</button>
+      <button class="btn secondary" onclick="refreshActive()">🔄 Обновить таблицу</button>
+    </div>
+    <div class="note">* очистка не удаляет номер и место куба — он вернётся в исходное состояние</div>
+  </div>
+
+  <!-- Блок аукциона -->
+  <div id="auctionBlock" style="display:none">
+    <h3>🏁 Аукцион «ЦЕНТР»</h3>
+    <div class="flex">
+      <button class="btn" onclick="startAuction()">🚀 Запустить на 72 часа</button>
+      <button class="btn secondary" onclick="assignWinner()">🏆 Назначить победителя</button>
+      <button class="btn secondary" onclick="closeAuction()">⛔ Закрыть аукцион</button>
+    </div>
+    <p id="auctionTimer" class="note">Осталось: —</p>
   </div>
 
   <table id="dataTable"><tr><td>Выберите раздел</td></tr></table>
 
-  <div class="actions">
-    <button id="addRowBtn" class="addBtn" style="display:none;" onclick="addRow()">➕ Добавить строку</button>
-    <button id="saveBtn" class="addBtn" style="display:none;" onclick="saveData()">💾 Сохранить изменения</button>
-  </div>
+<script>
+const API = '/api/sheets';
+const SECRET = 'MYKUB_SECRET_2025';
+let activeTab = '';
 
-  <script>
-    const API_URL = '/api/sheets';
-    const SECRET = 'MYKUB_SECRET_2025';
-    let currentAction = '';
+function toast(msg){ alert(msg); }
 
-    async function loadData(action) {
-      currentAction = action;
-      document.getElementById('dataTable').innerHTML = '<tr><td>Загрузка...</td></tr>';
-      document.getElementById('addRowBtn').style.display = 'inline-block';
-      document.getElementById('saveBtn').style.display = 'inline-block';
+async function loadTab(tab, btn){
+  activeTab = tab;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  btn && btn.classList.add('active');
 
-      try {
-        const res = await fetch(`${API_URL}?action=${action}&secret=${SECRET}`);
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error);
-        renderTable(data.data || []);
-      } catch (err) {
-        alert('Ошибка загрузки: ' + err);
-      }
+  // показать форму назначения для всех, кроме чистого списка ставок?
+  document.getElementById('assignForm').style.display = (tab==='getAuction' ? 'block' : 'block');
+  document.getElementById('auctionBlock').style.display = (tab==='getAuction' ? 'block' : 'none');
+
+  prepareCubeSelect();
+  renderTimer();
+
+  const r = await fetch(`${API}?action=${tab}&secret=${SECRET}`);
+  const j = await r.json();
+  if (!j.ok){ toast('Ошибка загрузки: '+(j.error||'')); return; }
+  renderTable(j.data||[]);
+}
+
+function prepareCubeSelect(){
+  const t = document.getElementById('fType').value;
+  const cubeWrap = document.getElementById('cubeWrap');
+  const videoWrap = document.getElementById('videoWrap');
+  const sel = document.getElementById('fCube');
+  sel.innerHTML = '';
+  videoWrap.style.display = (t==='heroes') ? 'block' : 'none';
+
+  if (t === 'rent'){
+    for(let i=1;i<=110;i++){
+      const o=document.createElement('option'); o.value=String(i); o.textContent='#'+i; sel.appendChild(o);
     }
-
-    function renderTable(data) {
-      const table = document.getElementById('dataTable');
-      table.innerHTML = '';
-      if (!data.length) {
-        table.innerHTML = '<tr><td>Нет данных</td></tr>';
-        return;
-      }
-
-      const headers = data[0];
-      const rows = data.slice(1);
-
-      // Заголовки
-      const thead = document.createElement('tr');
-      headers.forEach(h => {
-        const th = document.createElement('th');
-        th.textContent = h || '';
-        thead.appendChild(th);
-      });
-      const actTh = document.createElement('th');
-      actTh.textContent = 'Действия';
-      thead.appendChild(actTh);
-      table.appendChild(thead);
-
-      // Данные
-      rows.forEach((row, idx) => {
-        const tr = document.createElement('tr');
-        row.forEach(cell => {
-          const td = document.createElement('td');
-          const inp = document.createElement('input');
-          inp.value = cell || '';
-          td.appendChild(inp);
-          tr.appendChild(td);
-        });
-        // Кнопки
-        const tdAct = document.createElement('td');
-        const delBtn = document.createElement('button');
-        delBtn.textContent = '🗑';
-        delBtn.className = 'deleteBtn';
-        delBtn.onclick = () => tr.remove();
-
-        // Если это аукцион — добавим кнопку "Назначить победителя"
-        if (currentAction === 'getAuction') {
-          const winBtn = document.createElement('button');
-          winBtn.textContent = '🏆';
-          winBtn.style.background = '#00f5d4';
-          winBtn.style.color = '#000';
-          winBtn.onclick = () => appointWinner(row);
-          tdAct.appendChild(winBtn);
-        }
-
-        tdAct.appendChild(delBtn);
-        tr.appendChild(tdAct);
-        table.appendChild(tr);
-      });
+  }else if (t === 'center'){
+    const o=document.createElement('option'); o.value='ЦЕНТР'; o.textContent='ЦЕНТР'; sel.appendChild(o);
+  }else if (t === 'heroes'){
+    ['1','2','3'].forEach(id=>{ const o=document.createElement('option'); o.value=id; o.textContent='Герой '+id; sel.appendChild(o);});
+  }else if (t === 'story'){
+    // story назначаем как записи с id — пусть будет тот же список #1..#110, можно ставить любой id
+    for(let i=1;i<=110;i++){
+      const o=document.createElement('option'); o.value=String(i); o.textContent='История #'+i; sel.appendChild(o);
     }
+  }
+}
 
-    function addRow() {
-      const table = document.getElementById('dataTable');
-      const cols = table.querySelectorAll('th').length - 1;
-      if (cols < 1) return;
-      const tr = document.createElement('tr');
-      for (let i = 0; i < cols; i++) {
-        const td = document.createElement('td');
-        const inp = document.createElement('input');
-        td.appendChild(inp);
-        tr.appendChild(td);
-      }
-      const tdAct = document.createElement('td');
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '🗑';
-      delBtn.className = 'deleteBtn';
-      delBtn.onclick = () => tr.remove();
-      tdAct.appendChild(delBtn);
-      tr.appendChild(tdAct);
-      table.appendChild(tr);
-    }
+document.getElementById('fType').addEventListener('change', prepareCubeSelect);
 
-    async function saveData() {
-      const table = document.getElementById('dataTable');
-      const rows = [...table.querySelectorAll('tr')].map(tr =>
-        [...tr.querySelectorAll('td input')].map(inp => inp.value.trim())
-      );
-      if (!rows.length) return alert('Нет данных');
+function renderTable(rows){
+  const tbl = document.getElementById('dataTable');
+  tbl.innerHTML = '';
+  if (!rows.length){ tbl.innerHTML='<tr><td>Нет данных</td></tr>'; return; }
+  const thead = document.createElement('tr');
+  rows[0].forEach(h=>{ const th=document.createElement('th'); th.textContent=h||''; thead.appendChild(th); });
+  tbl.appendChild(thead);
+  rows.slice(1).forEach(r=>{
+    const tr=document.createElement('tr');
+    r.forEach(c=>{ const td=document.createElement('td'); td.textContent=c||''; tr.appendChild(td); });
+    tbl.appendChild(tr);
+  });
+}
 
-      try {
-        const payload = {
-          type: 'update' + currentAction.replace('get', ''),
-          secret: SECRET,
-          rows
-        };
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const j = await res.json();
-        if (j.ok) alert('✅ Сохранено!');
-        else alert('Ошибка: ' + j.error);
-      } catch (err) {
-        alert('Ошибка сохранения: ' + err);
-      }
-    }
+// безопасные пакетные сохранения таблиц
+async function saveTable(type, rows){
+  const res = await fetch(API, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type, secret:SECRET, rows})
+  });
+  return res.json();
+}
 
-    async function appointWinner(row) {
-      if (!confirm('Назначить победителем ставку: ' + row.join(' | ') + '?')) return;
+// выдать/обновить куб (все типы)
+async function assignCube(){
+  const t = document.getElementById('fType').value;
+  const cube = document.getElementById('fCube').value;
+  const item = {
+    cube: cube,
+    name: document.getElementById('fName').value.trim(),
+    contact: document.getElementById('fContact').value.trim(),
+    link: document.getElementById('fLink').value.trim(),
+    photo: document.getElementById('fPhoto').value.trim(),
+    desc: document.getElementById('fDesc').value.trim()
+  };
 
-      try {
-        const payload = {
-          type: 'rent',
-          secret: SECRET,
-          cubeId: 'Центр',
-          name: row[2] || '',
-          contact: row[3] || '',
-          link: row[4] || '',
-          message: 'Победитель аукциона'
-        };
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const j = await res.json();
-        if (j.ok) alert('🏆 Победитель добавлен в аренду!');
-        else alert('Ошибка: ' + j.error);
-      } catch (err) {
-        alert('Ошибка при назначении победителя: ' + err);
-      }
-    }
-  </script>
+  if (t==='rent' || t==='center'){
+    const r = await fetch(API,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({type:'upsertRent', secret:SECRET, item: {...item, cube: (t==='center'?'ЦЕНТР':cube)}})
+    }).then(r=>r.json());
+    if (r.ok){ toast('✅ Готово'); refreshActive(); } else toast('Ошибка: '+(r.error||''));
+  }
+  if (t==='heroes'){
+    const r = await fetch(API,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({type:'upsertHero', secret:SECRET, item: {
+        id: cube, name: item.name, photo:item.photo, link:item.link, description:item.desc, video: document.getElementById('fVideo').value.trim()
+      }})
+    }).then(r=>r.json());
+    if (r.ok){ toast('✅ Герой обновлён'); refreshActive(); } else toast('Ошибка: '+(r.error||''));
+  }
+  if (t==='story'){
+    const r = await fetch(API,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({type:'upsertStory', secret:SECRET, item: {
+        id: cube, name:item.name, contact:item.contact, link:item.link, story:item.desc
+      }})
+    }).then(r=>r.json());
+    if (r.ok){ toast('✅ История обновлена'); refreshActive(); } else toast('Ошибка: '+(r.error||''));
+  }
+}
+
+// очистить содержимое куба (rent)
+async function clearCube(){
+  const t = document.getElementById('fType').value;
+  const cube = document.getElementById('fCube').value;
+  if (t!=='rent' && t!=='center'){ toast('Очистка доступна только для “Аренда/Центр”'); return; }
+  if (!confirm('Очистить содержимое куба '+(t==='center'?'ЦЕНТР':'#'+cube)+' ?')) return;
+  const r = await fetch(API,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'clearRentByCube', secret:SECRET, cube:(t==='center'?'ЦЕНТР':cube)})
+  }).then(r=>r.json());
+  if (r.ok){ toast('✅ Очищено'); refreshActive(); } else toast('Ошибка: '+(r.error||'')); 
+}
+
+async function refreshActive(){
+  if (!activeTab) return;
+  const r = await fetch(`${API}?action=${activeTab}&secret=${SECRET}`).then(r=>r.json());
+  if (r.ok) renderTable(r.data); else toast('Ошибка: '+(r.error||''));
+}
+
+/** ===== Аукцион ===== */
+async function startAuction(){
+  if (!confirm('Запустить аукцион на 72 часа?')) return;
+  const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'startAuction', secret:SECRET, durationHours:72})
+  }).then(r=>r.json());
+  if (r.ok){ toast('🚀 Аукцион запущен'); renderTimer(); refreshActive(); }
+  else toast('Ошибка: '+(r.error||''));
+}
+
+async function closeAuction(){
+  const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'closeAuction', secret:SECRET})
+  }).then(r=>r.json());
+  if (r.ok){ toast('⛔ Закрыт'); renderTimer(); } else toast('Ошибка: '+(r.error||''));
+}
+
+async function assignWinner(){
+  if (!confirm('Назначить победителя (макс ставка)?')) return;
+  const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'assignAuctionWinner', secret:SECRET})
+  }).then(r=>r.json());
+  if (r.ok){ toast('🏆 Победитель назначен'); refreshActive(); }
+  else toast('Ошибка: '+(r.error||''));
+}
+
+async function renderTimer(){
+  const blk = document.getElementById('auctionBlock');
+  if (blk.style.display==='none') return;
+  const el = document.getElementById('auctionTimer');
+  const meta = await fetch(`${API}?action=getAuctionMeta&secret=${SECRET}`).then(r=>r.json());
+  if (!meta.ok || !meta.data || meta.data.length<=1){ el.textContent='Осталось: —'; return; }
+  const r = meta.data[1]; // start, end, active
+  const end = new Date(r[1]).getTime(); const active = (String(r[2])==='1');
+  const tick = ()=>{
+    const left = end - Date.now();
+    if (!active || left<=0){ el.textContent='Аукцион завершён'; return; }
+    const d = Math.floor(left/86400000);
+    const h = Math.floor((left%86400000)/3600000);
+    const m = Math.floor((left%3600000)/60000);
+    el.textContent = `Осталось: ${d}д ${h}ч ${m}м`;
+    setTimeout(tick, 60000);
+  };
+  tick();
+}
+
+// дефолт – откроем “Аренда”
+loadTab('getRent', document.querySelector('.tabs button'));
+</script>
 </body>
 </html>
