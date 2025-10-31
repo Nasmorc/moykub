@@ -18,14 +18,11 @@
   .btn.secondary{background:#0a0a0a;border:1px solid #00f5d4;color:#00f5d4}
   .flex{display:flex;gap:10px;justify-content:center}
   .note{opacity:.8}
-select option {
-  background-color: #00f5d4; /* светло-бирюзовый фон */
-  color: #000;              /* чёрный текст для читаемости */
-}
+  select option {background-color:#00f5d4;color:#000;}
 </style>
 </head>
 <body>
-  <h1>⚙ Панель администратора — Мой Куб</h1>Ы
+  <h1>⚙ Панель администратора — Мой Куб</h1>
 
   <div class="tabs">
     <button onclick="loadTab('getRent', this)">Аренда</button>
@@ -39,12 +36,12 @@ select option {
     <div class="row">
       <div>
         <label>Тип</label>
-        <select id="cubeType">
-  <option value="rent">Обычный куб</option>
-  <option value="hero">Герой месяца</option>
-  <option value="good">Куб Добра</option>
-  <option value="center">Центр</option>
-</select>
+        <select id="fType">
+          <option value="rent">Обычный куб</option>
+          <option value="hero">Герой месяца</option>
+          <option value="good">Куб Добра</option>
+          <option value="center">Центр</option>
+        </select>
       </div>
       <div id="cubeWrap">
         <label>Куб</label>
@@ -83,7 +80,6 @@ select option {
     <div class="note">* очистка не удаляет номер и место куба — он вернётся в исходное состояние</div>
   </div>
 
-  <!-- Блок аукциона -->
   <div id="auctionBlock" style="display:none">
     <h3>🏁 Аукцион «ЦЕНТР»</h3>
     <div class="flex">
@@ -108,7 +104,6 @@ async function loadTab(tab, btn){
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
   btn && btn.classList.add('active');
 
-  // показать форму назначения для всех, кроме чистого списка ставок?
   document.getElementById('assignForm').style.display = (tab==='getAuction' ? 'block' : 'block');
   document.getElementById('auctionBlock').style.display = (tab==='getAuction' ? 'block' : 'none');
 
@@ -123,11 +118,10 @@ async function loadTab(tab, btn){
 
 function prepareCubeSelect(){
   const t = document.getElementById('fType').value;
-  const cubeWrap = document.getElementById('cubeWrap');
-  const videoWrap = document.getElementById('videoWrap');
   const sel = document.getElementById('fCube');
+  const videoWrap = document.getElementById('videoWrap');
   sel.innerHTML = '';
-  videoWrap.style.display = (t==='heroes') ? 'block' : 'none';
+  videoWrap.style.display = (t==='hero') ? 'block' : 'none';
 
   if (t === 'rent'){
     for(let i=1;i<=110;i++){
@@ -135,16 +129,14 @@ function prepareCubeSelect(){
     }
   }else if (t === 'center'){
     const o=document.createElement('option'); o.value='ЦЕНТР'; o.textContent='ЦЕНТР'; sel.appendChild(o);
-  }else if (t === 'heroes'){
+  }else if (t === 'hero'){
     ['1','2','3'].forEach(id=>{ const o=document.createElement('option'); o.value=id; o.textContent='Герой '+id; sel.appendChild(o);});
-  }else if (t === 'story'){
-    // story назначаем как записи с id — пусть будет тот же список #1..#110, можно ставить любой id
+  }else if (t === 'good'){
     for(let i=1;i<=110;i++){
       const o=document.createElement('option'); o.value=String(i); o.textContent='История #'+i; sel.appendChild(o);
     }
   }
 }
-
 document.getElementById('fType').addEventListener('change', prepareCubeSelect);
 
 function renderTable(rows){
@@ -161,65 +153,38 @@ function renderTable(rows){
   });
 }
 
-// безопасные пакетные сохранения таблиц
-async function saveTable(type, rows){
-  const res = await fetch(API, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({type, secret:SECRET, rows})
-  });
-  return res.json();
-}
-
-// выдать/обновить куб (все типы)
+// === выдать/обновить куб ===
 async function assignCube(){
   const t = document.getElementById('fType').value;
   const cube = document.getElementById('fCube').value;
   const item = {
-    cube: cube,
+    cube,
     name: document.getElementById('fName').value.trim(),
     contact: document.getElementById('fContact').value.trim(),
     link: document.getElementById('fLink').value.trim(),
     photo: document.getElementById('fPhoto').value.trim(),
-    desc: document.getElementById('fDesc').value.trim()
+    desc: document.getElementById('fDesc').value.trim(),
+    video: document.getElementById('fVideo').value.trim()
   };
 
-  if (t==='rent' || t==='center'){
-    const r = await fetch(API,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({type:'upsertRent', secret:SECRET, item: {...item, cube: (t==='center'?'ЦЕНТР':cube)}})
-    }).then(r=>r.json());
-    if (r.ok){ toast('✅ Готово'); refreshActive(); } else toast('Ошибка: '+(r.error||''));
-  }
-  if (t==='heroes'){
-    const r = await fetch(API,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({type:'upsertHero', secret:SECRET, item: {
-        id: cube, name: item.name, photo:item.photo, link:item.link, description:item.desc, video: document.getElementById('fVideo').value.trim()
-      }})
-    }).then(r=>r.json());
-    if (r.ok){ toast('✅ Герой обновлён'); refreshActive(); } else toast('Ошибка: '+(r.error||''));
-  }
-  if (t==='story'){
-    const r = await fetch(API,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({type:'upsertStory', secret:SECRET, item: {
-        id: cube, name:item.name, contact:item.contact, link:item.link, story:item.desc
-      }})
-    }).then(r=>r.json());
-    if (r.ok){ toast('✅ История обновлена'); refreshActive(); } else toast('Ошибка: '+(r.error||''));
-  }
+  const r = await fetch(API, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type: t, secret: SECRET, ...item})
+  }).then(r=>r.json());
+
+  if (r.ok){ toast('✅ Сохранено'); refreshActive(); }
+  else toast('Ошибка: '+(r.error||'')); 
 }
 
-// очистить содержимое куба (rent)
+// === очистка куба ===
 async function clearCube(){
   const t = document.getElementById('fType').value;
   const cube = document.getElementById('fCube').value;
-  if (t!=='rent' && t!=='center'){ toast('Очистка доступна только для “Аренда/Центр”'); return; }
-  if (!confirm('Очистить содержимое куба '+(t==='center'?'ЦЕНТР':'#'+cube)+' ?')) return;
+  if (!confirm('Очистить содержимое куба '+cube+' ?')) return;
   const r = await fetch(API,{
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({type:'clearRentByCube', secret:SECRET, cube:(t==='center'?'ЦЕНТР':cube)})
+    body: JSON.stringify({type:'clear', secret:SECRET, cube})
   }).then(r=>r.json());
   if (r.ok){ toast('✅ Очищено'); refreshActive(); } else toast('Ошибка: '+(r.error||'')); 
 }
@@ -227,7 +192,7 @@ async function clearCube(){
 async function refreshActive(){
   if (!activeTab) return;
   const r = await fetch(`${API}?action=${activeTab}&secret=${SECRET}`).then(r=>r.json());
-  if (r.ok) renderTable(r.data); else toast('Ошибка: '+(r.error||''));
+  if (r.ok) renderTable(r.data); else toast('Ошибка: '+(r.error||'')); 
 }
 
 /** ===== Аукцион ===== */
@@ -237,14 +202,14 @@ async function startAuction(){
     body: JSON.stringify({type:'startAuction', secret:SECRET, durationHours:72})
   }).then(r=>r.json());
   if (r.ok){ toast('🚀 Аукцион запущен'); renderTimer(); refreshActive(); }
-  else toast('Ошибка: '+(r.error||''));
+  else toast('Ошибка: '+(r.error||'')); 
 }
 
 async function closeAuction(){
   const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
     body: JSON.stringify({type:'closeAuction', secret:SECRET})
   }).then(r=>r.json());
-  if (r.ok){ toast('⛔ Закрыт'); renderTimer(); } else toast('Ошибка: '+(r.error||''));
+  if (r.ok){ toast('⛔ Закрыт'); renderTimer(); } else toast('Ошибка: '+(r.error||'')); 
 }
 
 async function assignWinner(){
@@ -253,7 +218,7 @@ async function assignWinner(){
     body: JSON.stringify({type:'assignAuctionWinner', secret:SECRET})
   }).then(r=>r.json());
   if (r.ok){ toast('🏆 Победитель назначен'); refreshActive(); }
-  else toast('Ошибка: '+(r.error||''));
+  else toast('Ошибка: '+(r.error||'')); 
 }
 
 async function renderTimer(){
@@ -262,7 +227,7 @@ async function renderTimer(){
   const el = document.getElementById('auctionTimer');
   const meta = await fetch(`${API}?action=getAuctionMeta&secret=${SECRET}`).then(r=>r.json());
   if (!meta.ok || !meta.data || meta.data.length<=1){ el.textContent='Осталось: —'; return; }
-  const r = meta.data[1]; // start, end, active
+  const r = meta.data[1]; 
   const end = new Date(r[1]).getTime(); const active = (String(r[2])==='1');
   const tick = ()=>{
     const left = end - Date.now();
@@ -275,8 +240,6 @@ async function renderTimer(){
   };
   tick();
 }
-
-// дефолт – откроем “Аренда”
 loadTab('getRent', document.querySelector('.tabs button'));
 </script>
 </body>
